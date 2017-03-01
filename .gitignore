@@ -1,0 +1,15 @@
+*~
+*.egg/
+*.pyc
+*.pyo
+*.cpp
+*.so
+build
+\#*\#
+.\#*
+.coverage
+.eggs/
+_readthedocs_build
+chainer.egg-info/
+dist/
+htmlcov/

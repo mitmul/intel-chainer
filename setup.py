@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
 from setuptools import setup
+from setuptools.extension import Extension
+from Cython.Build import cythonize
 
 
 setup_requires = []
@@ -10,6 +12,16 @@ install_requires = [
     'numpy>=1.9.0',
     'protobuf',
     'six>=1.9.0',
+]
+
+extensions = [
+    Extension(
+        "chainer.cpu_accl.c_numeric_c",
+        ["chainer/cpu_accl/c_numeric_c.pyx"],
+        #include_dirs=['/some/path/to/include/'], # not needed for fftw unless it is installed in an unusual place
+        #libraries=['c_numeric_c'],
+        #library_dirs=['chainer/cpu_accl/'], # not needed for fftw unless it is installed in an unusual place
+    ),
 ]
 
 setup(
@@ -56,7 +68,9 @@ setup(
               'chainer.training',
               'chainer.training.extensions',
               'chainer.training.triggers',
-              'chainer.utils'],
+              'chainer.utils',
+              'chainer.cpu_accl'],
+    ext_modules = cythonize(extensions),
     zip_safe=False,
     setup_requires=setup_requires,
     install_requires=install_requires,

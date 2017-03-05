@@ -1,4 +1,24 @@
-from numpy import *
+import numpy as np
+cimport numpy as np
+from libc.stdlib cimport malloc, free
+
+ctypedef int MKL_INT
+ctypedef enum CBLAS_ORDER:
+    CblasRowMajor=101
+    CblasColMajor=102
+
+ctypedef enum CBLAS_TRANSPOSE:
+    CblasNoTrans=111
+    CblasTrans=112
+    CblasConjTrans=113
+
+cdef extern from "mkl_cblas.h":
+    void cblas_dgemm(const  CBLAS_ORDER Layout, const  CBLAS_TRANSPOSE TransA,
+                     const  CBLAS_TRANSPOSE TransB, const MKL_INT M, const MKL_INT N,
+                     const MKL_INT K, const double alpha, const double *A,
+                     const MKL_INT lda, const double *B, const MKL_INT ldb,
+                     const double beta, double *C, const MKL_INT ldc)
+
 def c_tensordot(a, b, axes=2):
     """
     Compute tensor dot product along specified axes for arrays >= 1-D.
@@ -141,7 +161,7 @@ def c_tensordot(a, b, axes=2):
         axes_b = [axes_b]
         nb = 1
 
-    a, b = asarray(a), asarray(b)
+    a, b = np.asarray(a), np.asarray(b)
     as_ = a.shape
     nda = len(a.shape)
     bs = b.shape
@@ -179,7 +199,24 @@ def c_tensordot(a, b, axes=2):
     newshape_b = (N2, -1)
     oldb = [bs[axis] for axis in notin]
 
-    at = a.transpose(newaxes_a).reshape(newshape_a)
-    bt = b.transpose(newaxes_b).reshape(newshape_b)
-    res = dot(at, bt)
+    cdef at = a.transpose(newaxes_a).reshape(newshape_a)
+    cdef bt = b.transpose(newaxes_b).reshape(newshape_b)
+
+    cdef int M;
+    cdef int K1;
+    cdef int K2;
+    cdef int N;
+    (M, K1)=at.shape
+    (K2, N)=bt.shape
+    print ("(M, N, K1, K2) = (%d, %d, %d, %d)\n"%(M, N, K1, K2))
+    cdef np.ndarray[np.float64_t, ndim=2, mode='c'] at_buff = np.ascontiguousarray(at, dtype = np.double)
+    cdef np.ndarray[np.float64_t, ndim=2, mode='c'] bt_buff = np.ascontiguousarray(bt, dtype = np.double)
+    cdef double* A_ptr = <double*>at_buff.data
+    cdef double* B_ptr = <double*>bt_buff.data
+    res = np.zeros([M, N], dtype=float)
+    cdef np.ndarray[np.float64_t, ndim=2, mode='c'] res_buff = np.ascontiguousarray(res, dtype = np.double)
+    cdef double* C_ptr = <double*>res_buff.data
+    cdef double* C_array = <double*>malloc(sizeof(double)*M*N)
+    cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
+        M, N, K1, 1.0, A_ptr, M, B_ptr, N, 0.0, C_array, M)
     return res.reshape(olda + oldb)

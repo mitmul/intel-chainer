@@ -18,9 +18,9 @@ extensions = [
     Extension(
         "chainer.cpu_accl.c_numeric_c",
         ["chainer/cpu_accl/c_numeric_c.pyx"],
-        #include_dirs=['/some/path/to/include/'], # not needed for fftw unless it is installed in an unusual place
-        #libraries=['c_numeric_c'],
-        #library_dirs=['chainer/cpu_accl/'], # not needed for fftw unless it is installed in an unusual place
+        include_dirs=['/opt/intel/mklml_lnx_2017.0.1.20161005/include/'], # not needed for fftw unless it is installed in an unusual place
+        libraries=['mklml_intel'],
+        library_dirs=['/opt/intel/mklml_lnx_2017.0.1.20161005/lib/'], # not needed for fftw unless it is installed in an unusual place
     ),
 ]
 

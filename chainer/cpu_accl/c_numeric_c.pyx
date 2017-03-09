@@ -1,6 +1,7 @@
 import numpy as np
 cimport numpy as np
 from libc.stdlib cimport malloc, free
+from libc.stdio cimport printf
 
 ctypedef int MKL_INT
 ctypedef enum CBLAS_ORDER:
@@ -208,7 +209,7 @@ def c_tensordot(a, b, axes=2):
     cdef int N;
     (M, K1)=at.shape
     (K2, N)=bt.shape
-    print ("(M, N, K1, K2) = (%d, %d, %d, %d)\n"%(M, N, K1, K2))
+    #print ("(M, N, K1, K2) = (%d, %d, %d, %d)\n"%(M, N, K1, K2))
     cdef np.ndarray[np.float64_t, ndim=2, mode='c'] at_buff = np.ascontiguousarray(at, dtype = np.double)
     cdef np.ndarray[np.float64_t, ndim=2, mode='c'] bt_buff = np.ascontiguousarray(bt, dtype = np.double)
     cdef double* A_ptr = <double*>at_buff.data
@@ -216,7 +217,8 @@ def c_tensordot(a, b, axes=2):
     res = np.zeros([M, N], dtype=float)
     cdef np.ndarray[np.float64_t, ndim=2, mode='c'] res_buff = np.ascontiguousarray(res, dtype = np.double)
     cdef double* C_ptr = <double*>res_buff.data
-    cdef double* C_array = <double*>malloc(sizeof(double)*M*N)
+    #cdef double* C_array = <double*>malloc(sizeof(double)*M*N)
+    #printf ("A_ptr=%p, B_ptr=%p, C_ptr=%p\n", A_ptr, B_ptr, C_ptr)
     cblas_dgemm(CblasRowMajor, CblasNoTrans, CblasNoTrans,
-        M, N, K1, 1.0, A_ptr, M, B_ptr, N, 0.0, C_array, M)
+        M, N, K1, 1.0, A_ptr, K1, B_ptr, N, 0.0, C_ptr, N)
     return res.reshape(olda + oldb)

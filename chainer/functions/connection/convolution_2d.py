@@ -4,7 +4,6 @@ from chainer import cuda
 from chainer import function
 from chainer.utils import conv
 from chainer.utils import type_check
-from chainer.cpu_accl import c_numeric_c
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
@@ -68,7 +67,8 @@ class Convolution2DFunction(function.Function):
         self.col = conv.im2col_cpu(
             x, kh, kw, self.sy, self.sx, self.ph, self.pw,
             cover_all=self.cover_all)
-        y = c_numeric_c.c_tensordot(
+        print "%f, %f"%(cos_module.cos_func(0.5), sin_module.sin_func(0.5))
+        y = numpy.tensordot(
             self.col, W, ((1, 2, 3), (1, 2, 3))).astype(x.dtype, copy=False)
         if b is not None:
             y += b

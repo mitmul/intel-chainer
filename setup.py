@@ -2,7 +2,7 @@
 
 from setuptools import setup
 from setuptools.extension import Extension
-from Cython.Build import cythonize
+#from Cython.Build import cythonize
 
 
 setup_requires = []
@@ -14,14 +14,31 @@ install_requires = [
     'six>=1.9.0',
 ]
 
+#extensions = [
+#    Extension(
+#        "chainer.cpu_accl.c_numeric_c",
+#        ["chainer/cpu_accl/c_numeric_c.pyx"],
+#        include_dirs=['/usr/local/include'],
+#        #include_dirs=['/opt/intel/mklml_lnx_2017.0.1.20161005/include/'],
+#        libraries=['mklml_intel', 'iomp5', 'mkldnn'],
+#        library_dirs=['/usr/local/lib/'],
+#        #library_dirs=['/opt/intel/mklml_lnx_2017.0.1.20161005/lib/'],
+#    ),
+#]
+
 extensions = [
     Extension(
-        "chainer.cpu_accl.c_numeric_c",
-        ["chainer/cpu_accl/c_numeric_c.pyx"],
-        include_dirs=['/opt/intel/mklml_lnx_2017.0.1.20161005/include/'], # not needed for fftw unless it is installed in an unusual place
-        libraries=['mklml_intel'],
-        library_dirs=['/opt/intel/mklml_lnx_2017.0.1.20161005/lib/'], # not needed for fftw unless it is installed in an unusual place
+        "mkldnnpy.dnn_raw",
+        sources=["mkldnnpy/dnn_raw.c", "mkldnnpy/dnn_raw.i"]
     ),
+    Extension(
+        "mkldnnpy._cos_module",
+        sources=["mkldnnpy/cos_module.c", "mkldnnpy/cos_module.i"]
+    ),
+    Extension(
+        "mkldnnpy._sin_module",
+        sources=["mkldnnpy/sin_module.c", "mkldnnpy/sin_module.i"]
+    )
 ]
 
 setup(
@@ -69,8 +86,10 @@ setup(
               'chainer.training.extensions',
               'chainer.training.triggers',
               'chainer.utils',
-              'chainer.cpu_accl'],
-    ext_modules = cythonize(extensions),
+              #'chainer.cpu_accl',
+              'mkldnnpy'],
+    #ext_modules = cythonize(extensions),
+    ext_modules = extensions,
     zip_safe=False,
     setup_requires=setup_requires,
     install_requires=install_requires,

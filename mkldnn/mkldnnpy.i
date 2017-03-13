@@ -4,6 +4,7 @@
     #define SWIG_FILE_WITH_INIT
     #include "common.h"
     #include "convolution.h"
+    #include "stream_factory.h"
 %}
 
 %include "numpy.i"
@@ -23,5 +24,6 @@
 
 %include "common.h"
 %include "convolution.h"
+%include "stream_factory.h"
 
 %template(Convolution2D_F32) Convolution2D<float>;

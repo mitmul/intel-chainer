@@ -18,5 +18,8 @@ int global_init()
     return 0;
 }
 
-
+bool enabled()
+{
+    return true;
+}
 

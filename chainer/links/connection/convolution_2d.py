@@ -52,7 +52,7 @@ class Convolution2D(link.Link):
     """
 
     def __init__(self, in_channels, out_channels, ksize, stride=1, pad=0,
-                 bias=0, nobias=False, use_cudnn=True, use_mkldnn=True,
+                 bias=0, nobias=False, use_cudnn=True,
                  initialW=None, initial_bias=None, deterministic=False):
         super(Convolution2D, self).__init__()
         self.ksize = ksize
@@ -99,10 +99,21 @@ class Convolution2D(link.Link):
             with cuda.get_device(self._device_id):
                 self._initialize_params(x.shape[1])
 
-        #if use_mkldnn:
-        #    if self.mkldnn_convolution == None:
-        #        y = np.empty(shape=(), dtype=np.float32);
-        #        self.mkldnn_convolution = mkldnnpy.Convolution2D_F32(x, self.W, self.b, y, self.stride, self.pad)
+        if mkldnnpy.enabled():
+            if self.mkldnn_convolution is None:
+                h_O = (x.shape[2] + 2*self.pad[0] - W.shape[2])//self.stride[0] + 1
+                w_O = (x.shape[3] + 2*self.pad[1] - W.shape[3])//self.stride[1] + 1
+                y = np.empty(shape=(x.shape[0], W.shape[0], h_O, w_O), dtype=np.float32)
+                if b is None:
+                    self.mkldnn_convolution = mkldnnpy.Convolution2D_F32(x, self.W, y,
+                                                                         self.stride[0], self.stride[1],
+                                                                         self.pad[0], self.pad[1])
+                else:
+                    self.mkldnn_convolution = mkldnnpy.Convolution2D_F32(x, self.W, self.b, y,
+                                                                         self.stride[0], self.stride[1],
+                                                                         self.pad[0], self.pad[1])
+            self.mkldnn_convolution.forward()
+            return y
 
         return convolution_2d.convolution_2d(
             x, self.W, self.b, self.stride, self.pad, self.use_cudnn,

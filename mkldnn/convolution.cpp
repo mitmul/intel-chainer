@@ -2,6 +2,7 @@
 #include <iostream>
 #include "mkldnn.hpp"
 #include "convolution.h"
+#include "utils.h"
 
 using namespace mkldnn;
 
@@ -31,27 +32,27 @@ Convolution2D<T>::Convolution2D(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
     auto padding = {p1, p2};
 
     /* create memory for user data */
-    auto user_src_memory = new memory({{{src_tz}, memory::data_type::f32,
+    auto user_src_memory = new memory({{{src_tz}, memory_data_type<T>(),
                                       memory::format::nchw}, cpu_engine}, x);
     auto user_weights_memory = new memory({{{weights_tz},
-                                          memory::data_type::f32, memory::format::oihw}, cpu_engine}, W);
+                                          memory_data_type<T>(), memory::format::oihw}, cpu_engine}, W);
 
     primitive* user_bias_memory = NULL;
     if (b != NULL)
         user_bias_memory = new memory({{{bias_tz},
-                                      memory::data_type::f32, memory::format::x}, cpu_engine}, b);
+                                      memory_data_type<T>(), memory::format::x}, cpu_engine}, b);
 
     /* create memory descriptors for convolution data w/ no specified format */
-    auto src_md = new memory::desc({src_tz}, memory::data_type::f32,
+    auto src_md = new memory::desc({src_tz}, memory_data_type<T>(),
                                    memory::format::any);
 
     memory::desc* bias_md = NULL;
     if (b != NULL)
-        bias_md = new memory::desc({bias_tz}, memory::data_type::f32,
+        bias_md = new memory::desc({bias_tz}, memory_data_type<T>(),
                                    memory::format::any);
     auto weights_md = new memory::desc({weights_tz},
-                                       memory::data_type::f32, memory::format::any);
-    auto dst_md = new memory::desc({dst_tz}, memory::data_type::f32,
+                                       memory_data_type<T>(), memory::format::any);
+    auto dst_md = new memory::desc({dst_tz}, memory_data_type<T>(),
                                    memory::format::any);
 
     /* create a convolution */

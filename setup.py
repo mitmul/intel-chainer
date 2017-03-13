@@ -45,7 +45,7 @@ extensions = [
     #),
     Extension(
         "mkldnn._mkldnnpy",
-        sources=["mkldnn/convolution.cpp", "mkldnn/common.cpp", "mkldnn/mkldnnpy.i"],
+        sources=["mkldnn/convolution.cpp", "mkldnn/common.cpp", "mkldnn/stream_factory.cpp", "mkldnn/mkldnnpy.i"],
         swig_opts=["-c++"],
         extra_compile_args=["-std=c++11"],
         include_dirs=[incdir],

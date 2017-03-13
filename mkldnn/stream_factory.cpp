@@ -3,12 +3,14 @@
 #include "mkldnn.hpp"
 #include "stream_factory.h"
 
+// helper functions to convert layer unique data to a string
 static std::string pointer_to_string(void* ptr)
 {
     std::ostringstream os;
     os << std::hex << static_cast<void*>(ptr);
     return os.str();
 }
+// end of helper functions
 
 mkldnn::stream* StreamFactory::getStream(std::string key)
 {
@@ -35,4 +37,13 @@ mkldnn::stream* StreamFactory::getRELUStream(void* input)
     std::string key = "relu_";
 
     key += pointer_to_string(input);
+    return getStream(key);
+}
+
+void StreamFactory::setRELUStream(void* input, mkldnn::stream* stream)
+{
+    std::string key = "relu_";
+
+    key += pointer_to_string(input);
+    setStream(key, stream);
 }

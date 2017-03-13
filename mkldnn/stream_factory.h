@@ -4,6 +4,12 @@
 #include <string>
 #include <unordered_map>
 
+// Usage:
+// When stream is created, call:
+// StreamFactory::getInstance().setRELUFwdStream(<input pointer>, <stream>)
+// then when forward is needed, call
+// stream = StreamFactory::getInstance().getRELUFwdStream(<input pointer>)
+
 class StreamFactory {
 public:
     static StreamFactory& getInstance() {
@@ -15,9 +21,16 @@ public:
                              mkldnn::stream*   stream);
 
     // relu stream
-    mkldnn::stream* getRELUStream(void*           input);
-    void            setRELUStream(void*           input,
-                                  mkldnn::stream* stream);
+    mkldnn::stream* getRELUFwdStream(void*           input);
+    void            setRELUFwdStream(void*           input,
+                                     mkldnn::stream* stream);
+    mkldnn::stream* getRELUBwdStream(void*           input,
+                                     void*           output_diff,
+                                     void*           input_diff);
+    void            setRELUBwdStream(void*           input,
+                                     void*           output_diff,
+                                     void*           input_diff,
+                                     mkldnn::stream* stream);
 
 #if 0
     // maxpool stream

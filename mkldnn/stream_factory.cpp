@@ -7,7 +7,7 @@
 static std::string pointer_to_string(void* ptr)
 {
     std::ostringstream os;
-    os << std::hex << static_cast<void*>(ptr);
+    os << std::hex << static_cast<void*>(ptr) << "_";
     return os.str();
 }
 // end of helper functions
@@ -32,18 +32,44 @@ void StreamFactory::setStream(std::string key, mkldnn::stream* stream)
     }
 }
 
-mkldnn::stream* StreamFactory::getRELUStream(void* input)
+#define RELU_FWD_PREFIX "relu_fwd_"
+#define RELU_BWD_PREFIX "relu_bwd_"
+
+mkldnn::stream* StreamFactory::getRELUFwdStream(void* input)
 {
-    std::string key = "relu_";
+    std::string key = RELU_FWD_PREFIX;
 
     key += pointer_to_string(input);
     return getStream(key);
 }
 
-void StreamFactory::setRELUStream(void* input, mkldnn::stream* stream)
+void StreamFactory::setRELUFwdStream(void* input, mkldnn::stream* stream)
 {
-    std::string key = "relu_";
+    std::string key = RELU_FWD_PREFIX;
 
     key += pointer_to_string(input);
+    setStream(key, stream);
+}
+
+mkldnn::stream* StreamFactory::getRELUBwdStream(
+        void* input, void* output_diff, void* input_diff)
+{
+    std::string key = RELU_BWD_PREFIX;
+
+    key += pointer_to_string(input);
+    key += pointer_to_string(output_diff);
+    key += pointer_to_string(input_diff);
+    return getStream(key);
+}
+
+void StreamFactory::setRELUBwdStream(
+        void* input, void* output_diff, void* input_diff,
+        mkldnn::stream* stream)
+{
+    std::string key = RELU_BWD_PREFIX;
+
+    key += pointer_to_string(input);
+    key += pointer_to_string(output_diff);
+    key += pointer_to_string(input_diff);
     setStream(key, stream);
 }

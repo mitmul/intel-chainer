@@ -4,6 +4,7 @@ from setuptools import setup
 from setuptools.extension import Extension
 #from Cython.Build import cythonize
 
+import numpy
 
 setup_requires = []
 install_requires = [
@@ -12,6 +13,7 @@ install_requires = [
     'numpy>=1.9.0',
     'protobuf',
     'six>=1.9.0',
+    'glog',
 ]
 
 #extensions = [
@@ -26,18 +28,28 @@ install_requires = [
 #    ),
 #]
 
+incdir = numpy.get_include()
+
 extensions = [
+    #Extension(
+    #    "mkldnnpy.dnn_raw",
+    #    sources=["mkldnnpy/dnn_raw.c", "mkldnnpy/dnn_raw.i"]
+    #),
+    #Extension(
+    #    "mkldnnpy._cos_module",
+    #    sources=["mkldnnpy/cos_module.c", "mkldnnpy/cos_module.i"]
+    #),
+    #Extension(
+    #    "mkldnnpy._sin_module",
+    #    sources=["mkldnnpy/sin_module.c", "mkldnnpy/sin_module.i"]
+    #),
     Extension(
-        "mkldnnpy.dnn_raw",
-        sources=["mkldnnpy/dnn_raw.c", "mkldnnpy/dnn_raw.i"]
-    ),
-    Extension(
-        "mkldnnpy._cos_module",
-        sources=["mkldnnpy/cos_module.c", "mkldnnpy/cos_module.i"]
-    ),
-    Extension(
-        "mkldnnpy._sin_module",
-        sources=["mkldnnpy/sin_module.c", "mkldnnpy/sin_module.i"]
+        "mkldnn._mkldnnpy",
+        sources=["mkldnn/convolution.cpp", "mkldnn/common.cpp", "mkldnn/mkldnnpy.i"],
+        swig_opts=["-c++"],
+        extra_compile_args=["-std=c++11"],
+        include_dirs=[incdir],
+        libraries=['glog', 'stdc++', 'mkldnn'],
     )
 ]
 
@@ -87,7 +99,8 @@ setup(
               'chainer.training.triggers',
               'chainer.utils',
               #'chainer.cpu_accl',
-              'mkldnnpy'],
+              'mkldnn',
+              ],
     #ext_modules = cythonize(extensions),
     ext_modules = extensions,
     zip_safe=False,

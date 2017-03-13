@@ -2,6 +2,7 @@ from chainer import cuda
 from chainer.functions.connection import convolution_2d
 from chainer import initializers
 from chainer import link
+from mkldnn import mkldnnpy
 
 
 class Convolution2D(link.Link):
@@ -51,7 +52,7 @@ class Convolution2D(link.Link):
     """
 
     def __init__(self, in_channels, out_channels, ksize, stride=1, pad=0,
-                 bias=0, nobias=False, use_cudnn=True,
+                 bias=0, nobias=False, use_cudnn=True, use_mkldnn=True,
                  initialW=None, initial_bias=None, deterministic=False):
         super(Convolution2D, self).__init__()
         self.ksize = ksize
@@ -97,6 +98,12 @@ class Convolution2D(link.Link):
         if self.has_uninitialized_params:
             with cuda.get_device(self._device_id):
                 self._initialize_params(x.shape[1])
+
+        #if use_mkldnn:
+        #    if self.mkldnn_convolution == None:
+        #        y = np.empty(shape=(), dtype=np.float32);
+        #        self.mkldnn_convolution = mkldnnpy.Convolution2D_F32(x, self.W, self.b, y, self.stride, self.pad)
+
         return convolution_2d.convolution_2d(
             x, self.W, self.b, self.stride, self.pad, self.use_cudnn,
             deterministic=self.deterministic)

@@ -10,6 +10,13 @@ static std::string pointer_to_string(void* ptr)
     os << std::hex << static_cast<void*>(ptr) << "_";
     return os.str();
 }
+
+static std::string int_to_string(int value)
+{
+    std::ostringstream os;
+    os << std::hex << value << "_";
+    return os.str();
+}
 // end of helper functions
 
 mkldnn::stream* StreamFactory::getStream(std::string key)
@@ -35,19 +42,21 @@ void StreamFactory::setStream(std::string key, mkldnn::stream* stream)
 #define RELU_FWD_PREFIX "relu_fwd_"
 #define RELU_BWD_PREFIX "relu_bwd_"
 
-mkldnn::stream* StreamFactory::getRELUFwdStream(void* input)
+mkldnn::stream* StreamFactory::getRELUFwdStream(void* input, void* output)
 {
     std::string key = RELU_FWD_PREFIX;
 
     key += pointer_to_string(input);
+    key += pointer_to_string(output);
     return getStream(key);
 }
 
-void StreamFactory::setRELUFwdStream(void* input, mkldnn::stream* stream)
+void StreamFactory::setRELUFwdStream(void* input, void* output, mkldnn::stream* stream)
 {
     std::string key = RELU_FWD_PREFIX;
 
     key += pointer_to_string(input);
+    key += pointer_to_string(output);
     setStream(key, stream);
 }
 
@@ -73,3 +82,200 @@ void StreamFactory::setRELUBwdStream(
     key += pointer_to_string(input_diff);
     setStream(key, stream);
 }
+
+#define MAX_POOLING_FWD_PREFIX "maxpool_fwd_"
+#define MAX_POOLING_BWD_PREFIX "maxpool_bwd_"
+mkldnn::stream* StreamFactory::getMaxPoolFwdStream(
+        void* input, void* output,
+        int stride_y, int stride_x,
+        int ksize_h, int ksize_w,
+        int pad_l_h, int pad_l_w,
+        int pad_r_h, int pad_r_w)
+{
+    std::string key = MAX_POOLING_FWD_PREFIX;
+
+    key += pointer_to_string(input);
+    key += pointer_to_string(output);
+    key += int_to_string(stride_y);
+    key += int_to_string(stride_x);
+    key += int_to_string(ksize_h);
+    key += int_to_string(ksize_w);
+    key += int_to_string(pad_l_h);
+    key += int_to_string(pad_l_w);
+    key += int_to_string(pad_r_h);
+    key += int_to_string(pad_r_w);
+
+    return getStream(key);
+}
+
+void StreamFactory::setMaxPoolFwdStream(
+        void* input, void* output,
+        int stride_y, int stride_x,
+        int ksize_h, int ksize_w,
+        int pad_l_h, int pad_l_w,
+        int pad_r_h, int pad_r_w,
+        mkldnn::stream* stream)
+{
+    std::string key = MAX_POOLING_FWD_PREFIX;
+
+    key += pointer_to_string(input);
+    key += pointer_to_string(output);
+    key += int_to_string(stride_y);
+    key += int_to_string(stride_x);
+    key += int_to_string(ksize_h);
+    key += int_to_string(ksize_w);
+    key += int_to_string(pad_l_h);
+    key += int_to_string(pad_l_w);
+    key += int_to_string(pad_r_h);
+    key += int_to_string(pad_r_w);
+
+    setStream(key, stream);
+}
+
+mkldnn::stream* StreamFactory::getMaxPoolBwdStream(
+        void* input_diff, void* output_diff, void* workspace,
+        int stride_y, int stride_x,
+        int ksize_h, int ksize_w,
+        int pad_l_h, int pad_l_w,
+        int pad_r_h, int pad_r_w)
+{
+    std::string key = MAX_POOLING_BWD_PREFIX;
+
+    key += pointer_to_string(input_diff);
+    key += pointer_to_string(output_diff);
+    key += pointer_to_string(workspace);
+    key += int_to_string(stride_y);
+    key += int_to_string(stride_x);
+    key += int_to_string(ksize_h);
+    key += int_to_string(ksize_w);
+    key += int_to_string(pad_l_h);
+    key += int_to_string(pad_l_w);
+    key += int_to_string(pad_r_h);
+    key += int_to_string(pad_r_w);
+
+    return getStream(key);
+}
+
+void StreamFactory::setMaxPoolBwdStream(
+        void* input_diff, void* output_diff, void* workspace,
+        int stride_y, int stride_x,
+        int ksize_h, int ksize_w,
+        int pad_l_h, int pad_l_w,
+        int pad_r_h, int pad_r_w,
+        mkldnn::stream* stream)
+{
+    std::string key = MAX_POOLING_BWD_PREFIX;
+
+    key += pointer_to_string(input_diff);
+    key += pointer_to_string(output_diff);
+    key += pointer_to_string(workspace);
+    key += int_to_string(stride_y);
+    key += int_to_string(stride_x);
+    key += int_to_string(ksize_h);
+    key += int_to_string(ksize_w);
+    key += int_to_string(pad_l_h);
+    key += int_to_string(pad_l_w);
+    key += int_to_string(pad_r_h);
+    key += int_to_string(pad_r_w);
+
+    setStream(key, stream);
+}
+
+#define AVG_POOLING_FWD_PREFIX "avgpool_fwd_"
+#define AVG_POOLING_BWD_PREFIX "avgpool_bwd_"
+mkldnn::stream* StreamFactory::getAvgPoolFwdStream(
+        void* input, void* output,
+        int stride_y, int stride_x,
+        int ksize_h, int ksize_w,
+        int pad_l_h, int pad_l_w,
+        int pad_r_h, int pad_r_w)
+{
+    std::string key = AVG_POOLING_FWD_PREFIX;
+
+    key += pointer_to_string(input);
+    key += pointer_to_string(output);
+    key += int_to_string(stride_y);
+    key += int_to_string(stride_x);
+    key += int_to_string(ksize_h);
+    key += int_to_string(ksize_w);
+    key += int_to_string(pad_l_h);
+    key += int_to_string(pad_l_w);
+    key += int_to_string(pad_r_h);
+    key += int_to_string(pad_r_w);
+
+    return getStream(key);
+}
+
+void StreamFactory::setAvgPoolFwdStream(
+        void* input, void* output,
+        int stride_y, int stride_x,
+        int ksize_h, int ksize_w,
+        int pad_l_h, int pad_l_w,
+        int pad_r_h, int pad_r_w,
+        mkldnn::stream* stream)
+{
+    std::string key = AVG_POOLING_FWD_PREFIX;
+
+    key += pointer_to_string(input);
+    key += pointer_to_string(output);
+    key += int_to_string(stride_y);
+    key += int_to_string(stride_x);
+    key += int_to_string(ksize_h);
+    key += int_to_string(ksize_w);
+    key += int_to_string(pad_l_h);
+    key += int_to_string(pad_l_w);
+    key += int_to_string(pad_r_h);
+    key += int_to_string(pad_r_w);
+
+    setStream(key, stream);
+}
+
+mkldnn::stream* StreamFactory::getAvgPoolBwdStream(
+        void* input_diff, void* output_diff, void* workspace,
+        int stride_y, int stride_x,
+        int ksize_h, int ksize_w,
+        int pad_l_h, int pad_l_w,
+        int pad_r_h, int pad_r_w)
+{
+    std::string key = AVG_POOLING_BWD_PREFIX;
+
+    key += pointer_to_string(input_diff);
+    key += pointer_to_string(output_diff);
+    key += pointer_to_string(workspace);
+    key += int_to_string(stride_y);
+    key += int_to_string(stride_x);
+    key += int_to_string(ksize_h);
+    key += int_to_string(ksize_w);
+    key += int_to_string(pad_l_h);
+    key += int_to_string(pad_l_w);
+    key += int_to_string(pad_r_h);
+    key += int_to_string(pad_r_w);
+
+    return getStream(key);
+}
+
+void StreamFactory::setAvgPoolBwdStream(
+        void* input_diff, void* output_diff, void* workspace,
+        int stride_y, int stride_x,
+        int ksize_h, int ksize_w,
+        int pad_l_h, int pad_l_w,
+        int pad_r_h, int pad_r_w,
+        mkldnn::stream* stream)
+{
+    std::string key = AVG_POOLING_BWD_PREFIX;
+
+    key += pointer_to_string(input_diff);
+    key += pointer_to_string(output_diff);
+    key += pointer_to_string(workspace);
+    key += int_to_string(stride_y);
+    key += int_to_string(stride_x);
+    key += int_to_string(ksize_h);
+    key += int_to_string(ksize_w);
+    key += int_to_string(pad_l_h);
+    key += int_to_string(pad_l_w);
+    key += int_to_string(pad_r_h);
+    key += int_to_string(pad_r_w);
+
+    setStream(key, stream);
+}
+

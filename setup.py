@@ -49,6 +49,7 @@ extensions = [
                 "mkldnn/convolution.cpp",
                 "mkldnn/common.cpp",
                 "mkldnn/stream_factory.cc",
+                "mkldnn/pooling.cc",
                 "mkldnn/mkldnnpy.i"
                 ],
         swig_opts=["-c++"],

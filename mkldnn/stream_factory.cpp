@@ -357,3 +357,31 @@ void StreamFactory::setLRNBwdStream(void*              input_diff,
 
     setStream(key, stream);
 }
+
+#define SOFTMAX_FWD_PREFIX "softmax_fwd_"
+mkldnn::stream* StreamFactory::getSoftmaxFwdStream(void*              input,
+                                                   void*              output,
+                                                   int                axis)
+{
+    std::string key = SOFTMAX_FWD_PREFIX;
+
+    key += pointer_to_string(input);
+    key += pointer_to_string(output);
+    key += int_to_string(axis);
+
+    return getStream(key);
+}
+
+void StreamFactory::setSoftmaxFwdStream(void*              input,
+                                    void*              output,
+                                    int                axis,
+                                    mkldnn::stream*    stream)
+{
+    std::string key = LRN_FWD_PREFIX;
+
+    key += pointer_to_string(input);
+    key += pointer_to_string(output);
+    key += int_to_string(axis);
+
+    setStream(key, stream);
+}

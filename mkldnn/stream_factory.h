@@ -150,20 +150,16 @@ public:
                                     float              beta,
                                     mkldnn::stream*    stream);
 
-#if 0
     // Softmax Cross Entropy stream
-    mkldnn::stream* getSoftmaxCrossEntropyStream(
+    mkldnn::stream* getSoftmaxFwdStream(
                             void*               input,
-                            void*               groundTruth,
-                            bool                normalize,
-                            void*               class_weight);
-    void            setSoftmaxCrossEntropyStream(
+                            void*               output,
+                            int                 axis);
+    void            setSoftmaxFwdStream(
                             void*               input,
-                            void*               groundTruth,
-                            bool                normalize,
-                            void*               class_weight,
+                            void*               output,
+                            int                 axis,
                             mkldnn::stream*     stream);
-#endif
 
     StreamFactory(StreamFactory const&)  = delete;
     void operator=(StreamFactory const&) = delete;

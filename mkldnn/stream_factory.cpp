@@ -17,6 +17,13 @@ static std::string int_to_string(int value)
     os << std::hex << value << "_";
     return os.str();
 }
+
+static std::string float_to_string(float value)
+{
+    std::ostringstream os;
+    os << value << "_";
+    return os.str();
+}
 // end of helper functions
 
 mkldnn::stream* StreamFactory::getStream(std::string key)
@@ -279,3 +286,74 @@ void StreamFactory::setAvgPoolBwdStream(
     setStream(key, stream);
 }
 
+#define LRN_FWD_PREFIX "lrn_fwd_"
+#define LRN_BWD_PREFIX "lrn_bwd_"
+mkldnn::stream* StreamFactory::getLRNFwdStream(void*              input,
+                                               void*              output,
+                                               int                local_size,
+                                               float              alpha,
+                                               float              beta)
+{
+    std::string key = LRN_FWD_PREFIX;
+
+    key += pointer_to_string(input);
+    key += pointer_to_string(output);
+    key += int_to_string(local_size);
+    key += float_to_string(alpha);
+    key += float_to_string(beta);
+
+    return getStream(key);
+}
+
+void StreamFactory::setLRNFwdStream(void*              input,
+                                    void*              output,
+                                    int                local_size,
+                                    float              alpha,
+                                    float              beta,
+                                    mkldnn::stream*    stream)
+{
+    std::string key = LRN_FWD_PREFIX;
+
+    key += pointer_to_string(input);
+    key += pointer_to_string(output);
+    key += int_to_string(local_size);
+    key += float_to_string(alpha);
+    key += float_to_string(beta);
+
+    setStream(key, stream);
+}
+
+mkldnn::stream* StreamFactory::getLRNBwdStream(void*              input_diff,
+                                               void*              output_diff,
+                                               int                local_size,
+                                               float              alpha,
+                                               float              beta)
+{
+    std::string key = LRN_BWD_PREFIX;
+
+    key += pointer_to_string(input_diff);
+    key += pointer_to_string(output_diff);
+    key += int_to_string(local_size);
+    key += float_to_string(alpha);
+    key += float_to_string(beta);
+
+    return getStream(key);
+}
+
+void StreamFactory::setLRNBwdStream(void*              input_diff,
+                                    void*              output_diff,
+                                    int                local_size,
+                                    float              alpha,
+                                    float              beta,
+                                    mkldnn::stream*    stream)
+{
+    std::string key = LRN_BWD_PREFIX;
+
+    key += pointer_to_string(input_diff);
+    key += pointer_to_string(output_diff);
+    key += int_to_string(local_size);
+    key += float_to_string(alpha);
+    key += float_to_string(beta);
+
+    setStream(key, stream);
+}

@@ -126,35 +126,31 @@ public:
                                         int                pad_r_w,
                                         mkldnn::stream*    stream);
 
-#if 0
     // Local Response Normalization stream
     mkldnn::stream* getLRNFwdStream(void*              input,
-                                 void*              output,
-                                 void*              workspace,
-                                 int                local_size,
-                                 float              alpha,
-                                 float              beta);
+                                    void*              output,
+                                    int                local_size,
+                                    float              alpha,
+                                    float              beta);
     void            setLRNFwdStream(void*              input,
-                                 void*              output,
-                                 void*              workspace,
-                                 int                local_size,
-                                 float              alpha,
-                                 float              beta,
-                                 mkldnn::stream*    stream);
-    mkldnn::stream* getLRNBwdStream(void*              input,
-                                 void*              output,
-                                 void*              workspace,
-                                 int                local_size,
-                                 float              alpha,
-                                 float              beta);
-    void            setLRNBwdStream(void*              input,
-                                 void*              output,
-                                 void*              workspace,
-                                 int                local_size,
-                                 float              alpha,
-                                 float              beta,
-                                 mkldnn::stream*    stream);
+                                    void*              output,
+                                    int                local_size,
+                                    float              alpha,
+                                    float              beta,
+                                    mkldnn::stream*    stream);
+    mkldnn::stream* getLRNBwdStream(void*              input_diff,
+                                    void*              output_diff,
+                                    int                local_size,
+                                    float              alpha,
+                                    float              beta);
+    void            setLRNBwdStream(void*              input_diff,
+                                    void*              output_diff,
+                                    int                local_size,
+                                    float              alpha,
+                                    float              beta,
+                                    mkldnn::stream*    stream);
 
+#if 0
     // Softmax Cross Entropy stream
     mkldnn::stream* getSoftmaxCrossEntropyStream(
                             void*               input,

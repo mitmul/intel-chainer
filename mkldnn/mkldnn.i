@@ -1,4 +1,4 @@
-%module mkldnnpy
+%module mkldnn
 
 %{
     #define SWIG_FILE_WITH_INIT
@@ -11,6 +11,7 @@
 
 %init %{
     import_array();
+    global_init();
 %}
 
 %apply ( float* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )

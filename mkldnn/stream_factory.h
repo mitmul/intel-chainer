@@ -16,10 +16,13 @@ public:
         static StreamFactory instance;
         return instance;
     }
+
+private:
     mkldnn::stream* getStream(std::string       key);
     void            setStream(std::string       key,
                              mkldnn::stream*   stream);
 
+public:
     // relu stream
     mkldnn::stream* getRELUFwdStream(void*           input,
                                      void*           output);

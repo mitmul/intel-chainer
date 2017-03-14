@@ -26,6 +26,11 @@ static std::string float_to_string(float value)
 }
 // end of helper functions
 
+using namespace mkldnn;
+StreamFactory::StreamFactory()
+{
+}
+
 mkldnn::stream* StreamFactory::getStream(std::string key)
 {
     auto stream_iter = map.find(key);

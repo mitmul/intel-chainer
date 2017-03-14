@@ -11,6 +11,9 @@
 // stream = StreamFactory::getInstance().getRELUFwdStream(<input pointer>)
 
 class StreamFactory {
+private:
+    StreamFactory();
+
 public:
     static StreamFactory& getInstance() {
         static StreamFactory instance;
@@ -168,7 +171,6 @@ public:
     void operator=(StreamFactory const&) = delete;
 
 private:
-    StreamFactory();
     //StreamFactory(StreamFactory const&);
     //void operator=(StreamFactory const&);
     std::unordered_map<std::string, mkldnn::stream*> map;

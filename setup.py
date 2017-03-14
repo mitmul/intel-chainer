@@ -46,10 +46,10 @@ extensions = [
     Extension(
         "mkldnn._mkldnnpy",
         sources=[
-                "mkldnn/convolution.cpp",
-                "mkldnn/common.cpp",
+                "mkldnn/convolution.cc",
+                "mkldnn/common.cc",
                 "mkldnn/stream_factory.cc",
-                "mkldnn/mkldnnpy.i"
+                "mkldnn/mkldnn.i"
                 ],
         swig_opts=["-c++"],
         extra_compile_args=["-std=c++11"],

@@ -3,6 +3,7 @@ import numpy
 from chainer import cuda
 from chainer.functions.pooling import pooling_2d
 from chainer.utils import conv
+from mkldnn import mkldnn as mkl
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
@@ -14,17 +15,30 @@ class MaxPooling2D(pooling_2d.Pooling2D):
     """Max pooling over a set of 2d planes."""
 
     def forward_cpu(self, x):
-        col = conv.im2col_cpu(
-            x[0], self.kh, self.kw, self.sy, self.sx, self.ph, self.pw,
-            pval=-float('inf'), cover_all=self.cover_all)
-        n, c, kh, kw, out_h, out_w = col.shape
-        col = col.reshape(n, c, kh * kw, out_h, out_w)
+        if mkl.enabled():
+            col = conv.im2col_cpu(
+                x[0], self.kh, self.kw, self.sy, self.sx, self.ph, self.pw,
+                pval=-float('inf'), cover_all=self.cover_all)
+            n, c, kh, kw, out_h, out_w = col.shape
+            col = col.reshape(n, c, kh * kw, out_h, out_w)
 
-        # We select maximum twice, since the implementation using numpy.choose
-        # hits its bug when kh * kw >= 32.
-        self.indexes = col.argmax(axis=2)
-        y = col.max(axis=2)
-        return y,
+            # We select maximum twice, since the implementation using numpy.choose
+            # hits its bug when kh * kw >= 32.
+            self.indexes = col.argmax(axis=2)
+            y = col.max(axis=2)
+            return y,
+        else:
+            col = conv.im2col_cpu(
+                x[0], self.kh, self.kw, self.sy, self.sx, self.ph, self.pw,
+                pval=-float('inf'), cover_all=self.cover_all)
+            n, c, kh, kw, out_h, out_w = col.shape
+            col = col.reshape(n, c, kh * kw, out_h, out_w)
+
+            # We select maximum twice, since the implementation using numpy.choose
+            # hits its bug when kh * kw >= 32.
+            self.indexes = col.argmax(axis=2)
+            y = col.max(axis=2)
+            return y,
 
     def forward_gpu(self, x):
         if (cuda.cudnn_enabled and self.use_cudnn and

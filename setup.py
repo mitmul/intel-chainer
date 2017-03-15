@@ -44,7 +44,7 @@ extensions = [
     #    sources=["mkldnnpy/sin_module.c", "mkldnnpy/sin_module.i"]
     #),
     Extension(
-        "mkldnn",
+        "_mkldnn",
         sources=[
                 "mkldnn/convolution.cc",
                 "mkldnn/common.cc",

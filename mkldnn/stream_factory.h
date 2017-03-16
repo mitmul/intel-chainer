@@ -67,6 +67,20 @@ public:
                                       int             pad_r_h,
                                       int             pad_r_w,
                                       Layer<float>*   layer);
+
+    void setMaxPoolBwdStream(void*              input_diff,
+                             void*              output_diff,
+                             void*              workspace,
+                             int                stride_y,
+                             int                stride_x,
+                             int                ksize_h,
+                             int                ksize_w,
+                             int                pad_l_h,
+                             int                pad_l_w,
+                             int                pad_r_h,
+                             int                pad_r_w,
+                             Layer<float>*      layer);
+
     Layer<float>* getMaxPoolBwdStream(void*              input_diff,
                                       void*              output_diff,
                                       void*              workspace,
@@ -74,13 +88,10 @@ public:
                                       int                stride_x,
                                       int                ksize_h,
                                       int                ksize_w,
-                                      int                ksize_h,
-                                      int                ksize_w,
                                       int                pad_l_h,
                                       int                pad_l_w,
                                       int                pad_r_h,
-                                      int                pad_r_w,
-                                      Layer<float>*      layer);
+                                      int                pad_r_w);
 
     // avgpool stream
     Layer<float>* getAvgPoolFwdStream(void*              input,
@@ -104,6 +115,20 @@ public:
                                       int                pad_r_h,
                                       int                pad_r_w,
                                       Layer<float>*      layer);
+
+    void setAvgPoolBwdStream(void*              input_diff,
+                             void*              output_diff,
+                             void*              workspace,
+                             int                stride_y,
+                             int                stride_x,
+                             int                ksize_h,
+                             int                ksize_w,
+                             int                pad_l_h,
+                             int                pad_l_w,
+                             int                pad_r_h,
+                             int                pad_r_w,
+                             Layer<float>*      layer);
+
     Layer<float>* getAvgPoolBwdStream(void*              input_diff,
                                       void*              output_diff,
                                       void*              workspace,
@@ -111,13 +136,10 @@ public:
                                       int                stride_x,
                                       int                ksize_h,
                                       int                ksize_w,
-                                      int                ksize_h,
-                                      int                ksize_w,
                                       int                pad_l_h,
                                       int                pad_l_w,
                                       int                pad_r_h,
-                                      int                pad_r_w,
-                                      Layer<float>*      layer);
+                                      int                pad_r_w);
 
     // Local Response Normalization stream
     Layer<float>* getLRNFwdStream(void*              input,

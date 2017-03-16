@@ -8,9 +8,9 @@ W = np.zeros((64,3,3,3), dtype=np.float32)
 b = np.zeros((64,),dtype=np.float32)
 y = np.empty(shape=(128,64,32,32),dtype=np.float32)
 
-conv = mkldnn.Convolution2D_F32(x, W, y, 1, 1, 1, 1)
+conv = mkldnn.Convolution2D_F32()
 
-ret = conv.forward()
+ret = conv.forward(x,W,b,y,1,1,1,1)
 
 print(ret)
 

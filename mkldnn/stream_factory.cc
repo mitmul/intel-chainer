@@ -31,7 +31,7 @@ StreamFactory::StreamFactory()
 {
 }
 
-mkldnn::stream* StreamFactory::getStream(std::string key)
+Layer<float>* StreamFactory::getStream(std::string key)
 {
     auto stream_iter = map.find(key);
     if (stream_iter == map.end()) {
@@ -41,11 +41,11 @@ mkldnn::stream* StreamFactory::getStream(std::string key)
     }
 }
 
-void StreamFactory::setStream(std::string key, mkldnn::stream* stream)
+void StreamFactory::setStream(std::string key, Layer<float>*   layer)
 {
     auto stream_iter = map.find(key);
     if (stream_iter == map.end()) {
-        map[key]=stream;
+        map[key]=layer;
     } else {
         throw new std::invalid_argument("cannot set same key to a new stream");
     }
@@ -54,7 +54,7 @@ void StreamFactory::setStream(std::string key, mkldnn::stream* stream)
 #define RELU_FWD_PREFIX "relu_fwd_"
 #define RELU_BWD_PREFIX "relu_bwd_"
 
-mkldnn::stream* StreamFactory::getRELUFwdStream(void* input, void* output)
+Layer<float>* StreamFactory::getRELUFwdStream(void* input, void* output)
 {
     std::string key = RELU_FWD_PREFIX;
 
@@ -63,16 +63,16 @@ mkldnn::stream* StreamFactory::getRELUFwdStream(void* input, void* output)
     return getStream(key);
 }
 
-void StreamFactory::setRELUFwdStream(void* input, void* output, mkldnn::stream* stream)
+void StreamFactory::setRELUFwdStream(void* input, void* output, Layer<float>*   layer)
 {
     std::string key = RELU_FWD_PREFIX;
 
     key += pointer_to_string(input);
     key += pointer_to_string(output);
-    setStream(key, stream);
+    setStream(key, layer);
 }
 
-mkldnn::stream* StreamFactory::getRELUBwdStream(
+Layer<float>* StreamFactory::getRELUBwdStream(
         void* input, void* output_diff, void* input_diff)
 {
     std::string key = RELU_BWD_PREFIX;
@@ -85,20 +85,20 @@ mkldnn::stream* StreamFactory::getRELUBwdStream(
 
 void StreamFactory::setRELUBwdStream(
         void* input, void* output_diff, void* input_diff,
-        mkldnn::stream* stream)
+        Layer<float>* layer)
 {
     std::string key = RELU_BWD_PREFIX;
 
     key += pointer_to_string(input);
     key += pointer_to_string(output_diff);
     key += pointer_to_string(input_diff);
-    setStream(key, stream);
+    setStream(key, layer);
 }
 
 #define MAX_POOLING_FWD_PREFIX "maxpool_fwd_"
 #define MAX_POOLING_BWD_PREFIX "maxpool_bwd_"
-mkldnn::stream* StreamFactory::getMaxPoolFwdStream(
-        void* input, void* output,
+Layer<float>* StreamFactory::getMaxPoolFwdStream(
+        int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
         int pad_l_h, int pad_l_w,
@@ -106,8 +106,10 @@ mkldnn::stream* StreamFactory::getMaxPoolFwdStream(
 {
     std::string key = MAX_POOLING_FWD_PREFIX;
 
-    key += pointer_to_string(input);
-    key += pointer_to_string(output);
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(x_d3);
+    key += int_to_string(x_d4);
     key += int_to_string(stride_y);
     key += int_to_string(stride_x);
     key += int_to_string(ksize_h);
@@ -121,17 +123,19 @@ mkldnn::stream* StreamFactory::getMaxPoolFwdStream(
 }
 
 void StreamFactory::setMaxPoolFwdStream(
-        void* input, void* output,
+        int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
         int pad_l_h, int pad_l_w,
         int pad_r_h, int pad_r_w,
-        mkldnn::stream* stream)
+        Layer<float>* layer)
 {
     std::string key = MAX_POOLING_FWD_PREFIX;
 
-    key += pointer_to_string(input);
-    key += pointer_to_string(output);
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(x_d3);
+    key += int_to_string(x_d4);
     key += int_to_string(stride_y);
     key += int_to_string(stride_x);
     key += int_to_string(ksize_h);
@@ -141,10 +145,10 @@ void StreamFactory::setMaxPoolFwdStream(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    setStream(key, stream);
+    setStream(key, layer);
 }
 
-mkldnn::stream* StreamFactory::getMaxPoolBwdStream(
+Layer<float>* StreamFactory::getMaxPoolBwdStream(
         void* input_diff, void* output_diff, void* workspace,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -174,7 +178,7 @@ void StreamFactory::setMaxPoolBwdStream(
         int ksize_h, int ksize_w,
         int pad_l_h, int pad_l_w,
         int pad_r_h, int pad_r_w,
-        mkldnn::stream* stream)
+        Layer<float>* layer)
 {
     std::string key = MAX_POOLING_BWD_PREFIX;
 
@@ -190,12 +194,12 @@ void StreamFactory::setMaxPoolBwdStream(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    setStream(key, stream);
+    setStream(key, layer);
 }
 
 #define AVG_POOLING_FWD_PREFIX "avgpool_fwd_"
 #define AVG_POOLING_BWD_PREFIX "avgpool_bwd_"
-mkldnn::stream* StreamFactory::getAvgPoolFwdStream(
+Layer<float>* StreamFactory::getAvgPoolFwdStream(
         void* input, void* output,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -224,7 +228,7 @@ void StreamFactory::setAvgPoolFwdStream(
         int ksize_h, int ksize_w,
         int pad_l_h, int pad_l_w,
         int pad_r_h, int pad_r_w,
-        mkldnn::stream* stream)
+        Layer<float>* layer)
 {
     std::string key = AVG_POOLING_FWD_PREFIX;
 
@@ -239,10 +243,10 @@ void StreamFactory::setAvgPoolFwdStream(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    setStream(key, stream);
+    setStream(key, layer);
 }
 
-mkldnn::stream* StreamFactory::getAvgPoolBwdStream(
+Layer<float>* StreamFactory::getAvgPoolBwdStream(
         void* input_diff, void* output_diff, void* workspace,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -272,7 +276,7 @@ void StreamFactory::setAvgPoolBwdStream(
         int ksize_h, int ksize_w,
         int pad_l_h, int pad_l_w,
         int pad_r_h, int pad_r_w,
-        mkldnn::stream* stream)
+        Layer<float>*   layer)
 {
     std::string key = AVG_POOLING_BWD_PREFIX;
 
@@ -288,16 +292,16 @@ void StreamFactory::setAvgPoolBwdStream(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    setStream(key, stream);
+    setStream(key, layer);
 }
 
 #define LRN_FWD_PREFIX "lrn_fwd_"
 #define LRN_BWD_PREFIX "lrn_bwd_"
-mkldnn::stream* StreamFactory::getLRNFwdStream(void*              input,
-                                               void*              output,
-                                               int                local_size,
-                                               float              alpha,
-                                               float              beta)
+Layer<float>* StreamFactory::getLRNFwdStream(void*              input,
+                                             void*              output,
+                                             int                local_size,
+                                             float              alpha,
+                                             float              beta)
 {
     std::string key = LRN_FWD_PREFIX;
 
@@ -315,7 +319,7 @@ void StreamFactory::setLRNFwdStream(void*              input,
                                     int                local_size,
                                     float              alpha,
                                     float              beta,
-                                    mkldnn::stream*    stream)
+                                    Layer<float>*      layer)
 {
     std::string key = LRN_FWD_PREFIX;
 
@@ -325,10 +329,10 @@ void StreamFactory::setLRNFwdStream(void*              input,
     key += float_to_string(alpha);
     key += float_to_string(beta);
 
-    setStream(key, stream);
+    setStream(key, layer);
 }
 
-mkldnn::stream* StreamFactory::getLRNBwdStream(void*              input_diff,
+Layer<float>* StreamFactory::getLRNBwdStream(void*              input_diff,
                                                void*              output_diff,
                                                int                local_size,
                                                float              alpha,
@@ -350,7 +354,7 @@ void StreamFactory::setLRNBwdStream(void*              input_diff,
                                     int                local_size,
                                     float              alpha,
                                     float              beta,
-                                    mkldnn::stream*    stream)
+                                    Layer<float>*      layer)
 {
     std::string key = LRN_BWD_PREFIX;
 
@@ -360,11 +364,11 @@ void StreamFactory::setLRNBwdStream(void*              input_diff,
     key += float_to_string(alpha);
     key += float_to_string(beta);
 
-    setStream(key, stream);
+    setStream(key, layer);
 }
 
 #define SOFTMAX_FWD_PREFIX "softmax_fwd_"
-mkldnn::stream* StreamFactory::getSoftmaxFwdStream(void*              input,
+Layer<float>* StreamFactory::getSoftmaxFwdStream(void*              input,
                                                    void*              output,
                                                    int                axis)
 {
@@ -380,7 +384,7 @@ mkldnn::stream* StreamFactory::getSoftmaxFwdStream(void*              input,
 void StreamFactory::setSoftmaxFwdStream(void*              input,
                                     void*              output,
                                     int                axis,
-                                    mkldnn::stream*    stream)
+                                    Layer<float>*      layer)
 {
     std::string key = LRN_FWD_PREFIX;
 
@@ -388,5 +392,5 @@ void StreamFactory::setSoftmaxFwdStream(void*              input,
     key += pointer_to_string(output);
     key += int_to_string(axis);
 
-    setStream(key, stream);
+    setStream(key, layer);
 }

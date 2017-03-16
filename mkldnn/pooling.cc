@@ -9,20 +9,26 @@ using namespace mkldnn;
 extern engine cpu_engine;
 
 template<typename T>
-int Pooling<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-                          T* y, int y_d1, int y_d2, int y_d3, int y_d4,
-                          int s_y, int s_x,
-                          int p_h, int p_w,
-                          int ker_h, int ker_w,
-                          mkldnn::algorithm alg_kind)
+int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
+                              int s_y, int s_x,
+                              int p_h, int p_w,
+                              int ker_h, int ker_w,
+                              mkldnn::algorithm alg_kind)
 {
+    int y_d1, y_d2, y_d3, y_d4;
+    // prepare y according to x, s, p, ker
+    y_d1 = x_d1;
+    y_d2 = x_d2;
+    y_d3 = x_d3-ker_h+p_h*2+1;
+    y_d4 = x_d4-ker_w+p_w*2+1;
+
     LOG(INFO) << "Pooling forward_setup";
 
     LOG(INFO) << "x =(" << x_d1 << "," << x_d2 << "," << x_d3 << "," << x_d4 << ")";
     LOG(INFO) << "y =(" << y_d1 << "," << y_d2 << "," << y_d3 << "," << y_d4 << ")";
-    LOG(INFO) << "strides =(" << s_y << "," << s_x;
-    LOG(INFO) << "padding =(" << p_h << "," << p_w;
-    LOG(INFO) << "kernel =(" << ker_h << "," << ker_w;
+    LOG(INFO) << "strides =(" << s_y << "," << s_x << ")";
+    LOG(INFO) << "padding =(" << p_h << "," << p_w << ")";
+    LOG(INFO) << "kernel =(" << ker_h << "," << ker_w << ")";
     LOG(INFO) << "alg_kind =" << (alg_kind == pooling_max ? "max" :
                                  (alg_kind == pooling_avg ? "avg" :
                                               /* else */    "unknown"));
@@ -40,12 +46,12 @@ int Pooling<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
 
     /* create memory for user data */
     auto user_src_memory = new memory({{{src_tz}, memory_data_type<T>(),
-                                      memory::format::nchw}, cpu_engine}, x);
+                                      memory::format::nchw}, cpu_engine});
     auto src_md = new memory::desc({src_tz}, memory_data_type<T>(),
                                    memory::format::any);
 
     auto user_dst_memory = new memory({{{dst_tz}, memory_data_type<T>(),
-                                      memory::format::nchw}, cpu_engine}, y);
+                                      memory::format::nchw}, cpu_engine});
     auto dst_md = new memory::desc({dst_tz}, memory_data_type<T>(),
                                    memory::format::any);
 
@@ -81,8 +87,36 @@ int Pooling<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
 
     auto fwd = new pooling_forward(
             *fwd_prim_desc, *user_src_memory, *pool_workspace_memory, *user_dst_memory);
-    primitives_.push_back(*fwd);
-    stream_ = new stream(stream::kind::eager);
+    this->primitives_.push_back(*fwd);
+    this->stream_ = new stream(stream::kind::eager);
+
+    x_d1_     = x_d1;
+    x_d2_     = x_d2;
+    x_d3_     = x_d3;
+    x_d4_     = x_d4;
+
+    s_y_      = s_y;
+    s_x_      = s_x;
+    p_h_      = p_h;
+    p_w_      = p_w;
+    ker_h_    = ker_h;
+    ker_w_    = ker_w;
+
+    alg_kind_ = alg_kind;
+
+    return 0;
+}
+
+template<typename T>
+int Pooling<T>::forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
+                        T* y, int y_d1, int y_d2, int y_d3, int y_d4)
+{
+    if (this->first_use) {
+        this->stream_->submit(this->primitives_).wait();
+        this->first_use = false;
+    } else {
+        this->stream_->rerun().wait();
+    }
     return 0;
 }
 
@@ -119,5 +153,6 @@ int Convolution2D<T>::backward()
     return 0;
 }
 
-template class Convolution2D<float>;
 #endif
+
+template class Pooling<float>;

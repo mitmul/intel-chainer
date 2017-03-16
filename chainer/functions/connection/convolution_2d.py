@@ -4,6 +4,7 @@ from chainer import cuda
 from chainer import function
 from chainer.utils import conv
 from chainer.utils import type_check
+from mkldnn import mkldnn
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
@@ -31,12 +32,17 @@ def _pair(x):
 class Convolution2DFunction(function.Function):
 
     def __init__(self, stride=1, pad=0, use_cudnn=True, cover_all=False,
-                 deterministic=False):
+                 deterministic=False, conv_link=None):
         self.sy, self.sx = _pair(stride)
         self.ph, self.pw = _pair(pad)
         self.use_cudnn = use_cudnn
         self.cover_all = cover_all
         self.deterministic = deterministic
+    
+        if mkldnn.enabled() and conv_link is None:
+            assert "conv_link can not be None in mkldnn enable model"
+
+        self.conv_link = conv_link
 
     def check_type_forward(self, in_types):
         n_in = in_types.size()
@@ -63,16 +69,37 @@ class Convolution2DFunction(function.Function):
     def forward_cpu(self, inputs):
         x, W = inputs[:2]
         b = inputs[2] if len(inputs) == 3 else None
-        kh, kw = W.shape[2:]
-        self.col = conv.im2col_cpu(
-            x, kh, kw, self.sy, self.sx, self.ph, self.pw,
-            cover_all=self.cover_all)
-        print "%f, %f"%(cos_module.cos_func(0.5), sin_module.sin_func(0.5))
-        y = numpy.tensordot(
-            self.col, W, ((1, 2, 3), (1, 2, 3))).astype(x.dtype, copy=False)
-        if b is not None:
-            y += b
-        return numpy.rollaxis(y, 3, 1),
+        out_c, input_c, kh, kw = W.shape
+        n, c, h, w = x.shape
+
+        if mkldnn.enabled():
+            out_h = conv.get_conv_outsize(h, kh, self.sy, self.ph,
+                                      cover_all=self.cover_all)
+            assert out_h > 0, 'Height in the output should be positive.'
+            out_w = conv.get_conv_outsize(w, kw, self.sx, self.pw,
+                                      cover_all=self.cover_all)
+            assert out_w > 0, 'Width in the output should be positive.'
+            
+            if self.conv_link.y is None:
+                self.conv_link.y = numpy.empty(shape=(n, out_c, out_h, out_w), dtype=x.dtype)
+            
+            if b is not None:
+                self.conv_link.mkldnn_conv.forward(x, W, b, self.conv_link.y, self.sx, self.sy, self.ph, self.pw)
+            else:
+                self.conv_link.mkldnn_conv.forward(x, W, self.conv_link.y, self.sx, self.sy, self.ph, self.pw)
+            return self.conv_link.y,
+            
+        else:
+            self.col = conv.im2col_cpu(
+                x, kh, kw, self.sy, self.sx, self.ph, self.pw,
+                cover_all=self.cover_all)
+            #print "%f, %f"%(cos_module.cos_func(0.5), sin_module.sin_func(0.5))
+            y = numpy.tensordot(
+                self.col, W, ((1, 2, 3), (1, 2, 3))).astype(x.dtype, copy=False)
+            if b is not None:
+                y += b
+            y = numpy.rollaxis(y, 3, 1)
+            return y,
 
     def forward_gpu(self, inputs):
         x, W = inputs[:2]
@@ -147,18 +174,35 @@ class Convolution2DFunction(function.Function):
         x, W = inputs[:2]
         b = inputs[2] if len(inputs) == 3 else None
         gy = grad_outputs[0]
-        h, w = x.shape[2:]
+        n, c, h, w = x.shape
+        out_c, input_c, kh, kw = W.shape
+        gn, gout_c, gout_h, gout_w = gy.shape
 
-        gW = numpy.tensordot(
-            gy, self.col, ((0, 2, 3), (0, 4, 5))).astype(W.dtype, copy=False)
-        gcol = numpy.tensordot(W, gy, (0, 1)).astype(x.dtype, copy=False)
-        gcol = numpy.rollaxis(gcol, 3)
-        gx = conv.col2im_cpu(gcol, self.sy, self.sx, self.ph, self.pw, h, w)
-
-        if b is None:
-            return gx, gW
+        if mkldnn.enabled():
+            if self.conv_link.gW is None:
+                self.conv_link.gW = numpy.empty(shape=(out_c, input_c, kh, kw), dtype=W.dtype)
+            
+            if self.conv_link.gx is None:
+                self.conv_link.gx = numpy.empty(shape=(n, c, h, w), dtype=W.dtype) 
+            
+            if b is None:
+                self.conv_link.mkldnn_conv.backward(x, W, gy, self.conv_link.gW, self.conv_link.gx)
+                return self.conv_link.gx, self.conv_link.gW
+            else:
+                if self.conv_link.gb is None:
+                    self.conv_link.gb = numpy.empty(shape=b.shape, dtype=W.dtype)
+                self.conv_link.mkldnn_conv.backward(x, W, b, gy, self.conv_link.gW, self.conv_link.gx, self.conv_link.gb)
+                return self.conv_link.gx, self.conv_link.gW, self.conv_link.gb
         else:
-            gb = gy.sum(axis=(0, 2, 3))
+            gW = numpy.tensordot(
+                    gy, self.col, ((0, 2, 3), (0, 4, 5))).astype(W.dtype, copy=False)
+            gcol = numpy.tensordot(W, gy, (0, 1)).astype(x.dtype, copy=False)
+            gcol = numpy.rollaxis(gcol, 3)
+            gx = conv.col2im_cpu(gcol, self.sy, self.sx, self.ph, self.pw, h, w)
+            if b is None:
+                return gx, gW
+            else:
+                gb = gy.sum(axis=(0, 2, 3))
             return gx, gW, gb
 
     def backward_gpu(self, inputs, grad_outputs):
@@ -254,7 +298,7 @@ class Convolution2DFunction(function.Function):
 
 
 def convolution_2d(x, W, b=None, stride=1, pad=0, use_cudnn=True,
-                   cover_all=False, deterministic=False):
+                   cover_all=False, deterministic=False, conv_link=None):
     """Two-dimensional convolution function.
 
     This is an implementation of two-dimensional convolution in ConvNets.
@@ -320,7 +364,7 @@ def convolution_2d(x, W, b=None, stride=1, pad=0, use_cudnn=True,
 
     """
     func = Convolution2DFunction(
-        stride, pad, use_cudnn, cover_all, deterministic)
+        stride, pad, use_cudnn, cover_all, deterministic, conv_link)
     if b is None:
         return func(x, W)
     else:

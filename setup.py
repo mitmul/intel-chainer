@@ -2,8 +2,6 @@
 
 from setuptools import setup
 from setuptools.extension import Extension
-#from Cython.Build import cythonize
-
 import numpy
 
 setup_requires = []
@@ -16,45 +14,20 @@ install_requires = [
     'glog',
 ]
 
-#extensions = [
-#    Extension(
-#        "chainer.cpu_accl.c_numeric_c",
-#        ["chainer/cpu_accl/c_numeric_c.pyx"],
-#        include_dirs=['/usr/local/include'],
-#        #include_dirs=['/opt/intel/mklml_lnx_2017.0.1.20161005/include/'],
-#        libraries=['mklml_intel', 'iomp5', 'mkldnn'],
-#        library_dirs=['/usr/local/lib/'],
-#        #library_dirs=['/opt/intel/mklml_lnx_2017.0.1.20161005/lib/'],
-#    ),
-#]
-
-incdir = numpy.get_include()
-
 extensions = [
-    #Extension(
-    #    "mkldnnpy.dnn_raw",
-    #    sources=["mkldnnpy/dnn_raw.c", "mkldnnpy/dnn_raw.i"]
-    #),
-    #Extension(
-    #    "mkldnnpy._cos_module",
-    #    sources=["mkldnnpy/cos_module.c", "mkldnnpy/cos_module.i"]
-    #),
-    #Extension(
-    #    "mkldnnpy._sin_module",
-    #    sources=["mkldnnpy/sin_module.c", "mkldnnpy/sin_module.i"]
-    #),
     Extension(
-        "mkldnn",
+        "_mkldnn",
         sources=[
-                "mkldnn/convolution.cc",
+                "mkldnn/mkldnn_conv.cc",
                 "mkldnn/common.cc",
                 "mkldnn/stream_factory.cc",
                 "mkldnn/pooling.cc",
-                "mkldnn/mkldnn.i"
+                "mkldnn/mkldnn.i",
+                "mkldnn/local_response_normalization.cc"
                 ],
         swig_opts=["-c++"],
         extra_compile_args=["-std=c++11"],
-        include_dirs=[incdir],
+        include_dirs=[numpy.get_include()],
         libraries=['glog', 'stdc++', 'mkldnn'],
     )
 ]
@@ -104,10 +77,8 @@ setup(
               'chainer.training.extensions',
               'chainer.training.triggers',
               'chainer.utils',
-              #'chainer.cpu_accl',
               'mkldnn',
               ],
-    #ext_modules = cythonize(extensions),
     ext_modules = extensions,
     zip_safe=False,
     setup_requires=setup_requires,

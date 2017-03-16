@@ -1,0 +1,10 @@
+True
+0
+5:59:36.127024 24541 common.cc:16] Global Init
+I0315 15:59:36.128342 24541 convolution.cc:100] Convolution CTOR, without b
+I0315 15:59:36.128365 24541 convolution.cc:19] Convolution CTOR, with b
+I0315 15:59:36.128372 24541 convolution.cc:21] x =(128,3,32,32)
+I0315 15:59:36.128379 24541 convolution.cc:22] W =(64,3,3,3)
+I0315 15:59:36.128387 24541 convolution.cc:23] b =(0)
+I0315 15:59:36.128394 24541 convolution.cc:24] y =(128,64,32,32)
+I0315 15:59:36.128736 24541 convolution.cc:113] Convolution forward

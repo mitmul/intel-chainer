@@ -2,7 +2,10 @@ from chainer import cuda
 from chainer.functions.connection import convolution_2d
 from chainer import initializers
 from chainer import link
-import mkldnn
+from mkldnn import mkldnn
+from chainer.utils import conv
+
+import numpy as np
 
 
 class Convolution2D(link.Link):
@@ -79,6 +82,13 @@ class Convolution2D(link.Link):
                 initial_bias = bias
             bias_initilizer = initializers._get_initializer(initial_bias)
             self.add_param('b', out_channels, initializer=bias_initilizer)
+        
+        # For mkldnn backend
+        self.mkldnn_conv = None
+        self.y = None
+        self.gW = None
+        self.gx = None
+        self.gb = None
 
     def _initialize_params(self, in_channels):
         kh, kw = _pair(self.ksize)
@@ -99,25 +109,16 @@ class Convolution2D(link.Link):
             with cuda.get_device(self._device_id):
                 self._initialize_params(x.shape[1])
 
+        # For mkldnn backend
         if mkldnn.enabled():
-            if self.mkldnn_convolution is None:
-                h_O = (x.shape[2] + 2*self.pad[0] - W.shape[2])//self.stride[0] + 1
-                w_O = (x.shape[3] + 2*self.pad[1] - W.shape[3])//self.stride[1] + 1
-                y = np.empty(shape=(x.shape[0], W.shape[0], h_O, w_O), dtype=np.float32)
-                if b is None:
-                    self.mkldnn_convolution = mkldnn.Convolution2D_F32(x, self.W, y,
-                                                                         self.stride[0], self.stride[1],
-                                                                         self.pad[0], self.pad[1])
-                else:
-                    self.mkldnn_convolution = mkldnn.Convolution2D_F32(x, self.W, self.b, y,
-                                                                         self.stride[0], self.stride[1],
-                                                                         self.pad[0], self.pad[1])
-            self.mkldnn_convolution.forward()
-            return y
-
+            if self.W.dtype == np.float32:
+                self.mkldnn_conv = mkldnn.Convolution2D_F32()
+            elif self.W.dtype == np.float64:
+                self.mkldnn_conv = mkldnn.Convolution2D_F64()
+        
         return convolution_2d.convolution_2d(
             x, self.W, self.b, self.stride, self.pad, self.use_cudnn,
-            deterministic=self.deterministic)
+            deterministic=self.deterministic, conv_link=self)
 
 
 def _pair(x):

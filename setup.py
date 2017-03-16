@@ -46,7 +46,7 @@ extensions = [
     Extension(
         "_mkldnn",
         sources=[
-                "mkldnn/convolution.cc",
+                "mkldnn/mkldnn_conv.cc",
                 "mkldnn/common.cc",
                 "mkldnn/stream_factory.cc",
                 "mkldnn/pooling.cc",

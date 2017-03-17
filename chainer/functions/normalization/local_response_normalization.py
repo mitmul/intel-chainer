@@ -4,7 +4,7 @@ import six
 from chainer import cuda
 from chainer import function
 from chainer.utils import type_check
-from mkldnn import mkldnnpy
+from mkldnn import mkldnn
 
 
 def _cu_conv_sum(y, x, n):
@@ -63,9 +63,11 @@ class LocalResponseNormalization(function.Function):
                 self.mkldnn_lrn = mkldnnpy.LocalResponseNormalization_F32(
                     in_x,self.y,self.n,self.k,self.alpha,self.beta)
                 # self.mkldnn_lrn.forward()
-                print "y = "y + ",y.ravel=" + y.reavel()
+                print "y = "+str(y) + ",y.ravel=" + str(y.reavel())
                 return self.y
-        else
+            else:
+                return None
+        else:
             half_n = self.n // 2
             x2 = numpy.square(x[0])
             sum_part = x2.copy()

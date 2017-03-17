@@ -166,15 +166,24 @@ public:
                                   Layer<float>*      layer);
 
     // Softmax Cross Entropy stream
-    Layer<float>* getSoftmaxFwdStream(
-                          void*               input,
-                          void*               output,
-                          int                 axis);
-    void          setSoftmaxFwdStream(
-                          void*               input,
-                          void*               output,
-                          int                 axis,
-                          Layer<float>*       layer);
+    Layer<float>* getSoftmax2DFwdStream(int               d1,
+                                        int               d2,
+                                        int               axis);
+    void          setSoftmax2DFwdStream(int               d1,
+                                        int               d2,
+                                        int               axis,
+                                        Layer<float>*     layer);
+    Layer<float>* getSoftmax4DFwdStream(int               d1,
+                                        int               d2,
+                                        int               d3,
+                                        int               d4,
+                                        int               axis);
+    void          setSoftmax4DFwdStream(int               d1,
+                                        int               d2,
+                                        int               d3,
+                                        int               d4,
+                                        int               axis,
+                                        Layer<float>*     layer);
 
     StreamFactory(StreamFactory const&)  = delete;
     void operator=(StreamFactory const&) = delete;

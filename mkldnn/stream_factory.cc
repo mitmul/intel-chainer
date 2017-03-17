@@ -367,29 +367,65 @@ void StreamFactory::setLRNBwdStream(void*              input_diff,
     setStream(key, layer);
 }
 
-#define SOFTMAX_FWD_PREFIX "softmax_fwd_"
-Layer<float>* StreamFactory::getSoftmaxFwdStream(void*              input,
-                                                   void*              output,
+#define SOFTMAX2D_FWD_PREFIX "softmax2d_fwd_"
+Layer<float>* StreamFactory::getSoftmax2DFwdStream(int                d1,
+                                                   int                d2,
                                                    int                axis)
 {
-    std::string key = SOFTMAX_FWD_PREFIX;
+    std::string key = SOFTMAX2D_FWD_PREFIX;
 
-    key += pointer_to_string(input);
-    key += pointer_to_string(output);
+    key += int_to_string(d1);
+    key += int_to_string(d2);
     key += int_to_string(axis);
 
     return getStream(key);
 }
 
-void StreamFactory::setSoftmaxFwdStream(void*              input,
-                                    void*              output,
-                                    int                axis,
-                                    Layer<float>*      layer)
+void StreamFactory::setSoftmax2DFwdStream(int                d1,
+                                          int                d2,
+                                          int                axis,
+                                          Layer<float>*      layer)
 {
-    std::string key = LRN_FWD_PREFIX;
+    std::string key = SOFTMAX2D_FWD_PREFIX;
 
-    key += pointer_to_string(input);
-    key += pointer_to_string(output);
+    key += int_to_string(d1);
+    key += int_to_string(d2);
+    key += int_to_string(axis);
+
+    setStream(key, layer);
+}
+
+#define SOFTMAX4D_FWD_PREFIX "softmax4d_fwd_"
+Layer<float>* StreamFactory::getSoftmax4DFwdStream(int                d1,
+                                                   int                d2,
+                                                   int                d3,
+                                                   int                d4,
+                                                   int                axis)
+{
+    std::string key = SOFTMAX4D_FWD_PREFIX;
+
+    key += int_to_string(d1);
+    key += int_to_string(d2);
+    key += int_to_string(d3);
+    key += int_to_string(d4);
+    key += int_to_string(axis);
+
+    return getStream(key);
+}
+
+void StreamFactory::setSoftmax4DFwdStream(int                d1,
+                                          int                d2,
+                                          int                d3,
+                                          int                d4,
+                                          int                axis,
+                                          Layer<float>*      layer)
+{
+    std::string key = SOFTMAX4D_FWD_PREFIX;
+
+    key += int_to_string(d1);
+    key += int_to_string(d2);
+    key += int_to_string(d3);
+    key += int_to_string(d4);
     key += int_to_string(axis);
 
     setStream(key, layer);

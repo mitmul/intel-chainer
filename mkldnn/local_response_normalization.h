@@ -7,55 +7,44 @@
 #include <vector>
 #include <memory>
 
-
-using namespace mkldnn;
-
 struct lrn_params {
   double alpha, beta;
   int local_size;
-  prop_kind aprop_kind;
-  algorithm aalgorithm;
-  memory::format data_format;
-  memory::format diff_data_format;
-  // memory::format diff_data_format;
-  // int kind; // 0 ac, 1 wc
+  mkldnn::prop_kind aprop_kind;
+  mkldnn::algorithm aalgorithm;
+  mkldnn::memory::format data_format;
+  mkldnn::memory::format diff_data_format;
 };
 
 template <typename T>
 class LocalResponseNormalization {
 public:
-    LocalResponseNormalization(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-                              T* y, int y_d1, int y_d2, int y_d3, int y_d4,
-                              int n, int k, double alpha, double beta);
-
-    int forward();
-    int backward();
 
     LocalResponseNormalization();
     ~LocalResponseNormalization();
 
-
+    LocalResponseNormalization(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
+                              T* y, int y_d1, int y_d2, int y_d3, int y_d4,
+                              int n, int k, double alpha, double beta);
+    int forward();
+    int backward();
 private:
-
-
-    std::shared_ptr<memory> src;
-    std::shared_ptr<memory> dst;
-    std::shared_ptr<memory> diff_src;
-    std::shared_ptr<memory> diff_dst;
-    std::shared_ptr<memory> workspace;
-    std::shared_ptr<memory::desc> src_desc;
-    std::shared_ptr<memory::desc> dst_desc;
-    std::shared_ptr<memory::desc> diff_src_desc;
-    std::shared_ptr<memory::desc> diff_dst_desc;
-    std::shared_ptr<lrn_forward::primitive_desc> lrn_fwd_prim_desc;
-    std::shared_ptr<lrn_forward::primitive_desc> lrn_bwd_prim_desc;
     lrn_params p;
-    memory::dims padR;
-    std::shared_ptr<engine> eng;
-    memory::data_type data_type;
+    std::shared_ptr<mkldnn::memory> src;
+    std::shared_ptr<mkldnn::memory> dst;
+    std::shared_ptr<mkldnn::memory> diff_src;
+    std::shared_ptr<mkldnn::memory> diff_dst;
+    std::shared_ptr<mkldnn::memory> workspace;
+    std::shared_ptr<mkldnn::memory::desc> src_desc;
+    std::shared_ptr<mkldnn::memory::desc> dst_desc;
+    std::shared_ptr<mkldnn::memory::desc> diff_src_desc;
+    std::shared_ptr<mkldnn::memory::desc> diff_dst_desc;
+    std::shared_ptr<mkldnn::lrn_forward::primitive_desc> lrn_fwd_prim_desc;
+    std::shared_ptr<mkldnn::lrn_forward::primitive_desc> lrn_bwd_prim_desc;
+    std::shared_ptr<mkldnn::engine> eng;
     bool is_training;
-    memory::dims lrn_src_tz;
-    memory::dims lrn_dst_tz;
+    mkldnn::memory::dims lrn_src_tz;
+    mkldnn::memory::dims lrn_dst_tz;
 
     // mkldnn::stream* stream_;
     // std::vector<mkldnn::primitive> primitives_;

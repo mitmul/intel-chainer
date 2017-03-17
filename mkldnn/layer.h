@@ -17,7 +17,7 @@ public:
 protected:
     mkldnn::stream* stream_;
     std::vector<mkldnn::primitive> primitives_;
-    bool first_use = true;
+    bool first_use_ = true;
 
 };
 

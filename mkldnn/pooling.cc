@@ -75,12 +75,14 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     bool reorder_src_p_ = false;
     bool reorder_dst_p_ = false;
 
+    #if 0
     if (memory::primitive_desc(fwd_prim_desc_.get()->src_primitive_desc())
         != user_src_memory_->get_primitive_desc()) {
         src_memory_.reset(new memory(fwd_prim_desc_.get()->src_primitive_desc()));
         reorder_src_ = reorder(*user_src_memory_, *src_memory_);
         reorder_src_p_ = true;
     }
+    #endif
 
     if (memory::primitive_desc(fwd_prim_desc_->dst_primitive_desc())
         != user_dst_memory_->get_primitive_desc()) {

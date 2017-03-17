@@ -57,14 +57,14 @@ class LocalResponseNormalization(function.Function):
         if mkldnnpy.enabled():
             if self.mkldnn_lrn is None:
                 # n, c, h, w = x.shape
-                print x.shape
-                self.y = numpy.empty(x.shape,dtype=x.dtype)
-                # self.mkldnn_lrn = mkldnnpy.LocalResponseNormalization_F32(
-                #     x,y,self.n,self.k,self.alpha,self.beta)
+                print x[0].shape
+                self.y = numpy.empty(x[0].shape,dtype=x.dtype)
+                in_x = x[0]
+                self.mkldnn_lrn = mkldnnpy.LocalResponseNormalization_F32(
+                    in_x,self.y,self.n,self.k,self.alpha,self.beta)
                 # self.mkldnn_lrn.forward()
                 print "y = "y + ",y.ravel=" + y.reavel()
-
-
+                return self.y
         else
             half_n = self.n // 2
             x2 = numpy.square(x[0])

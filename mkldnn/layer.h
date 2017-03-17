@@ -7,14 +7,17 @@
 template <typename T>
 class Layer {
 public:
-    int forward(){};
-    int backward(){};
+    virtual ~Layer() {}
+    virtual int forward(){ return 0; };
+    virtual int backward(){ return 0; };
 
-    int setup_forward(){};
-    int setup_backward(){};
+    virtual int setup_forward(){ return 0; };
+    virtual int setup_backward(){ return 0; };
 
+protected:
     mkldnn::stream* stream_;
     std::vector<mkldnn::primitive> primitives_;
+    bool first_use_ = true;
 
 };
 

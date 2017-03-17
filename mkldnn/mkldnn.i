@@ -4,6 +4,8 @@
     #define SWIG_FILE_WITH_INIT
     #include "common.h"
     #include "stream_factory.h"
+    #include "pooling.h"
+    #include "max_pooling.h"
     #include "mkldnn_conv.h"
 %}
 
@@ -33,6 +35,12 @@
 
 %include "common.h"
 %include "stream_factory.h"
+%include "layer.h"
+%include "pooling.h"
+%include "max_pooling.h"
 %include "mkldnn_conv.h"
 
 %template(Convolution2D_F32) Convolution2D<float>;
+%template(Pooling_F32) Pooling<float>;
+%template(MaxPooling_F32) MaxPooling<float>;
+%template(Layer_F32) Layer<float>;

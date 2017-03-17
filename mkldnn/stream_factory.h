@@ -2,13 +2,14 @@
 #define _STREAM_FACTORY_
 #include <mkldnn.hpp>
 #include <string>
+#include "layer.h"
 #include <unordered_map>
 
 // Usage:
 // When stream is created, call:
-// StreamFactory::getInstance().setRELUFwdStream(<input pointer>, <stream>)
+// StreamFactory::getInstance().setRELUFwdStream(<input pointer>, <layer>)
 // then when forward is needed, call
-// stream = StreamFactory::getInstance().getRELUFwdStream(<input pointer>)
+// layer = StreamFactory::getInstance().getRELUFwdStream(<input pointer>)
 
 class StreamFactory {
 private:
@@ -21,151 +22,159 @@ public:
     }
 
 private:
-    mkldnn::stream* getStream(std::string       key);
-    void            setStream(std::string       key,
-                             mkldnn::stream*   stream);
+    Layer<float>* getStream(std::string       key);
+    void          setStream(std::string       key,
+                            Layer<float>*     layer);
 
 public:
     // relu stream
-    mkldnn::stream* getRELUFwdStream(void*           input,
-                                     void*           output);
-    void            setRELUFwdStream(void*           input,
-                                     void*           output,
-                                     mkldnn::stream* stream);
-    mkldnn::stream* getRELUBwdStream(void*           input,
-                                     void*           output_diff,
-                                     void*           input_diff);
-    void            setRELUBwdStream(void*           input,
-                                     void*           output_diff,
-                                     void*           input_diff,
-                                     mkldnn::stream* stream);
+    Layer<float>* getRELUFwdStream(void*           input,
+                                   void*           output);
+    void          setRELUFwdStream(void*           input,
+                                   void*           output,
+                                   Layer<float>*   layer);
+    Layer<float>* getRELUBwdStream(void*           input,
+                                   void*           output_diff,
+                                   void*           input_diff);
+    void          setRELUBwdStream(void*           input,
+                                   void*           output_diff,
+                                   void*           input_diff,
+                                   Layer<float>*   layer);
 
     // maxpool stream
-    mkldnn::stream* getMaxPoolFwdStream(void*              input,
-                                        void*              output,
-                                        int                stride_y,
-                                        int                stride_x,
-                                        int                ksize_h,
-                                        int                ksize_w,
-                                        int                pad_l_h,
-                                        int                pad_l_w,
-                                        int                pad_r_h,
-                                        int                pad_r_w);
-    void            setMaxPoolFwdStream(void*              input,
-                                        void*              output,
-                                        int                stride_y,
-                                        int                stride_x,
-                                        int                ksize_h,
-                                        int                ksize_w,
-                                        int                pad_l_h,
-                                        int                pad_l_w,
-                                        int                pad_r_h,
-                                        int                pad_r_w,
-                                        mkldnn::stream*    stream);
-    mkldnn::stream* getMaxPoolBwdStream(void*              input_diff,
-                                        void*              output_diff,
-                                        void*              workspace,
-                                        int                stride_y,
-                                        int                stride_x,
-                                        int                ksize_h,
-                                        int                ksize_w,
-                                        int                pad_l_h,
-                                        int                pad_l_w,
-                                        int                pad_r_h,
-                                        int                pad_r_w);
-    void            setMaxPoolBwdStream(void*              input_diff,
-                                        void*              output_diff,
-                                        void*              workspace,
-                                        int                stride_y,
-                                        int                stride_x,
-                                        int                ksize_h,
-                                        int                ksize_w,
-                                        int                pad_l_h,
-                                        int                pad_l_w,
-                                        int                pad_r_h,
-                                        int                pad_r_w,
-                                        mkldnn::stream*    stream);
+    Layer<float>* getMaxPoolFwdStream(int             x_d1,
+                                      int             x_d2,
+                                      int             x_d3,
+                                      int             x_d4,
+                                      int             stride_y,
+                                      int             stride_x,
+                                      int             ksize_h,
+                                      int             ksize_w,
+                                      int             pad_l_h,
+                                      int             pad_l_w,
+                                      int             pad_r_h,
+                                      int             pad_r_w);
+    void          setMaxPoolFwdStream(int             x_d1,
+                                      int             x_d2,
+                                      int             x_d3,
+                                      int             x_d4,
+                                      int             stride_y,
+                                      int             stride_x,
+                                      int             ksize_h,
+                                      int             ksize_w,
+                                      int             pad_l_h,
+                                      int             pad_l_w,
+                                      int             pad_r_h,
+                                      int             pad_r_w,
+                                      Layer<float>*   layer);
+
+    void setMaxPoolBwdStream(void*              input_diff,
+                             void*              output_diff,
+                             void*              workspace,
+                             int                stride_y,
+                             int                stride_x,
+                             int                ksize_h,
+                             int                ksize_w,
+                             int                pad_l_h,
+                             int                pad_l_w,
+                             int                pad_r_h,
+                             int                pad_r_w,
+                             Layer<float>*      layer);
+
+    Layer<float>* getMaxPoolBwdStream(void*              input_diff,
+                                      void*              output_diff,
+                                      void*              workspace,
+                                      int                stride_y,
+                                      int                stride_x,
+                                      int                ksize_h,
+                                      int                ksize_w,
+                                      int                pad_l_h,
+                                      int                pad_l_w,
+                                      int                pad_r_h,
+                                      int                pad_r_w);
 
     // avgpool stream
-    mkldnn::stream* getAvgPoolFwdStream(void*              input,
-                                        void*              output,
-                                        int                stride_y,
-                                        int                stride_x,
-                                        int                ksize_h,
-                                        int                ksize_w,
-                                        int                pad_l_h,
-                                        int                pad_l_w,
-                                        int                pad_r_h,
-                                        int                pad_r_w);
+    Layer<float>* getAvgPoolFwdStream(void*              input,
+                                      void*              output,
+                                      int                stride_y,
+                                      int                stride_x,
+                                      int                ksize_h,
+                                      int                ksize_w,
+                                      int                pad_l_h,
+                                      int                pad_l_w,
+                                      int                pad_r_h,
+                                      int                pad_r_w);
     void            setAvgPoolFwdStream(void*              input,
-                                        void*              output,
-                                        int                stride_y,
-                                        int                stride_x,
-                                        int                ksize_h,
-                                        int                ksize_w,
-                                        int                pad_l_h,
-                                        int                pad_l_w,
-                                        int                pad_r_h,
-                                        int                pad_r_w,
-                                        mkldnn::stream*    stream);
-    mkldnn::stream* getAvgPoolBwdStream(void*              input_diff,
-                                        void*              output_diff,
-                                        void*              workspace,
-                                        int                stride_y,
-                                        int                stride_x,
-                                        int                ksize_h,
-                                        int                ksize_w,
-                                        int                pad_l_h,
-                                        int                pad_l_w,
-                                        int                pad_r_h,
-                                        int                pad_r_w);
-    void            setAvgPoolBwdStream(void*              input,
-                                        void*              output,
-                                        void*              workspace,
-                                        int                stride_y,
-                                        int                stride_x,
-                                        int                ksize_h,
-                                        int                ksize_w,
-                                        int                pad_l_h,
-                                        int                pad_l_w,
-                                        int                pad_r_h,
-                                        int                pad_r_w,
-                                        mkldnn::stream*    stream);
+                                      void*              output,
+                                      int                stride_y,
+                                      int                stride_x,
+                                      int                ksize_h,
+                                      int                ksize_w,
+                                      int                pad_l_h,
+                                      int                pad_l_w,
+                                      int                pad_r_h,
+                                      int                pad_r_w,
+                                      Layer<float>*      layer);
+
+    void setAvgPoolBwdStream(void*              input_diff,
+                             void*              output_diff,
+                             void*              workspace,
+                             int                stride_y,
+                             int                stride_x,
+                             int                ksize_h,
+                             int                ksize_w,
+                             int                pad_l_h,
+                             int                pad_l_w,
+                             int                pad_r_h,
+                             int                pad_r_w,
+                             Layer<float>*      layer);
+
+    Layer<float>* getAvgPoolBwdStream(void*              input_diff,
+                                      void*              output_diff,
+                                      void*              workspace,
+                                      int                stride_y,
+                                      int                stride_x,
+                                      int                ksize_h,
+                                      int                ksize_w,
+                                      int                pad_l_h,
+                                      int                pad_l_w,
+                                      int                pad_r_h,
+                                      int                pad_r_w);
 
     // Local Response Normalization stream
-    mkldnn::stream* getLRNFwdStream(void*              input,
-                                    void*              output,
-                                    int                local_size,
-                                    float              alpha,
-                                    float              beta);
-    void            setLRNFwdStream(void*              input,
-                                    void*              output,
-                                    int                local_size,
-                                    float              alpha,
-                                    float              beta,
-                                    mkldnn::stream*    stream);
-    mkldnn::stream* getLRNBwdStream(void*              input_diff,
-                                    void*              output_diff,
-                                    int                local_size,
-                                    float              alpha,
-                                    float              beta);
-    void            setLRNBwdStream(void*              input_diff,
-                                    void*              output_diff,
-                                    int                local_size,
-                                    float              alpha,
-                                    float              beta,
-                                    mkldnn::stream*    stream);
+    Layer<float>* getLRNFwdStream(void*              input,
+                                  void*              output,
+                                  int                local_size,
+                                  float              alpha,
+                                  float              beta);
+    void          setLRNFwdStream(void*              input,
+                                  void*              output,
+                                  int                local_size,
+                                  float              alpha,
+                                  float              beta,
+                                  Layer<float>*      layer);
+    Layer<float>* getLRNBwdStream(void*              input_diff,
+                                  void*              output_diff,
+                                  int                local_size,
+                                  float              alpha,
+                                  float              beta);
+    void          setLRNBwdStream(void*              input_diff,
+                                  void*              output_diff,
+                                  int                local_size,
+                                  float              alpha,
+                                  float              beta,
+                                  Layer<float>*      layer);
 
     // Softmax Cross Entropy stream
-    mkldnn::stream* getSoftmaxFwdStream(
-                            void*               input,
-                            void*               output,
-                            int                 axis);
-    void            setSoftmaxFwdStream(
-                            void*               input,
-                            void*               output,
-                            int                 axis,
-                            mkldnn::stream*     stream);
+    Layer<float>* getSoftmaxFwdStream(
+                          void*               input,
+                          void*               output,
+                          int                 axis);
+    void          setSoftmaxFwdStream(
+                          void*               input,
+                          void*               output,
+                          int                 axis,
+                          Layer<float>*       layer);
 
     StreamFactory(StreamFactory const&)  = delete;
     void operator=(StreamFactory const&) = delete;
@@ -173,7 +182,7 @@ public:
 private:
     //StreamFactory(StreamFactory const&);
     //void operator=(StreamFactory const&);
-    std::unordered_map<std::string, mkldnn::stream*> map;
+    std::unordered_map<std::string, Layer<float>*> map;
 };
 
 #endif // _STREAM_FACTORY_

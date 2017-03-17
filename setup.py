@@ -22,8 +22,9 @@ extensions = [
                 "mkldnn/common.cc",
                 "mkldnn/stream_factory.cc",
                 "mkldnn/pooling.cc",
-                "mkldnn/mkldnn.i",
-                "mkldnn/local_response_normalization.cc"
+                "mkldnn/local_response_normalization.cc",
+                "mkldnn/max_pooling.cc",
+                "mkldnn/mkldnn.i"
                 ],
         swig_opts=["-c++"],
         extra_compile_args=["-std=c++11"],

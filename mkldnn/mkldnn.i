@@ -7,6 +7,7 @@
     #include "pooling.h"
     #include "max_pooling.h"
     #include "mkldnn_conv.h"
+    #include "mkldnn_softmax.h"
 %}
 
 %include "numpy.i"
@@ -39,8 +40,10 @@
 %include "pooling.h"
 %include "max_pooling.h"
 %include "mkldnn_conv.h"
+%include "mkldnn_softmax.h"
 
 %template(Convolution2D_F32) Convolution2D<float>;
 %template(Pooling_F32) Pooling<float>;
 %template(MaxPooling_F32) MaxPooling<float>;
 %template(Layer_F32) Layer<float>;
+%template(Softmax_F32) Softmax<float>;

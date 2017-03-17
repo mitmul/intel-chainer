@@ -93,7 +93,7 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
 
     indice_memory_.reset(new memory(dst_memory_->get_primitive_desc()));
     fwd_.reset(new pooling_forward(
-            *fwd_prim_desc_, *src_memory_, *indice_memory_, *dst_memory_));
+            *fwd_prim_desc_, *src_memory_, *dst_memory_, *indice_memory_));
 
     LOG(INFO) << "    reorder_src: " << reorder_src_p_;
     LOG(INFO) << "    reorder_dst: " << reorder_src_p_;

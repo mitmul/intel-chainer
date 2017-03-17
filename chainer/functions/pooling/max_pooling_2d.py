@@ -16,8 +16,7 @@ class MaxPooling2D(pooling_2d.Pooling2D):
     """Max pooling over a set of 2d planes."""
 
     def forward_cpu(self, x):
-        #if mkl.enabled():
-        if False:
+        if mkl.enabled():
             n, c, h, w = x[0].shape
             y_h = conv.get_conv_outsize(
                 h, self.kh, self.sy, self.ph, self.cover_all)

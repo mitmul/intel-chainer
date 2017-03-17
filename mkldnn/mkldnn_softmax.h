@@ -12,8 +12,8 @@
 template <typename T>
 class Softmax : public Layer<T> {
 public:
-    Softmax();
-    Softmax(int* dims, int axis);
+    Softmax() {}
+    Softmax(int* dims, int axis) {}
 
     void		update_user_mem(T* x, T* y);
     void		update_user_data(T* mem, int mem_type, int size);

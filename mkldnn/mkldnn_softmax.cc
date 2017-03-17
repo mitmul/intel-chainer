@@ -155,6 +155,13 @@ int Softmax_2D<T>::setup_forward()
 }
 
 template<typename T>
+int Softmax_2D<T>::setup_backward()
+{
+    LOG(INFO) << "Softmax_2D::setup_backward";
+    return 0;
+}
+
+template<typename T>
 int Softmax_2D<T>::forward()
 {
     LOG(INFO) << "Softmax_2D::forward";
@@ -191,6 +198,14 @@ int Softmax_4D<T>::setup_forward()
     LOG(INFO) << "Softmax_4D::setup_forward";
     return 0;
 }
+
+template<typename T>
+int Softmax_4D<T>::setup_backward()
+{
+    LOG(INFO) << "Softmax_4D::setup_backward";
+    return 0;
+}
+
 
 template<typename T>
 int Softmax_4D<T>::forward()

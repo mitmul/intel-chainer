@@ -6,7 +6,6 @@
 #include <vector>
 #include "pooling.h"
 
-//class Pooling:public Layer<T> {
 template <typename T>
 class AvgPooling:public Pooling<T> {
 public:

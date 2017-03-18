@@ -2,6 +2,8 @@
 #ifndef _POOLING_H_
 #define _POOLING_H_
 
+#include <glog/logging.h>
+#include <iostream>
 #include <mkldnn.hpp>
 #include <vector>
 #include "layer.h"
@@ -44,11 +46,10 @@ public:
                                 (x_d1, x_d2, x_d3, x_d4,
                                  s_y, s_x, ker_h, ker_w, p_h, p_w, p_h, p_w));
         } else {
-            // TODO
-            //pooling_forward = dynamic_cast<Pooling<float>*>(
-                                //LayerFactory::getInstance().getAvgPoolFwdLayer
-                                //(x_d1, x_d2, x_d3, x_d4,
-                                 //s_y, s_x, p_h, p_w, p_h, p_w, ker_h, ker_w));
+            pooling_forward = dynamic_cast<Pooling<float>*>(
+                                LayerFactory::getInstance().getAvgPoolLayer
+                                (x_d1, x_d2, x_d3, x_d4,
+                                 s_y, s_x, p_h, p_w, p_h, p_w, ker_h, ker_w));
         }
         if (pooling_forward == NULL) {
             pooling_forward = new Pooling<T>();
@@ -61,8 +62,10 @@ public:
                                     s_y, s_x, ker_h, ker_w, p_h, p_w, p_h, p_w,
                                     pooling_forward);
             } else {
-                // TODO
-                // check avg pool
+                LayerFactory::getInstance().setAvgPoolLayer(
+                                    x_d1, x_d2, x_d3, x_d4,
+                                    s_y, s_x, ker_h, ker_w, p_h, p_w, p_h, p_w,
+                                    pooling_forward);
             }
         }
         return pooling_forward;
@@ -81,11 +84,10 @@ public:
                                 (x_d1, x_d2, x_d3, x_d4,
                                  s_y, s_x, ker_h, ker_w, p_h, p_w, p_h, p_w));
         } else {
-            // TODO
-            //pooling_backward = dynamic_cast<Pooling<float>*>(
-                                //LayerFactory::getInstance().getAvgPoolBwdLayer
-                                //(x_d1, x_d2, x_d3, x_d4,
-                                 //s_y, s_x, p_h, p_w, p_h, p_w, ker_h, ker_w));
+            pooling_backward = dynamic_cast<Pooling<T>*>(
+                                LayerFactory::getInstance().getAvgPoolLayer
+                                (x_d1, x_d2, x_d3, x_d4,
+                                 s_y, s_x, ker_h, ker_w, p_h, p_w, p_h, p_w));
         }
         assert (pooling_backward != NULL);  // we must have already done forward
                                             // before

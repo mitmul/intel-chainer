@@ -101,7 +101,7 @@ int Softmax_2D<T>::setup_forward()
 {
     LOG(INFO) << "Softmax_2D::setup_forward";
 
-    // (1) Init persistent memory
+    // (1) One shape specifies a certain primitive
     memory::dims src_tz = {dims[0], dims[1]};
     memory::dims dst_tz = {dims[0], dims[1]};
 
@@ -165,10 +165,10 @@ int Softmax_2D<T>::setup_backward()
 template<typename T>
 int Softmax_2D<T>::forward()
 {
-    // Copy user source data to persistent memory
+    // Update data ptr in src_mem and dst_mem
     this->update_user_data(src_mem, dst_mem);
 
-    // Submit stream
+    // Launch stream
     if (this->is_first_fwd()) {
         fwd_stream_->submit(fwd_primitives_).wait();
 	this->mark_first_fwd();

@@ -16,29 +16,27 @@ void Softmax<T>::update_user_mem(T* x, T* y)
     dst_user = y;
 }
 
-enum { SOFTMAX_SRC_USER_DATA_UPDATA = 0, SOFTMAX_DST_USER_DATA_UPDATA};
-
 template<typename T>
-void Softmax<T>::update_user_data(T* mem, int mem_type, int size)
+void Softmax<T>::update_user_data(std::shared_ptr<mkldnn::memory> src_mem,
+                                  std::shared_ptr<mkldnn::memory> dst_mem)
 {
-    switch (mem_type) {
-    case SOFTMAX_SRC_USER_DATA_UPDATA:
-        memcpy(mem, src_user, size);
-	break;
-    case SOFTMAX_DST_USER_DATA_UPDATA:
-        memcpy(dst_user, mem, size);
-	break;
-    default:
-        LOG(INFO) << "No such mem_type " << mem_type << ".";
-	break;
-    };
+    src_mem->set_data_handle(src_user);
+    dst_mem->set_data_handle(dst_user);
 }
 
 // Class Softmax<T>
 template<typename T> Softmax<T>*
-Softmax<T>::softmax_create_forward(T* x, T* y, int* dims, int ndim, int axis)
+Softmax<T>::softmax_create_forward(T* x, int dummy_x,
+                                   T* y, int dummy_y,
+                                   int* dims, int ndim, int axis)
 {
     Softmax<T>* inst = NULL;
+
+    // Useless parameter
+    // Ravel 2D or 4D nparray to 1D to unify interface
+    // In SWIG we have to use fixing transformation map to get C pointer
+    (void)dummy_x;
+    (void)dummy_y;
 
 #define SOFTMAX_2D 2
 #define SOFTMAX_4D 4
@@ -104,23 +102,24 @@ int Softmax_2D<T>::setup_forward()
     LOG(INFO) << "Softmax_2D::setup_forward";
 
     // (1) Init persistent memory
-    auto src = new T[get_res_size()];;
-    auto dst = new T[get_res_size()];;
     memory::dims src_tz = {dims[0], dims[1]};
     memory::dims dst_tz = {dims[0], dims[1]};
 
     // (2) Prepare user memory primitive and memory desc
     src_mem.reset(new memory({{{src_tz}, memory_data_type<T>(),
-                                      memory::format::nc}, cpu_engine}, src));
+                                      memory::format::nc}, cpu_engine}));
     dst_mem.reset(new memory({{{dst_tz}, memory_data_type<T>(),
-                                      memory::format::nc}, cpu_engine}, dst));
+                                      memory::format::nc}, cpu_engine}));
+
+    src = (T*)src_mem->get_data_handle();
+    dst = (T*)dst_mem->get_data_handle();
 
     src_md.reset(new memory::desc({src_tz}, memory_data_type<T>(),
                                    memory::format::nc));
 
     // (3) Create softmax primitive desc
-    softmax_desc.reset(new softmax_forward::desc(prop_kind::forward_scoring, *src_md, axis));
-    softmax_pd.reset(new softmax_forward::primitive_desc(*softmax_desc, cpu_engine));
+    fwd_desc.reset(new softmax_forward::desc(prop_kind::forward_scoring, *src_md, axis));
+    fwd_pd.reset(new softmax_forward::primitive_desc(*fwd_desc, cpu_engine));
 
     // (4) Create src primitive and src_reorder primitive
     //
@@ -145,11 +144,11 @@ int Softmax_2D<T>::setup_forward()
     // }
 
     // (6) Create softmax primitive
-    softmax.reset(new softmax_forward(*softmax_pd, *src_mem, *dst_mem));
+    fwd.reset(new softmax_forward(*fwd_pd, *src_mem, *dst_mem));
 
     // (7) Construct net
-    primitives_.push_back(*softmax);
-    stream_.reset(new stream(stream::kind::lazy));
+    fwd_primitives_.push_back(*fwd);
+    fwd_stream_.reset(new stream(stream::kind::eager));
 
     return 0;
 }
@@ -164,16 +163,16 @@ int Softmax_2D<T>::setup_backward()
 template<typename T>
 int Softmax_2D<T>::forward()
 {
-    LOG(INFO) << "Softmax_2D::forward";
-
     // Copy user source data to persistent memory
-    this->update_user_data(src, SOFTMAX_SRC_USER_DATA_UPDATA, get_res_size());
+    this->update_user_data(src_mem, dst_mem);
 
     // Submit stream
-    stream_->submit(primitives_).wait();
-
-    // Copy softmax outputs (persistent memory) to user destination memory
-    this->update_user_data(dst, SOFTMAX_DST_USER_DATA_UPDATA, get_res_size());
+    if (this->is_first_fwd()) {
+        fwd_stream_->submit(fwd_primitives_).wait();
+	this->mark_first_fwd();
+    } else {
+        fwd_stream_->rerun().wait();
+    }
 
     return 0;
 }

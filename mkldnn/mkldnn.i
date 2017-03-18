@@ -28,10 +28,15 @@
     {( float* W, int W_d1, int W_d2, int W_d3, int W_d4 )}
 %apply ( float* INPLACE_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
     {( float* gW, int gW_d1, int gW_d2, int gW_d3, int gW_d4 )}
-%apply ( float* IN_ARRAY1, int DIM1)
-    {( float* b, int b_d1)}
-%apply ( float* INPLACE_ARRAY1, int DIM1)
-    {( float* gb, int gb_d1)}
+%apply ( float* IN_ARRAY1, int DIM1 )
+    {( float* b, int b_d1 ),
+     /* Softmax_2D/4D, Ravel 2D or 4D nparray to 1D to unify interface */
+     ( float* x, int dummy_x )}
+%apply ( float* INPLACE_ARRAY1, int DIM1 )
+    {( float* gb, int gb_d1 ),
+     ( float* y, int dummy_y )}
+%apply ( int* IN_ARRAY1, int DIM1 )
+    {( int* dims, int ndim )}
 %apply ( float* INPLACE_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
     {( float* y, int y_d1, int y_d2, int y_d3, int y_d4 )}
 %apply ( float* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )

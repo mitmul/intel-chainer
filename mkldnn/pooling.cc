@@ -213,12 +213,11 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     }
     #endif
 
-    // TODO: we don't really use indice memory, but if we have a map between
-    // forward pass, indice memory address, and backward pass, we will be able
-    // to use indice memory
-    // workspace_memory_.reset(new memory(y_mem_->get_primitive_desc()));
+    // TODO: Note here we don't necessary get the correct workspace memory, if
+    // two pooling happen to have same geometry, which must be very rare case
+    // if happen.  //think ...
     bwd_.reset(new pooling_backward(
-            *bwd_prim_desc_, *gy_mem_/*, *workspace_memory_*/, *gx_mem_));
+            *bwd_prim_desc_, *gy_mem_, *workspace_memory_, *gx_mem_));
 
     LOG(INFO) << "    reorder_src: " << reorder_x_p;
     LOG(INFO) << "    reorder_dst: " << reorder_y_p;
@@ -298,40 +297,5 @@ int Pooling<T>::backward(T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
                             << gx[2] << "," << gx[3] << "}";
     return 0;
 }
-
-#if 0
-template<typename T>
-Convolution2D<T>::Convolution2D(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-                                T* W, int W_d1, int W_d2, int W_d3, int W_d4,
-                                T* y, int y_d1, int y_d2, int y_d3, int y_d4,
-                                int s1, int s2,
-                                int p1, int p2)
-{
-    LOG(INFO) << "Convolution CTOR, without b";
-
-    Convolution2D(x, x_d1, x_d2, x_d3, x_d4,
-                  W, W_d1, W_d2, W_d3, W_d4,
-                  NULL, 0, // no bias
-                  y, y_d1, y_d2, y_d3, y_d4,
-                  s1, s2,
-                  p1, p2);
-}
-
-template<typename T>
-int Convolution2D<T>::forward()
-{
-    LOG(INFO) << "Convolution forward";
-    stream_->submit(primitives_);
-    return 0;
-}
-
-template<typename T>
-int Convolution2D<T>::backward()
-{
-    LOG(INFO) << "Convolution backward";
-    return 0;
-}
-
-#endif
 
 template class Pooling<float>;

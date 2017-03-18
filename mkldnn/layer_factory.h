@@ -7,42 +7,42 @@
 
 // Usage:
 // When stream is created, call:
-// StreamFactory::getInstance().setRELUFwdStream(<input pointer>, <layer>)
+// LayerFactory::getInstance().setRELUFwdLayer(<input pointer>, <layer>)
 // then when forward is needed, call
-// layer = StreamFactory::getInstance().getRELUFwdStream(<input pointer>)
+// layer = LayerFactory::getInstance().getRELUFwdLayer(<input pointer>)
 
-class StreamFactory {
+class LayerFactory {
 private:
-    StreamFactory();
+    LayerFactory();
 
 public:
-    static StreamFactory& getInstance() {
-        static StreamFactory instance;
+    static LayerFactory& getInstance() {
+        static LayerFactory instance;
         return instance;
     }
 
 private:
-    Layer<float>* getStream(std::string       key);
-    void          setStream(std::string       key,
+    Layer<float>* getLayer(std::string       key);
+    void          setLayer(std::string       key,
                             Layer<float>*     layer);
 
 public:
     // relu stream
-    Layer<float>* getRELUFwdStream(void*           input,
+    Layer<float>* getRELUFwdLayer(void*           input,
                                    void*           output);
-    void          setRELUFwdStream(void*           input,
+    void          setRELUFwdLayer(void*           input,
                                    void*           output,
                                    Layer<float>*   layer);
-    Layer<float>* getRELUBwdStream(void*           input,
+    Layer<float>* getRELUBwdLayer(void*           input,
                                    void*           output_diff,
                                    void*           input_diff);
-    void          setRELUBwdStream(void*           input,
+    void          setRELUBwdLayer(void*           input,
                                    void*           output_diff,
                                    void*           input_diff,
                                    Layer<float>*   layer);
 
     // maxpool stream
-    Layer<float>* getMaxPoolStream(int             x_d1,
+    Layer<float>* getMaxPoolLayer(int             x_d1,
                                    int             x_d2,
                                    int             x_d3,
                                    int             x_d4,
@@ -55,7 +55,7 @@ public:
                                    int             pad_r_h,
                                    int             pad_r_w);
 
-    void          setMaxPoolStream(int             x_d1,
+    void          setMaxPoolLayer(int             x_d1,
                                    int             x_d2,
                                    int             x_d3,
                                    int             x_d4,
@@ -70,7 +70,7 @@ public:
                                    Layer<float>*   layer);
 
     // avgpool stream
-    Layer<float>* getAvgPoolFwdStream(void*              input,
+    Layer<float>* getAvgPoolFwdLayer(void*              input,
                                       void*              output,
                                       int                stride_y,
                                       int                stride_x,
@@ -80,7 +80,7 @@ public:
                                       int                pad_l_w,
                                       int                pad_r_h,
                                       int                pad_r_w);
-    void            setAvgPoolFwdStream(void*              input,
+    void            setAvgPoolFwdLayer(void*              input,
                                       void*              output,
                                       int                stride_y,
                                       int                stride_x,
@@ -92,7 +92,7 @@ public:
                                       int                pad_r_w,
                                       Layer<float>*      layer);
 
-    void setAvgPoolBwdStream(void*              input_diff,
+    void setAvgPoolBwdLayer(void*              input_diff,
                              void*              output_diff,
                              void*              workspace,
                              int                stride_y,
@@ -105,7 +105,7 @@ public:
                              int                pad_r_w,
                              Layer<float>*      layer);
 
-    Layer<float>* getAvgPoolBwdStream(void*              input_diff,
+    Layer<float>* getAvgPoolBwdLayer(void*              input_diff,
                                       void*              output_diff,
                                       void*              workspace,
                                       int                stride_y,
@@ -118,23 +118,23 @@ public:
                                       int                pad_r_w);
 
     // Local Response Normalization stream
-    Layer<float>* getLRNFwdStream(void*              input,
+    Layer<float>* getLRNFwdLayer(void*              input,
                                   void*              output,
                                   int                local_size,
                                   float              alpha,
                                   float              beta);
-    void          setLRNFwdStream(void*              input,
+    void          setLRNFwdLayer(void*              input,
                                   void*              output,
                                   int                local_size,
                                   float              alpha,
                                   float              beta,
                                   Layer<float>*      layer);
-    Layer<float>* getLRNBwdStream(void*              input_diff,
+    Layer<float>* getLRNBwdLayer(void*              input_diff,
                                   void*              output_diff,
                                   int                local_size,
                                   float              alpha,
                                   float              beta);
-    void          setLRNBwdStream(void*              input_diff,
+    void          setLRNBwdLayer(void*              input_diff,
                                   void*              output_diff,
                                   int                local_size,
                                   float              alpha,
@@ -142,31 +142,31 @@ public:
                                   Layer<float>*      layer);
 
     // Softmax Cross Entropy stream
-    Layer<float>* getSoftmax2DFwdStream(int               d1,
+    Layer<float>* getSoftmax2DFwdLayer(int               d1,
                                         int               d2,
                                         int               axis);
-    void          setSoftmax2DFwdStream(int               d1,
+    void          setSoftmax2DFwdLayer(int               d1,
                                         int               d2,
                                         int               axis,
                                         Layer<float>*     layer);
-    Layer<float>* getSoftmax4DFwdStream(int               d1,
+    Layer<float>* getSoftmax4DFwdLayer(int               d1,
                                         int               d2,
                                         int               d3,
                                         int               d4,
                                         int               axis);
-    void          setSoftmax4DFwdStream(int               d1,
+    void          setSoftmax4DFwdLayer(int               d1,
                                         int               d2,
                                         int               d3,
                                         int               d4,
                                         int               axis,
                                         Layer<float>*     layer);
 
-    StreamFactory(StreamFactory const&)  = delete;
-    void operator=(StreamFactory const&) = delete;
+    LayerFactory(LayerFactory const&)  = delete;
+    void operator=(LayerFactory const&) = delete;
 
 private:
-    //StreamFactory(StreamFactory const&);
-    //void operator=(StreamFactory const&);
+    //LayerFactory(LayerFactory const&);
+    //void operator=(LayerFactory const&);
     std::unordered_map<std::string, Layer<float>*> map;
 };
 

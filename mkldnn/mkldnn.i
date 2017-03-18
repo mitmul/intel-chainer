@@ -3,7 +3,7 @@
 %{
     #define SWIG_FILE_WITH_INIT
     #include "common.h"
-    #include "stream_factory.h"
+    #include "layer_factory.h"
     #include "layer.h"
     #include "pooling.h"
     #include "max_pooling.h"
@@ -37,7 +37,7 @@
     {( float* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4 )}
 
 %include "common.h"
-%include "stream_factory.h"
+%include "layer_factory.h"
 %include "layer.h"
 %include "pooling.h"
 %include "max_pooling.h"

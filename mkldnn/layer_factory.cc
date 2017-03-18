@@ -1,7 +1,7 @@
 #include <glog/logging.h>
 #include <iostream>
 #include "mkldnn.hpp"
-#include "stream_factory.h"
+#include "layer_factory.h"
 
 // helper functions to convert layer unique data to a string
 static std::string pointer_to_string(void* ptr)
@@ -27,11 +27,11 @@ static std::string float_to_string(float value)
 // end of helper functions
 
 using namespace mkldnn;
-StreamFactory::StreamFactory()
+LayerFactory::LayerFactory()
 {
 }
 
-Layer<float>* StreamFactory::getStream(std::string key)
+Layer<float>* LayerFactory::getLayer(std::string key)
 {
     auto stream_iter = map.find(key);
     if (stream_iter == map.end()) {
@@ -41,7 +41,7 @@ Layer<float>* StreamFactory::getStream(std::string key)
     }
 }
 
-void StreamFactory::setStream(std::string key, Layer<float>*   layer)
+void LayerFactory::setLayer(std::string key, Layer<float>* layer)
 {
     auto stream_iter = map.find(key);
     if (stream_iter == map.end()) {
@@ -54,25 +54,25 @@ void StreamFactory::setStream(std::string key, Layer<float>*   layer)
 #define RELU_FWD_PREFIX "relu_fwd_"
 #define RELU_BWD_PREFIX "relu_bwd_"
 
-Layer<float>* StreamFactory::getRELUFwdStream(void* input, void* output)
+Layer<float>* LayerFactory::getRELUFwdLayer(void* input, void* output)
 {
     std::string key = RELU_FWD_PREFIX;
 
     key += pointer_to_string(input);
     key += pointer_to_string(output);
-    return getStream(key);
+    return getLayer(key);
 }
 
-void StreamFactory::setRELUFwdStream(void* input, void* output, Layer<float>*   layer)
+void LayerFactory::setRELUFwdLayer(void* input, void* output, Layer<float>*   layer)
 {
     std::string key = RELU_FWD_PREFIX;
 
     key += pointer_to_string(input);
     key += pointer_to_string(output);
-    setStream(key, layer);
+    setLayer(key, layer);
 }
 
-Layer<float>* StreamFactory::getRELUBwdStream(
+Layer<float>* LayerFactory::getRELUBwdLayer(
         void* input, void* output_diff, void* input_diff)
 {
     std::string key = RELU_BWD_PREFIX;
@@ -80,10 +80,10 @@ Layer<float>* StreamFactory::getRELUBwdStream(
     key += pointer_to_string(input);
     key += pointer_to_string(output_diff);
     key += pointer_to_string(input_diff);
-    return getStream(key);
+    return getLayer(key);
 }
 
-void StreamFactory::setRELUBwdStream(
+void LayerFactory::setRELUBwdLayer(
         void* input, void* output_diff, void* input_diff,
         Layer<float>* layer)
 {
@@ -92,11 +92,11 @@ void StreamFactory::setRELUBwdStream(
     key += pointer_to_string(input);
     key += pointer_to_string(output_diff);
     key += pointer_to_string(input_diff);
-    setStream(key, layer);
+    setLayer(key, layer);
 }
 
 #define MAX_POOLING_PREFIX "maxpool_"
-Layer<float>* StreamFactory::getMaxPoolStream(
+Layer<float>* LayerFactory::getMaxPoolLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -118,10 +118,10 @@ Layer<float>* StreamFactory::getMaxPoolStream(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    return getStream(key);
+    return getLayer(key);
 }
 
-void StreamFactory::setMaxPoolStream(
+void LayerFactory::setMaxPoolLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -144,12 +144,12 @@ void StreamFactory::setMaxPoolStream(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    setStream(key, layer);
+    setLayer(key, layer);
 }
 
 #define AVG_POOLING_FWD_PREFIX "avgpool_fwd_"
 #define AVG_POOLING_BWD_PREFIX "avgpool_bwd_"
-Layer<float>* StreamFactory::getAvgPoolFwdStream(
+Layer<float>* LayerFactory::getAvgPoolFwdLayer(
         void* input, void* output,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -169,10 +169,10 @@ Layer<float>* StreamFactory::getAvgPoolFwdStream(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    return getStream(key);
+    return getLayer(key);
 }
 
-void StreamFactory::setAvgPoolFwdStream(
+void LayerFactory::setAvgPoolFwdLayer(
         void* input, void* output,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -193,10 +193,10 @@ void StreamFactory::setAvgPoolFwdStream(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    setStream(key, layer);
+    setLayer(key, layer);
 }
 
-Layer<float>* StreamFactory::getAvgPoolBwdStream(
+Layer<float>* LayerFactory::getAvgPoolBwdLayer(
         void* input_diff, void* output_diff, void* workspace,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -217,10 +217,10 @@ Layer<float>* StreamFactory::getAvgPoolBwdStream(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    return getStream(key);
+    return getLayer(key);
 }
 
-void StreamFactory::setAvgPoolBwdStream(
+void LayerFactory::setAvgPoolBwdLayer(
         void* input_diff, void* output_diff, void* workspace,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -242,12 +242,12 @@ void StreamFactory::setAvgPoolBwdStream(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    setStream(key, layer);
+    setLayer(key, layer);
 }
 
 #define LRN_FWD_PREFIX "lrn_fwd_"
 #define LRN_BWD_PREFIX "lrn_bwd_"
-Layer<float>* StreamFactory::getLRNFwdStream(void*              input,
+Layer<float>* LayerFactory::getLRNFwdLayer(void*              input,
                                              void*              output,
                                              int                local_size,
                                              float              alpha,
@@ -261,10 +261,10 @@ Layer<float>* StreamFactory::getLRNFwdStream(void*              input,
     key += float_to_string(alpha);
     key += float_to_string(beta);
 
-    return getStream(key);
+    return getLayer(key);
 }
 
-void StreamFactory::setLRNFwdStream(void*              input,
+void LayerFactory::setLRNFwdLayer(void*              input,
                                     void*              output,
                                     int                local_size,
                                     float              alpha,
@@ -279,10 +279,10 @@ void StreamFactory::setLRNFwdStream(void*              input,
     key += float_to_string(alpha);
     key += float_to_string(beta);
 
-    setStream(key, layer);
+    setLayer(key, layer);
 }
 
-Layer<float>* StreamFactory::getLRNBwdStream(void*              input_diff,
+Layer<float>* LayerFactory::getLRNBwdLayer(void*              input_diff,
                                                void*              output_diff,
                                                int                local_size,
                                                float              alpha,
@@ -296,10 +296,10 @@ Layer<float>* StreamFactory::getLRNBwdStream(void*              input_diff,
     key += float_to_string(alpha);
     key += float_to_string(beta);
 
-    return getStream(key);
+    return getLayer(key);
 }
 
-void StreamFactory::setLRNBwdStream(void*              input_diff,
+void LayerFactory::setLRNBwdLayer(void*              input_diff,
                                     void*              output_diff,
                                     int                local_size,
                                     float              alpha,
@@ -314,11 +314,11 @@ void StreamFactory::setLRNBwdStream(void*              input_diff,
     key += float_to_string(alpha);
     key += float_to_string(beta);
 
-    setStream(key, layer);
+    setLayer(key, layer);
 }
 
 #define SOFTMAX2D_FWD_PREFIX "softmax2d_fwd_"
-Layer<float>* StreamFactory::getSoftmax2DFwdStream(int                d1,
+Layer<float>* LayerFactory::getSoftmax2DFwdLayer(int                d1,
                                                    int                d2,
                                                    int                axis)
 {
@@ -328,10 +328,10 @@ Layer<float>* StreamFactory::getSoftmax2DFwdStream(int                d1,
     key += int_to_string(d2);
     key += int_to_string(axis);
 
-    return getStream(key);
+    return getLayer(key);
 }
 
-void StreamFactory::setSoftmax2DFwdStream(int                d1,
+void LayerFactory::setSoftmax2DFwdLayer(int                d1,
                                           int                d2,
                                           int                axis,
                                           Layer<float>*      layer)
@@ -342,11 +342,11 @@ void StreamFactory::setSoftmax2DFwdStream(int                d1,
     key += int_to_string(d2);
     key += int_to_string(axis);
 
-    setStream(key, layer);
+    setLayer(key, layer);
 }
 
 #define SOFTMAX4D_FWD_PREFIX "softmax4d_fwd_"
-Layer<float>* StreamFactory::getSoftmax4DFwdStream(int                d1,
+Layer<float>* LayerFactory::getSoftmax4DFwdLayer(int                d1,
                                                    int                d2,
                                                    int                d3,
                                                    int                d4,
@@ -360,10 +360,10 @@ Layer<float>* StreamFactory::getSoftmax4DFwdStream(int                d1,
     key += int_to_string(d4);
     key += int_to_string(axis);
 
-    return getStream(key);
+    return getLayer(key);
 }
 
-void StreamFactory::setSoftmax4DFwdStream(int                d1,
+void LayerFactory::setSoftmax4DFwdLayer(int                d1,
                                           int                d2,
                                           int                d3,
                                           int                d4,
@@ -378,5 +378,5 @@ void StreamFactory::setSoftmax4DFwdStream(int                d1,
     key += int_to_string(d4);
     key += int_to_string(axis);
 
-    setStream(key, layer);
+    setLayer(key, layer);
 }

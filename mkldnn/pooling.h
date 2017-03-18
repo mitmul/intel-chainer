@@ -5,7 +5,7 @@
 #include <mkldnn.hpp>
 #include <vector>
 #include "layer.h"
-#include "stream_factory.h"
+#include "layer_factory.h"
 
 template <typename T>
 class Pooling: public Layer<T>{
@@ -40,13 +40,13 @@ public:
         Pooling<T>* pooling_forward = NULL;
         if (alg_kind == mkldnn::pooling_max) {
             pooling_forward = dynamic_cast<Pooling<T>*>(
-                                StreamFactory::getInstance().getMaxPoolStream
+                                LayerFactory::getInstance().getMaxPoolLayer
                                 (x_d1, x_d2, x_d3, x_d4,
                                  s_y, s_x, ker_h, ker_w, p_h, p_w, p_h, p_w));
         } else {
             // TODO
             //pooling_forward = dynamic_cast<Pooling<float>*>(
-                                //StreamFactory::getInstance().getAvgPoolFwdStream
+                                //LayerFactory::getInstance().getAvgPoolFwdLayer
                                 //(x_d1, x_d2, x_d3, x_d4,
                                  //s_y, s_x, p_h, p_w, p_h, p_w, ker_h, ker_w));
         }
@@ -56,7 +56,7 @@ public:
                                        s_y, s_x, p_h, p_w, ker_h, ker_w,
                                        alg_kind);
             if (alg_kind == mkldnn::pooling_max) {
-                StreamFactory::getInstance().setMaxPoolStream(
+                LayerFactory::getInstance().setMaxPoolLayer(
                                     x_d1, x_d2, x_d3, x_d4,
                                     s_y, s_x, ker_h, ker_w, p_h, p_w, p_h, p_w,
                                     pooling_forward);
@@ -77,13 +77,13 @@ public:
         Pooling<T>* pooling_backward = NULL;
         if (alg_kind == mkldnn::pooling_max) {
             pooling_backward = dynamic_cast<Pooling<T>*>(
-                                StreamFactory::getInstance().getMaxPoolStream
+                                LayerFactory::getInstance().getMaxPoolLayer
                                 (x_d1, x_d2, x_d3, x_d4,
                                  s_y, s_x, ker_h, ker_w, p_h, p_w, p_h, p_w));
         } else {
             // TODO
             //pooling_backward = dynamic_cast<Pooling<float>*>(
-                                //StreamFactory::getInstance().getAvgPoolBwdStream
+                                //LayerFactory::getInstance().getAvgPoolBwdLayer
                                 //(x_d1, x_d2, x_d3, x_d4,
                                  //s_y, s_x, p_h, p_w, p_h, p_w, ker_h, ker_w));
         }

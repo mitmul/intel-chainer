@@ -20,7 +20,7 @@ extensions = [
         sources=[
                 "mkldnn/mkldnn_conv.cc",
                 "mkldnn/common.cc",
-                "mkldnn/stream_factory.cc",
+                "mkldnn/layer_factory.cc",
                 "mkldnn/pooling.cc",
                 "mkldnn/local_response_normalization.cc",
                 "mkldnn/max_pooling.cc",

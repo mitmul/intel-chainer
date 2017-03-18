@@ -43,17 +43,17 @@ Softmax<T>::softmax_create_forward(T* x, T* y, int* dims, int ndim, int axis)
 #define SOFTMAX_2D 2
 #define SOFTMAX_4D 4
     if (SOFTMAX_2D == ndim) {
-	// StreamFactory get map
+	// LayerFactory get map
         if (!(inst =
-	    (Softmax_2D<T>*)StreamFactory::getInstance().getSoftmax2DFwdStream(dims[0], dims[1], axis))) {
+	    (Softmax_2D<T>*)LayerFactory::getInstance().getSoftmax2DFwdLayer(dims[0], dims[1], axis))) {
             // New Softmax inst
             inst = new Softmax_2D<T>(dims, axis);
 
             // Setup forward
             inst->setup_forward();
 
-	    // StreamFactory set map
-            StreamFactory::getInstance().setSoftmax2DFwdStream(dims[0], dims[1], axis, inst);
+	    // LayerFactory set map
+            LayerFactory::getInstance().setSoftmax2DFwdLayer(dims[0], dims[1], axis, inst);
 
             LOG(INFO) << "New Softmax2D Instance: " << (void*)&inst << " !!!";
 	} else {
@@ -64,17 +64,17 @@ Softmax<T>::softmax_create_forward(T* x, T* y, int* dims, int ndim, int axis)
         // FIXME: Do not drop memory util finishing forward() in Python layer
 	inst->update_user_mem(x, y);
     } else if (SOFTMAX_4D == ndim) {
-	// StreamFactory get map
+	// LayerFactory get map
         if (!(inst =
-	    (Softmax_4D<T>*)StreamFactory::getInstance().getSoftmax4DFwdStream(dims[0], dims[1], dims[2], dims[3], axis))) {
+	    (Softmax_4D<T>*)LayerFactory::getInstance().getSoftmax4DFwdLayer(dims[0], dims[1], dims[2], dims[3], axis))) {
             // New Softmax inst
             inst = new Softmax_4D<T>(dims, axis);
 
             // Setup forward
             inst->setup_forward();
 
-	    // StreamFactory set map
-            StreamFactory::getInstance().setSoftmax4DFwdStream(dims[0], dims[1], dims[2], dims[3], axis, inst);
+	    // LayerFactory set map
+            LayerFactory::getInstance().setSoftmax4DFwdLayer(dims[0], dims[1], dims[2], dims[3], axis, inst);
 
             LOG(INFO) << "New Softmax4D Instance: " << (void*)&inst << " !!!";
         } else {

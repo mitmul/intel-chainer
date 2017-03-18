@@ -7,7 +7,7 @@
 #include <unordered_map>
 #include <mkldnn.hpp>
 #include "layer.h"
-#include "stream_factory.h"
+#include "layer_factory.h"
 
 template <typename T>
 class Softmax : public Layer<T> {

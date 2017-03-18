@@ -16,7 +16,7 @@ install_requires = [
 
 extensions = [
     Extension(
-        "_mkldnn",
+        "mkldnn.mkldnn",
         sources=[
                 "mkldnn/mkldnn_conv.cc",
                 "mkldnn/common.cc",

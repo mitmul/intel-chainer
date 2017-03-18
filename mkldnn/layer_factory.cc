@@ -4,12 +4,14 @@
 #include "layer_factory.h"
 
 // helper functions to convert layer unique data to a string
+#if 1
 static std::string pointer_to_string(void* ptr)
 {
     std::ostringstream os;
     os << std::hex << static_cast<void*>(ptr) << "_";
     return os.str();
 }
+#endif
 
 static std::string int_to_string(int value)
 {
@@ -51,47 +53,21 @@ void LayerFactory::setLayer(std::string key, Layer<float>* layer)
     }
 }
 
-#define RELU_FWD_PREFIX "relu_fwd_"
-#define RELU_BWD_PREFIX "relu_bwd_"
+#define RELU_PREFIX "relu_"
 
-Layer<float>* LayerFactory::getRELUFwdLayer(void* input, void* output)
+Layer<float>* LayerFactory::getRELULayer(int size)
 {
-    std::string key = RELU_FWD_PREFIX;
+    std::string key = RELU_PREFIX;
 
-    key += pointer_to_string(input);
-    key += pointer_to_string(output);
+    key += int_to_string(size);
     return getLayer(key);
 }
 
-void LayerFactory::setRELUFwdLayer(void* input, void* output, Layer<float>*   layer)
+void LayerFactory::setRELULayer(int size, Layer<float>*   layer)
 {
-    std::string key = RELU_FWD_PREFIX;
+    std::string key = RELU_PREFIX;
 
-    key += pointer_to_string(input);
-    key += pointer_to_string(output);
-    setLayer(key, layer);
-}
-
-Layer<float>* LayerFactory::getRELUBwdLayer(
-        void* input, void* output_diff, void* input_diff)
-{
-    std::string key = RELU_BWD_PREFIX;
-
-    key += pointer_to_string(input);
-    key += pointer_to_string(output_diff);
-    key += pointer_to_string(input_diff);
-    return getLayer(key);
-}
-
-void LayerFactory::setRELUBwdLayer(
-        void* input, void* output_diff, void* input_diff,
-        Layer<float>* layer)
-{
-    std::string key = RELU_BWD_PREFIX;
-
-    key += pointer_to_string(input);
-    key += pointer_to_string(output_diff);
-    key += pointer_to_string(input_diff);
+    key += int_to_string(size);
     setLayer(key, layer);
 }
 
@@ -147,19 +123,20 @@ void LayerFactory::setMaxPoolLayer(
     setLayer(key, layer);
 }
 
-#define AVG_POOLING_FWD_PREFIX "avgpool_fwd_"
-#define AVG_POOLING_BWD_PREFIX "avgpool_bwd_"
-Layer<float>* LayerFactory::getAvgPoolFwdLayer(
-        void* input, void* output,
+#define AVG_POOLING_PREFIX "avgpool_"
+Layer<float>* LayerFactory::getAvgPoolLayer(
+        int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
         int pad_l_h, int pad_l_w,
         int pad_r_h, int pad_r_w)
 {
-    std::string key = AVG_POOLING_FWD_PREFIX;
+    std::string key = AVG_POOLING_PREFIX;
 
-    key += pointer_to_string(input);
-    key += pointer_to_string(output);
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(x_d3);
+    key += int_to_string(x_d4);
     key += int_to_string(stride_y);
     key += int_to_string(stride_x);
     key += int_to_string(ksize_h);
@@ -172,18 +149,20 @@ Layer<float>* LayerFactory::getAvgPoolFwdLayer(
     return getLayer(key);
 }
 
-void LayerFactory::setAvgPoolFwdLayer(
-        void* input, void* output,
+void LayerFactory::setAvgPoolLayer(
+        int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
         int pad_l_h, int pad_l_w,
         int pad_r_h, int pad_r_w,
         Layer<float>* layer)
 {
-    std::string key = AVG_POOLING_FWD_PREFIX;
+    std::string key = AVG_POOLING_PREFIX;
 
-    key += pointer_to_string(input);
-    key += pointer_to_string(output);
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(x_d3);
+    key += int_to_string(x_d4);
     key += int_to_string(stride_y);
     key += int_to_string(stride_x);
     key += int_to_string(ksize_h);
@@ -196,67 +175,21 @@ void LayerFactory::setAvgPoolFwdLayer(
     setLayer(key, layer);
 }
 
-Layer<float>* LayerFactory::getAvgPoolBwdLayer(
-        void* input_diff, void* output_diff, void* workspace,
-        int stride_y, int stride_x,
-        int ksize_h, int ksize_w,
-        int pad_l_h, int pad_l_w,
-        int pad_r_h, int pad_r_w)
+#define LRN_PREFIX "lrn_"
+Layer<float>* LayerFactory::getLRNLayer(int             x_d1,
+                                        int             x_d2,
+                                        int             x_d3,
+                                        int             x_d4,
+                                        int             local_size,
+                                        float           alpha,
+                                        float           beta)
 {
-    std::string key = AVG_POOLING_BWD_PREFIX;
+    std::string key = LRN_PREFIX;
 
-    key += pointer_to_string(input_diff);
-    key += pointer_to_string(output_diff);
-    key += pointer_to_string(workspace);
-    key += int_to_string(stride_y);
-    key += int_to_string(stride_x);
-    key += int_to_string(ksize_h);
-    key += int_to_string(ksize_w);
-    key += int_to_string(pad_l_h);
-    key += int_to_string(pad_l_w);
-    key += int_to_string(pad_r_h);
-    key += int_to_string(pad_r_w);
-
-    return getLayer(key);
-}
-
-void LayerFactory::setAvgPoolBwdLayer(
-        void* input_diff, void* output_diff, void* workspace,
-        int stride_y, int stride_x,
-        int ksize_h, int ksize_w,
-        int pad_l_h, int pad_l_w,
-        int pad_r_h, int pad_r_w,
-        Layer<float>*   layer)
-{
-    std::string key = AVG_POOLING_BWD_PREFIX;
-
-    key += pointer_to_string(input_diff);
-    key += pointer_to_string(output_diff);
-    key += pointer_to_string(workspace);
-    key += int_to_string(stride_y);
-    key += int_to_string(stride_x);
-    key += int_to_string(ksize_h);
-    key += int_to_string(ksize_w);
-    key += int_to_string(pad_l_h);
-    key += int_to_string(pad_l_w);
-    key += int_to_string(pad_r_h);
-    key += int_to_string(pad_r_w);
-
-    setLayer(key, layer);
-}
-
-#define LRN_FWD_PREFIX "lrn_fwd_"
-#define LRN_BWD_PREFIX "lrn_bwd_"
-Layer<float>* LayerFactory::getLRNFwdLayer(void*              input,
-                                             void*              output,
-                                             int                local_size,
-                                             float              alpha,
-                                             float              beta)
-{
-    std::string key = LRN_FWD_PREFIX;
-
-    key += pointer_to_string(input);
-    key += pointer_to_string(output);
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(x_d3);
+    key += int_to_string(x_d4);
     key += int_to_string(local_size);
     key += float_to_string(alpha);
     key += float_to_string(beta);
@@ -264,17 +197,21 @@ Layer<float>* LayerFactory::getLRNFwdLayer(void*              input,
     return getLayer(key);
 }
 
-void LayerFactory::setLRNFwdLayer(void*              input,
-                                    void*              output,
-                                    int                local_size,
-                                    float              alpha,
-                                    float              beta,
-                                    Layer<float>*      layer)
+void LayerFactory::setLRNLayer(int              x_d1,
+                               int              x_d2,
+                               int              x_d3,
+                               int              x_d4,
+                               int              local_size,
+                               float            alpha,
+                               float            beta,
+                               Layer<float>*    layer)
 {
-    std::string key = LRN_FWD_PREFIX;
+    std::string key = LRN_PREFIX;
 
-    key += pointer_to_string(input);
-    key += pointer_to_string(output);
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(x_d3);
+    key += int_to_string(x_d4);
     key += int_to_string(local_size);
     key += float_to_string(alpha);
     key += float_to_string(beta);
@@ -282,47 +219,12 @@ void LayerFactory::setLRNFwdLayer(void*              input,
     setLayer(key, layer);
 }
 
-Layer<float>* LayerFactory::getLRNBwdLayer(void*              input_diff,
-                                               void*              output_diff,
-                                               int                local_size,
-                                               float              alpha,
-                                               float              beta)
+#define SOFTMAX2D_PREFIX "softmax2d_"
+Layer<float>* LayerFactory::getSoftmax2DLayer(int                d1,
+                                              int                d2,
+                                              int                axis)
 {
-    std::string key = LRN_BWD_PREFIX;
-
-    key += pointer_to_string(input_diff);
-    key += pointer_to_string(output_diff);
-    key += int_to_string(local_size);
-    key += float_to_string(alpha);
-    key += float_to_string(beta);
-
-    return getLayer(key);
-}
-
-void LayerFactory::setLRNBwdLayer(void*              input_diff,
-                                    void*              output_diff,
-                                    int                local_size,
-                                    float              alpha,
-                                    float              beta,
-                                    Layer<float>*      layer)
-{
-    std::string key = LRN_BWD_PREFIX;
-
-    key += pointer_to_string(input_diff);
-    key += pointer_to_string(output_diff);
-    key += int_to_string(local_size);
-    key += float_to_string(alpha);
-    key += float_to_string(beta);
-
-    setLayer(key, layer);
-}
-
-#define SOFTMAX2D_FWD_PREFIX "softmax2d_fwd_"
-Layer<float>* LayerFactory::getSoftmax2DFwdLayer(int                d1,
-                                                   int                d2,
-                                                   int                axis)
-{
-    std::string key = SOFTMAX2D_FWD_PREFIX;
+    std::string key = SOFTMAX2D_PREFIX;
 
     key += int_to_string(d1);
     key += int_to_string(d2);
@@ -331,12 +233,12 @@ Layer<float>* LayerFactory::getSoftmax2DFwdLayer(int                d1,
     return getLayer(key);
 }
 
-void LayerFactory::setSoftmax2DFwdLayer(int                d1,
-                                          int                d2,
-                                          int                axis,
-                                          Layer<float>*      layer)
+void LayerFactory::setSoftmax2DLayer(int                d1,
+                                     int                d2,
+                                     int                axis,
+                                     Layer<float>*      layer)
 {
-    std::string key = SOFTMAX2D_FWD_PREFIX;
+    std::string key = SOFTMAX2D_PREFIX;
 
     key += int_to_string(d1);
     key += int_to_string(d2);
@@ -345,14 +247,14 @@ void LayerFactory::setSoftmax2DFwdLayer(int                d1,
     setLayer(key, layer);
 }
 
-#define SOFTMAX4D_FWD_PREFIX "softmax4d_fwd_"
-Layer<float>* LayerFactory::getSoftmax4DFwdLayer(int                d1,
-                                                   int                d2,
-                                                   int                d3,
-                                                   int                d4,
-                                                   int                axis)
+#define SOFTMAX4D_PREFIX "softmax4d_"
+Layer<float>* LayerFactory::getSoftmax4DLayer(int                d1,
+                                              int                d2,
+                                              int                d3,
+                                              int                d4,
+                                              int                axis)
 {
-    std::string key = SOFTMAX4D_FWD_PREFIX;
+    std::string key = SOFTMAX4D_PREFIX;
 
     key += int_to_string(d1);
     key += int_to_string(d2);
@@ -363,14 +265,14 @@ Layer<float>* LayerFactory::getSoftmax4DFwdLayer(int                d1,
     return getLayer(key);
 }
 
-void LayerFactory::setSoftmax4DFwdLayer(int                d1,
-                                          int                d2,
-                                          int                d3,
-                                          int                d4,
-                                          int                axis,
-                                          Layer<float>*      layer)
+void LayerFactory::setSoftmax4DLayer(int                d1,
+                                     int                d2,
+                                     int                d3,
+                                     int                d4,
+                                     int                axis,
+                                     Layer<float>*      layer)
 {
-    std::string key = SOFTMAX4D_FWD_PREFIX;
+    std::string key = SOFTMAX4D_PREFIX;
 
     key += int_to_string(d1);
     key += int_to_string(d2);

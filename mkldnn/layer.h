@@ -15,10 +15,13 @@ public:
     virtual int setup_backward(){ return 0; };
 
 protected:
-    mkldnn::stream* stream_;
-    std::vector<mkldnn::primitive> primitives_;
-    bool first_use_ = true;
-
+    mkldnn::stream* forward_stream_;
+    mkldnn::stream* backward_stream_;
+    std::vector<mkldnn::primitive> forward_primitives_;
+    std::vector<mkldnn::primitive> backward_primitives_;
+    bool forward_first_use_ = true;
+    bool backward_first_use_ = true;
+    bool backward_first_setup_ = true;
 };
 
 #endif // _LAYER_H_

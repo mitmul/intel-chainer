@@ -14,7 +14,8 @@ for i in range(1):
     for j in range(1):
         for k in range(4):
             for l in range(4):
-                x[i, j, k, l] = math.sin(i+j+k+l)
+                x[i, j, k, l] = math.sin(i+j*2+k*3+l*4)
+                                        # break symmetry
 
 print "x="
 print x

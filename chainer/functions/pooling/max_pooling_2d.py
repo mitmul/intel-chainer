@@ -24,7 +24,6 @@ class MaxPooling2D(pooling_2d.Pooling2D):
             y_w = conv.get_conv_outsize(
                 w, self.kw, self.sx, self.pw, self.cover_all)
             y = numpy.empty((n, c, y_h, y_w), dtype=x[0].dtype)
-            #self.indexes = numpy.empty((n, c, y_h, y_w), dtype=numpy.int32)
 
             forward_obj = mkl.MaxPooling_F32.get_forward_object(
                     x[0], self.sy, self.sx, self.ph, self.pw, self.kh, self.kw)
@@ -96,23 +95,36 @@ class MaxPooling2D(pooling_2d.Pooling2D):
         return y,
 
     def backward_cpu(self, x, gy):
-        n, c, out_h, out_w = gy[0].shape
-        h, w = x[0].shape[2:]
-        kh, kw = self.kh, self.kw
+        if switch.enable_max_pooling:
+            n, c, h, w = x[0].shape
+            gx = numpy.empty((n, c, h, w), dtype=x[0].dtype)
 
-        gcol = numpy.zeros(
-            (n * c * out_h * out_w * kh * kw), dtype=x[0].dtype)
+            backward_obj = mkl.MaxPooling_F32.get_backward_object(
+                    x[0],
+                    self.sy, self.sx,
+                    self.ph, self.pw,
+                    self.kh, self.kw)
 
-        indexes = self.indexes.flatten()
-        indexes += numpy.arange(0, indexes.size * kh * kw, kh * kw)
+            backward_obj.backward(gy[0], x[0], gx)
+            return gx,
+        else:
+            n, c, out_h, out_w = gy[0].shape
+            h, w = x[0].shape[2:]
+            kh, kw = self.kh, self.kw
 
-        gcol[indexes] = gy[0].ravel()
-        gcol = gcol.reshape(n, c, out_h, out_w, kh, kw)
-        gcol = numpy.swapaxes(gcol, 2, 4)
-        gcol = numpy.swapaxes(gcol, 3, 5)
+            gcol = numpy.zeros(
+                (n * c * out_h * out_w * kh * kw), dtype=x[0].dtype)
 
-        gx = conv.col2im_cpu(gcol, self.sy, self.sx, self.ph, self.pw, h, w)
-        return gx,
+            indexes = self.indexes.flatten()
+            indexes += numpy.arange(0, indexes.size * kh * kw, kh * kw)
+
+            gcol[indexes] = gy[0].ravel()
+            gcol = gcol.reshape(n, c, out_h, out_w, kh, kw)
+            gcol = numpy.swapaxes(gcol, 2, 4)
+            gcol = numpy.swapaxes(gcol, 3, 5)
+
+            gx = conv.col2im_cpu(gcol, self.sy, self.sx, self.ph, self.pw, h, w)
+            return gx,
 
     def backward_gpu(self, x, gy):
         if (cuda.cudnn_enabled and self.use_cudnn and

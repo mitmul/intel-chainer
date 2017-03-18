@@ -95,16 +95,15 @@ void StreamFactory::setRELUBwdStream(
     setStream(key, layer);
 }
 
-#define MAX_POOLING_FWD_PREFIX "maxpool_fwd_"
-#define MAX_POOLING_BWD_PREFIX "maxpool_bwd_"
-Layer<float>* StreamFactory::getMaxPoolFwdStream(
+#define MAX_POOLING_PREFIX "maxpool_"
+Layer<float>* StreamFactory::getMaxPoolStream(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
         int pad_l_h, int pad_l_w,
         int pad_r_h, int pad_r_w)
 {
-    std::string key = MAX_POOLING_FWD_PREFIX;
+    std::string key = MAX_POOLING_PREFIX;
 
     key += int_to_string(x_d1);
     key += int_to_string(x_d2);
@@ -122,7 +121,7 @@ Layer<float>* StreamFactory::getMaxPoolFwdStream(
     return getStream(key);
 }
 
-void StreamFactory::setMaxPoolFwdStream(
+void StreamFactory::setMaxPoolStream(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -130,61 +129,12 @@ void StreamFactory::setMaxPoolFwdStream(
         int pad_r_h, int pad_r_w,
         Layer<float>* layer)
 {
-    std::string key = MAX_POOLING_FWD_PREFIX;
+    std::string key = MAX_POOLING_PREFIX;
 
     key += int_to_string(x_d1);
     key += int_to_string(x_d2);
     key += int_to_string(x_d3);
     key += int_to_string(x_d4);
-    key += int_to_string(stride_y);
-    key += int_to_string(stride_x);
-    key += int_to_string(ksize_h);
-    key += int_to_string(ksize_w);
-    key += int_to_string(pad_l_h);
-    key += int_to_string(pad_l_w);
-    key += int_to_string(pad_r_h);
-    key += int_to_string(pad_r_w);
-
-    setStream(key, layer);
-}
-
-Layer<float>* StreamFactory::getMaxPoolBwdStream(
-        void* input_diff, void* output_diff, void* workspace,
-        int stride_y, int stride_x,
-        int ksize_h, int ksize_w,
-        int pad_l_h, int pad_l_w,
-        int pad_r_h, int pad_r_w)
-{
-    std::string key = MAX_POOLING_BWD_PREFIX;
-
-    key += pointer_to_string(input_diff);
-    key += pointer_to_string(output_diff);
-    key += pointer_to_string(workspace);
-    key += int_to_string(stride_y);
-    key += int_to_string(stride_x);
-    key += int_to_string(ksize_h);
-    key += int_to_string(ksize_w);
-    key += int_to_string(pad_l_h);
-    key += int_to_string(pad_l_w);
-    key += int_to_string(pad_r_h);
-    key += int_to_string(pad_r_w);
-
-    return getStream(key);
-}
-
-void StreamFactory::setMaxPoolBwdStream(
-        void* input_diff, void* output_diff, void* workspace,
-        int stride_y, int stride_x,
-        int ksize_h, int ksize_w,
-        int pad_l_h, int pad_l_w,
-        int pad_r_h, int pad_r_w,
-        Layer<float>* layer)
-{
-    std::string key = MAX_POOLING_BWD_PREFIX;
-
-    key += pointer_to_string(input_diff);
-    key += pointer_to_string(output_diff);
-    key += pointer_to_string(workspace);
     key += int_to_string(stride_y);
     key += int_to_string(stride_x);
     key += int_to_string(ksize_h);

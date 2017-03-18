@@ -24,43 +24,47 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
 
     LOG(INFO) << "Pooling forward_setup";
 
-    LOG(INFO) << "    xdim=(" << x_d1 << "," << x_d2 << "," << x_d3 << "," << x_d4 << ")";
-    LOG(INFO) << "    ydim=(" << y_d1 << "," << y_d2 << "," << y_d3 << "," << y_d4 << ")";
+    LOG(INFO) << "    xdim=(" << x_d1 << "," << x_d2<< ","
+                              << x_d3 << "," << x_d4 << ")";
+    LOG(INFO) << "    ydim=(" << y_d1 << "," << y_d2 << ","
+                              << y_d3 << "," << y_d4 << ")";
     LOG(INFO) << "    strides =(" << s_y << "," << s_x << ")";
     LOG(INFO) << "    padding =(" << p_h << "," << p_w << ")";
     LOG(INFO) << "    kernel =(" << ker_h << "," << ker_w << ")";
     LOG(INFO) << "    alg_kind =" << (alg_kind == pooling_max ? "max" :
-                                 (alg_kind == pooling_avg ? "avg" :
-                                              /* else */    "unknown"));
+                                     (alg_kind == pooling_avg ? "avg" :
+                                                  /* else */    "unknown"));
 
     if (alg_kind != pooling_max && alg_kind != pooling_avg) {
         LOG(ERROR) << "alg_kind must be either pooling_max or "
                    << "pooling_avg";
     }
 
-    memory::dims src_tz     = {x_d1, x_d2, x_d3, x_d4};
-    memory::dims dst_tz     = {y_d1, y_d2, y_d3, y_d4};
-    memory::dims strides    = {s_y, s_x};
-    memory::dims padding   = {p_h, p_w};
-    memory::dims kernel     = {ker_h, ker_w};
+    memory::dims x_tz    = {x_d1, x_d2, x_d3, x_d4};
+    memory::dims y_tz    = {y_d1, y_d2, y_d3, y_d4};
+    memory::dims strides = {s_y, s_x};
+    memory::dims padding = {p_h, p_w};
+    memory::dims kernel  = {ker_h, ker_w};
 
     /* create memory for user data */
-    user_src_memory_.reset(new memory({{{src_tz}, memory_data_type<T>(),
-                                      memory::format::nchw}, cpu_engine}));
-    x_internal_ = (T*)user_src_memory_->get_data_handle();
-    src_md_.reset(new memory::desc({src_tz}, memory_data_type<T>(),
-                                   memory::format::any));
+    user_x_mem_.reset(new memory({{{x_tz}, memory_data_type<T>(),
+                            memory::format::nchw}, cpu_engine}/*,xdata*/));
+    // TODO here we let mkldnn allocate a piece of internal memory but its not
+    // used and will soon be replaced.  An alt. way is pass data pointer of
+    // first run to forward setup and use that data for first run but it makes
+    // interface not clean
+    x_md_.reset(new memory::desc({x_tz}, memory_data_type<T>(),
+                            memory::format::any));
 
-    user_dst_memory_.reset(new memory({{{dst_tz}, memory_data_type<T>(),
-                                      memory::format::nchw}, cpu_engine}));
-    y_internal_ = (T*)user_dst_memory_->get_data_handle();
-    dst_md_.reset(new memory::desc({dst_tz}, memory_data_type<T>(),
-                                   memory::format::any));
+    user_y_mem_.reset(new memory({{{y_tz}, memory_data_type<T>(),
+                            memory::format::nchw}, cpu_engine}/*,ydata*/));
+    y_md_.reset(new memory::desc({y_tz}, memory_data_type<T>(),
+                            memory::format::any));
 
 
     // create a pooling descriptor
     fwd_desc_.reset(new pooling_forward::desc(prop_kind::forward, alg_kind,
-                                         *src_md_, *dst_md_,
+                                         *x_md_, *y_md_,
                                          strides, kernel, padding, padding,
                                          padding_kind::zero));
 
@@ -70,37 +74,39 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
 
     /* create reorders between user and data if it is needed and
      *  add it to net before convolution */
-    src_memory_ = user_src_memory_;
-    dst_memory_ = user_dst_memory_;
-    bool reorder_src_p_ = false;
-    bool reorder_dst_p_ = false;
+    x_mem_ = user_x_mem_;
+    y_mem_ = user_y_mem_;
+    bool reorder_x_p = false;
+    bool reorder_y_p = false;
 
     #if 0
     if (memory::primitive_desc(fwd_prim_desc_.get()->src_primitive_desc())
-        != user_src_memory_->get_primitive_desc()) {
-        src_memory_.reset(new memory(fwd_prim_desc_.get()->src_primitive_desc()));
-        reorder_src_ = reorder(*user_src_memory_, *src_memory_);
-        reorder_src_p_ = true;
+        != user_x_mem_->get_primitive_desc()) {
+        x_mem_.reset(new memory(fwd_prim_desc_.get()->src_primitive_desc()));
+        reorder_x_ = reorder(*user_x_mem_, *x_mem_);
+        reorder_x_p = true;
     }
     #endif
 
     if (memory::primitive_desc(fwd_prim_desc_->dst_primitive_desc())
-        != user_dst_memory_->get_primitive_desc()) {
-        dst_memory_.reset(new memory(fwd_prim_desc_.get()->dst_primitive_desc()));
-        reorder_dst_ = reorder(*dst_memory_, *user_dst_memory_);
-        reorder_dst_p_ = true;
+        != user_y_mem_->get_primitive_desc()) {
+        y_mem_.reset(new memory(fwd_prim_desc_.get()->dst_primitive_desc()));
+        reorder_y_ = reorder(*y_mem_, *user_y_mem_);
+        reorder_y_p = true;
     }
 
-    indice_memory_.reset(new memory(dst_memory_->get_primitive_desc()));
+    // TODO: enable until we have map between forward pass and backward pass,
+    // and workspace
+    workspace_memory_.reset(new memory(y_mem_->get_primitive_desc()));
     fwd_.reset(new pooling_forward(
-            *fwd_prim_desc_, *src_memory_, *dst_memory_, *indice_memory_));
+            *fwd_prim_desc_, *x_mem_, *y_mem_, *workspace_memory_));
 
-    LOG(INFO) << "    reorder_src: " << reorder_src_p_;
-    LOG(INFO) << "    reorder_dst: " << reorder_src_p_;
-    if (reorder_src_p_) this->primitives_.push_back(reorder_src_);
-    this->primitives_.push_back(*fwd_);
-    if (reorder_dst_p_) this->primitives_.push_back(reorder_dst_);
-    this->stream_ = new stream(stream::kind::eager);
+    LOG(INFO) << "    reorder_src: " << reorder_x_p;
+    LOG(INFO) << "    reorder_dst: " << reorder_y_p;
+    if (reorder_x_p) this->forward_primitives_.push_back(reorder_x_);
+    this->forward_primitives_.push_back(*fwd_);
+    if (reorder_y_p) this->forward_primitives_.push_back(reorder_y_);
+    this->forward_stream_ = new stream(stream::kind::eager);
 
     x_d1_     = x_d1;
     x_d2_     = x_d2;
@@ -115,7 +121,126 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     ker_w_    = ker_w;
 
     alg_kind_ = alg_kind;
-    this->first_use_ = true;
+    this->forward_first_use_ = true;
+
+    return 0;
+}
+
+template<typename T>
+int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
+                              int s_y, int s_x,
+                              int p_h, int p_w,
+                              int ker_h, int ker_w,
+                              mkldnn::algorithm alg_kind)
+{
+    int y_d1, y_d2, y_d3, y_d4;
+    // prepare y according to x, s, p, ker
+    y_d1 = x_d1;
+    y_d2 = x_d2;
+    y_d3 = (x_d3-ker_h+p_h*2)/s_y+1;
+    y_d4 = (x_d4-ker_w+p_w*2)/s_x+1;
+
+    LOG(INFO) << "Pooling backward_setup";
+
+    LOG(INFO) << "    xdim=(" << x_d1 << "," << x_d2 << ","
+                              << x_d3 << "," << x_d4 << ")";
+    LOG(INFO) << "    ydim=(" << y_d1 << "," << y_d2 << ","
+                              << y_d3 << "," << y_d4 << ")";
+    LOG(INFO) << "    strides =(" << s_y << "," << s_x << ")";
+    LOG(INFO) << "    padding =(" << p_h << "," << p_w << ")";
+    LOG(INFO) << "    kernel =(" << ker_h << "," << ker_w << ")";
+    LOG(INFO) << "    alg_kind =" << (alg_kind == pooling_max ? "max" :
+                                     (alg_kind == pooling_avg ? "avg" :
+                                                  /* else */    "unknown"));
+
+    if (alg_kind != pooling_max && alg_kind != pooling_avg) {
+        LOG(ERROR) << "alg_kind must be either pooling_max or "
+                   << "pooling_avg";
+    }
+
+    memory::dims x_tz    = {x_d1, x_d2, x_d3, x_d4};
+    memory::dims y_tz    = {y_d1, y_d2, y_d3, y_d4};
+    memory::dims strides = {s_y, s_x};
+    memory::dims padding = {p_h, p_w};
+    memory::dims kernel  = {ker_h, ker_w};
+
+    /* create memory for user data */
+    user_gx_mem_.reset(new memory({{{x_tz}, memory_data_type<T>(),
+                                      memory::format::nchw}, cpu_engine}));
+    gx_md_.reset(new memory::desc({x_tz}, memory_data_type<T>(),
+                                   memory::format::any));
+
+    user_gy_mem_.reset(new memory({{{y_tz}, memory_data_type<T>(),
+                                      memory::format::nchw}, cpu_engine}));
+    gy_md_.reset(new memory::desc({y_tz}, memory_data_type<T>(),
+                                   memory::format::any));
+
+
+
+    // create a pooling descriptor
+    bwd_desc_.reset(new pooling_backward::desc(
+                                        alg_kind,
+                                        *gx_md_, *gy_md_,
+                                        strides, kernel, padding, padding,
+                                        padding_kind::zero));
+
+    bwd_prim_desc_.reset(new pooling_backward::primitive_desc(
+                                *bwd_desc_, cpu_engine, *fwd_prim_desc_));
+    // TODO: we don't know its safe until we know what mkldnn do with fwd_desc_
+
+
+    /* create reorders between user and data if it is needed and
+     *  add it to net before convolution */
+    gx_mem_ = user_gx_mem_;
+    gy_mem_ = user_gy_mem_;
+    bool reorder_x_p = false;
+    bool reorder_y_p = false;
+
+    #if 0
+    if (memory::primitive_desc(bwd_prim_desc_.get()->diff_src_primitive_desc())
+        != user_gx_mem_->get_primitive_desc()) {
+        x_mem_.reset(new memory(
+                            bwd_prim_desc_.get()->diff_src_primitive_desc()));
+        reorder_gx_ = reorder(*x_mem_, *user_x_mem_);
+        reorder_x_p = true;
+    }
+
+    if (memory::primitive_desc(bwd_prim_desc_->dst_primitive_desc())
+        != user_gy_mem_->get_primitive_desc()) {
+        gy_mem_.reset(new memory(bwd_prim_desc_.get()->dst_primitive_desc()));
+        reorder_gy_ = reorder(*user_gy_mem_, *y_mem_);
+        reorder_y_p = true;
+    }
+    #endif
+
+    // TODO: we don't really use indice memory, but if we have a map between
+    // forward pass, indice memory address, and backward pass, we will be able
+    // to use indice memory
+    // workspace_memory_.reset(new memory(y_mem_->get_primitive_desc()));
+    bwd_.reset(new pooling_backward(
+            *bwd_prim_desc_, *gy_mem_/*, *workspace_memory_*/, *gx_mem_));
+
+    LOG(INFO) << "    reorder_src: " << reorder_x_p;
+    LOG(INFO) << "    reorder_dst: " << reorder_y_p;
+    if (reorder_x_p) this->backward_primitives_.push_back(reorder_x_);
+    this->backward_primitives_.push_back(*bwd_);
+    if (reorder_y_p) this->backward_primitives_.push_back(reorder_y_);
+    this->backward_stream_ = new stream(stream::kind::eager);
+
+    x_d1_     = x_d1;
+    x_d2_     = x_d2;
+    x_d3_     = x_d3;
+    x_d4_     = x_d4;
+
+    s_y_      = s_y;
+    s_x_      = s_x;
+    p_h_      = p_h;
+    p_w_      = p_w;
+    ker_h_    = ker_h;
+    ker_w_    = ker_w;
+
+    alg_kind_ = alg_kind;
+    this->backward_first_use_ = true;
 
     return 0;
 }
@@ -125,23 +250,52 @@ int Pooling<T>::forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
                         T* y, int y_d1, int y_d2, int y_d3, int y_d4)
 {
     LOG(INFO) << "Pooling forward";
-    LOG(INFO) << "    xdim=(" << x_d1 << "," << x_d2 <<","<< x_d3 <<","<< x_d4 <<")";
-    LOG(INFO) << "    ydim=(" << y_d1 << "," << y_d2 <<","<< y_d3 <<","<< y_d4 <<")";
-    LOG(INFO) << "    x={" << x[0] << "," << x[1] << "," << x[2] << "," << x[3] << "}";
+    LOG(INFO) << "    xdim=(" << x_d1 << "," << x_d2 << ","
+                              << x_d3 << "," << x_d4 << ")";
+    LOG(INFO) << "    ydim=(" << y_d1 << "," << y_d2 << ","
+                              << y_d3 << "," << y_d4 << ")";
+    LOG(INFO) << "    x={"    << x[0] << "," << x[1] << ","
+                              << x[2] << "," << x[3] << "}";
 
-    size_t size_x = x_d1*x_d2*x_d3*x_d4*sizeof(T);
-    size_t size_y = y_d1*y_d2*y_d3*y_d4*sizeof(T);
-    LOG(INFO) << "    copying " << size_x << " bytes from x";
-    memcpy(this->x_internal_, x, size_x);
-    if (this->first_use_) {
-        this->stream_->submit(this->primitives_).wait();
-        this->first_use_ = false;
+    user_x_mem_->set_data_handle(x);
+    user_y_mem_->set_data_handle(y);
+    if (this->forward_first_use_) {
+        this->forward_stream_->submit(this->forward_primitives_).wait();
+        this->forward_first_use_ = false;
     } else {
-        this->stream_->rerun().wait();
+        this->forward_stream_->rerun().wait();
     }
-    LOG(INFO) << "    copying " << size_y << " bytes to y";
-    memcpy(y, this->y_internal_, size_y);
-    LOG(INFO) << "    y={" << y[0] << "," << y[1] << "," << y[2] << "," << y[3] << "}";
+    LOG(INFO) << "    y={" << y[0] << "," << y[1] << ","
+                           << y[2] << "," << y[3] << "}";
+    return 0;
+}
+
+template<typename T>
+int Pooling<T>::backward(T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
+                         T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
+                         T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4)
+{
+    LOG(INFO) << "Pooling backward";
+    LOG(INFO) << "    xdim=(" << x_d1  << "," << x_d2  << ","
+                              << x_d3  << "," << x_d4  << ")";
+    LOG(INFO) << "    ydim=(" << gy_d1 << "," << gy_d2 << ","
+                              << gy_d3 << "," << gy_d4 << ")";
+    LOG(INFO) << "    gy={"   << gy[0] << "," << gy[1] << ","
+                              << gy[2] << "," << gy[3] << "}";
+    LOG(INFO) << "    x={"    << x[0]  << "," << x[1]  << ","
+                              << x[2]  << "," << x[3]  << "}";
+
+    user_x_mem_ ->set_data_handle(x);
+    user_gx_mem_->set_data_handle(gx);
+    user_gy_mem_->set_data_handle(gy);
+    if (this->backward_first_use_) {
+        this->backward_stream_->submit(this->backward_primitives_).wait();
+        this->backward_first_use_ = false;
+    } else {
+        this->backward_stream_->rerun().wait();
+    }
+    LOG(INFO) << "    gx={" << gx[0] << "," << gx[1] << ","
+                            << gx[2] << "," << gx[3] << "}";
     return 0;
 }
 

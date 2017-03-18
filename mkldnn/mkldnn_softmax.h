@@ -46,9 +46,9 @@ class Softmax_2D : public Softmax<T> {
 public:
     Softmax_2D(int* dims, int axis) :
 	       dims(dims),
-	       axis(axis),
-	       src(NULL),
-	       dst(NULL) {}
+	       axis(axis)
+	       /* src(NULL), */
+	       /* dst(NULL)  */ {}
 
     int get_res_size();
     int forward();
@@ -62,8 +62,8 @@ private:
     int								axis;		// softmax base axis of all functions initialized by constructor
 
     // Resources
-    T*								src;		// Persistent source memory linked to primitive
-    T*								dst;		// Persistent destination memory linked to primitive
+    // T*							src;		// Persistent source memory linked to primitive
+    // T*							dst;		// Persistent destination memory linked to primitive
     std::shared_ptr<mkldnn::memory>				src_mem;
     std::shared_ptr<mkldnn::memory>				dst_mem;
     std::shared_ptr<mkldnn::memory::desc>			src_md;
@@ -79,9 +79,9 @@ class Softmax_4D : public Softmax<T> {
 public:
     Softmax_4D(int* dims, int axis) :
 	       dims(dims),
-	       axis(axis),
-	       src(NULL),
-	       dst(NULL) {}
+	       axis(axis)
+	       /* src(NULL), */
+	       /* dst(NULL)  */ {}
 
     int get_res_size();
     int forward();
@@ -95,8 +95,8 @@ private:
     int								axis;		// softmax base axis of all functions initialized by constructor
 
     // Resources
-    T*								src;		// Persistent source memory linked to primitive
-    T*								dst;		// Persistent destination memory linked to primitive
+    // T*							src;		// Persistent source memory linked to primitive
+    // T*							dst;		// Persistent destination memory linked to primitive
     std::shared_ptr<mkldnn::memory>				src_mem;
     std::shared_ptr<mkldnn::memory>				dst_mem;
     std::shared_ptr<mkldnn::memory::desc>			src_md;

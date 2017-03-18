@@ -111,8 +111,10 @@ int Softmax_2D<T>::setup_forward()
     dst_mem.reset(new memory({{{dst_tz}, memory_data_type<T>(),
                                       memory::format::nc}, cpu_engine}));
 
-    src = (T*)src_mem->get_data_handle();
-    dst = (T*)dst_mem->get_data_handle();
+    // Use set_data_handle to switch param ptr of created primitive
+    // Need persistent memory no more
+    // src = (T*)src_mem->get_data_handle();
+    // dst = (T*)dst_mem->get_data_handle();
 
     src_md.reset(new memory::desc({src_tz}, memory_data_type<T>(),
                                    memory::format::nc));

@@ -297,7 +297,6 @@ void OpenMpManager::bindOpenMpThreads() {
   #pragma omp parallel
   {
     unsigned logicalCoreId = omp_get_thread_num();
-    LOG(INFO) << "logicalCoreId=" << logicalCoreId;
     openMpManager.bindCurrentThreadToLogicalCoreCpu(logicalCoreId);
   }
 }

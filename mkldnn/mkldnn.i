@@ -7,6 +7,7 @@
     #include "layer.h"
     #include "pooling.h"
     #include "max_pooling.h"
+    #include "avg_pooling.h"
     #include "mkldnn_conv.h"
     #include "mkldnn_softmax.h"
     #include "local_response_normalization.h"
@@ -41,6 +42,7 @@
 %include "layer.h"
 %include "pooling.h"
 %include "max_pooling.h"
+%include "avg_pooling.h"
 %include "mkldnn_conv.h"
 %include "mkldnn_softmax.h"
 %include "local_response_normalization.h"
@@ -49,5 +51,6 @@
 %template(Convolution2D_F32) Convolution2D<float>;
 %template(Pooling_F32) Pooling<float>;
 %template(MaxPooling_F32) MaxPooling<float>;
+%template(AvgPooling_F32) AvgPooling<float>;
 %template(Softmax_F32) Softmax<float>;
 %template(LocalResponseNormalization_F32) LocalResponseNormalization<float>;

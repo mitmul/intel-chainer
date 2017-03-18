@@ -5,7 +5,6 @@ from chainer.functions.pooling import pooling_2d
 from chainer.utils import conv
 from mkldnn import mkldnn as mkl
 from mkldnn import switch
-#import _mkldnn as mkl
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn

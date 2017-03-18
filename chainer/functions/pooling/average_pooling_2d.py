@@ -3,6 +3,8 @@ import numpy
 from chainer import cuda
 from chainer.functions.pooling import pooling_2d
 from chainer.utils import conv
+from mkldnn import mkldnn as mkl
+from mkldnn import switch
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
@@ -15,10 +17,24 @@ class AveragePooling2D(pooling_2d.Pooling2D):
     # TODO(beam2d): Support cover_all mode.
 
     def forward_cpu(self, x):
-        col = conv.im2col_cpu(x[0], self.kh, self.kw, self.sy, self.sx,
-                              self.ph, self.pw)
-        y = col.mean(axis=(2, 3))
-        return y,
+        if switch.enable_avg_pooling:
+            n, c, h, w = x[0].shape
+            y_h = conv.get_conv_outsize(
+                h, self.kh, self.sy, self.ph, self.cover_all)
+            y_w = conv.get_conv_outsize(
+                w, self.kw, self.sx, self.pw, self.cover_all)
+            y = numpy.empty((n, c, y_h, y_w), dtype=x[0].dtype)
+
+            forward_obj = mkl.AvgPooling_F32.get_forward_object(
+                    x[0], self.sy, self.sx, self.ph, self.pw, self.kh, self.kw)
+
+            forward_obj.forward(x[0], y)
+            return y,
+        else:
+            col = conv.im2col_cpu(x[0], self.kh, self.kw, self.sy, self.sx,
+                                        self.ph, self.pw)
+            y = col.mean(axis=(2, 3))
+            return y,
 
     def forward_gpu(self, x):
         if (cuda.cudnn_enabled and self.use_cudnn and
@@ -57,11 +73,24 @@ class AveragePooling2D(pooling_2d.Pooling2D):
         return y,
 
     def backward_cpu(self, x, gy):
-        h, w = x[0].shape[2:]
-        gcol = numpy.tile(gy[0][:, :, None, None],
-                          (1, 1, self.kh, self.kw, 1, 1))
-        gx = conv.col2im_cpu(gcol, self.sy, self.sx, self.ph, self.pw, h, w)
-        gx /= self.kh * self.kw
+        if switch.enable_avg_pooling:
+            n, c, h, w = x[0].shape
+            gx = numpy.empty((n, c, h, w), dtype=x[0].dtype)
+
+            backward_obj = mkl.AvgPooling_F32.get_backward_object(
+                    x[0],
+                    self.sy, self.sx,
+                    self.ph, self.pw,
+                    self.kh, self.kw)
+
+            backward_obj.backward(gy[0], x[0], gx)
+            return gx,
+        else:
+            h, w = x[0].shape[2:]
+            gcol = numpy.tile(gy[0][:, :, None, None],
+                              (1, 1, self.kh, self.kw, 1, 1))
+            gx = conv.col2im_cpu(gcol, self.sy, self.sx, self.ph, self.pw, h, w)
+            gx /= self.kh * self.kw
         return gx,
 
     def backward_gpu(self, x, gy):

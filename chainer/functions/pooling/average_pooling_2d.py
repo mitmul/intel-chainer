@@ -25,10 +25,14 @@ class AveragePooling2D(pooling_2d.Pooling2D):
                 w, self.kw, self.sx, self.pw, self.cover_all)
             y = numpy.empty((n, c, y_h, y_w), dtype=x[0].dtype)
 
-            forward_obj = mkl.AvgPooling_F32.get_forward_object(
-                    x[0], self.sy, self.sx, self.ph, self.pw, self.kh, self.kw)
-
-            forward_obj.forward(x[0], y)
+            #forward_obj = mkl.AvgPooling_F32.get_forward_object(
+            #        x[0], self.sy, self.sx, self.ph, self.pw, self.kh, self.kw)
+            #forward_obj.forward(x[0], y)
+            mkl.AvgPooling_F32.do_forward(
+                                    x[0], y,
+                                    self.sy, self.sx,
+                                    self.ph, self.pw,
+                                    self.kh, self.kw);
             return y,
         else:
             col = conv.im2col_cpu(x[0], self.kh, self.kw, self.sy, self.sx,
@@ -77,13 +81,17 @@ class AveragePooling2D(pooling_2d.Pooling2D):
             n, c, h, w = x[0].shape
             gx = numpy.empty((n, c, h, w), dtype=x[0].dtype)
 
-            backward_obj = mkl.AvgPooling_F32.get_backward_object(
-                    x[0],
-                    self.sy, self.sx,
-                    self.ph, self.pw,
-                    self.kh, self.kw)
-
-            backward_obj.backward(gy[0], x[0], gx)
+            #backward_obj = mkl.AvgPooling_F32.get_backward_object(
+            #        x[0],
+            #        self.sy, self.sx,
+            #        self.ph, self.pw,
+            #        self.kh, self.kw)
+            #backward_obj.backward(gy[0], x[0], gx)
+            mkl.AvgPooling_F32.do_backward(
+                                    gy[0], x[0], gx,
+                                    self.sy, self.sx,
+                                    self.ph, self.pw,
+                                    self.kh, self.kw)
             return gx,
         else:
             h, w = x[0].shape[2:]

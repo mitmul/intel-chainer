@@ -40,6 +40,7 @@ public:
                       int ker_h, int ker_w,
                       mkldnn::algorithm alg_kind) {
         Pooling<T>* pooling_forward = NULL;
+        assert (alg_kind == pooling_max || alg_kind == pooling_avg);
         if (alg_kind == mkldnn::pooling_max) {
             pooling_forward = dynamic_cast<Pooling<T>*>(
                                 LayerFactory::getInstance().getMaxPoolLayer
@@ -49,7 +50,7 @@ public:
             pooling_forward = dynamic_cast<Pooling<float>*>(
                                 LayerFactory::getInstance().getAvgPoolLayer
                                 (x_d1, x_d2, x_d3, x_d4,
-                                 s_y, s_x, p_h, p_w, p_h, p_w, ker_h, ker_w));
+                                 s_y, s_x, ker_h, ker_w, p_h, p_w, p_h, p_w));
         }
         if (pooling_forward == NULL) {
             pooling_forward = new Pooling<T>();

@@ -7,6 +7,7 @@
     #include "pooling.h"
     #include "max_pooling.h"
     #include "mkldnn_conv.h"
+    #include "relu.h"
 %}
 
 %include "numpy.i"
@@ -32,6 +33,14 @@
     {( float* y, int y_d1, int y_d2, int y_d3, int y_d4 )}
 %apply ( float* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
     {( float* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4 )}
+%apply ( float* IN_ARRAY1, int DIM1)
+    {( float* x, int x_size)}
+%apply ( float* INPLACE_ARRAY1, int DIM1)
+    {( float* y, int y_size)}
+%apply ( float* IN_ARRAY1, int DIM1)
+    {( float* gy, int gy_size)}
+%apply ( float* INPLACE_ARRAY1, int DIM1)
+    {( float* gx, int gx_size)}
 
 %include "common.h"
 %include "stream_factory.h"
@@ -39,8 +48,10 @@
 %include "pooling.h"
 %include "max_pooling.h"
 %include "mkldnn_conv.h"
+%include "relu.h"
 
 %template(Convolution2D_F32) Convolution2D<float>;
 %template(Pooling_F32) Pooling<float>;
 %template(MaxPooling_F32) MaxPooling<float>;
 %template(Layer_F32) Layer<float>;
+%template(Relu_F32) Relu<float>;

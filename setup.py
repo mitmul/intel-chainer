@@ -23,6 +23,7 @@ extensions = [
                 "mkldnn/stream_factory.cc",
                 "mkldnn/pooling.cc",
                 "mkldnn/max_pooling.cc",
+                "mkldnn/relu.cc",
                 "mkldnn/mkldnn.i"
                 ],
         swig_opts=["-c++"],

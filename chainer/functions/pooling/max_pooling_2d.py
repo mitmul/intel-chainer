@@ -25,9 +25,6 @@ class MaxPooling2D(pooling_2d.Pooling2D):
             y = numpy.empty((n, c, y_h, y_w), dtype=x[0].dtype)
             self.indexes = numpy.empty((n, c, y_h, y_w), dtype=numpy.int32)
 
-            #forward_obj = mkl.MaxPooling_F32.get_forward_object(
-            #        x[0], self.sy, self.sx, self.ph, self.pw, self.kh, self.kw)
-            #forward_obj.forward(x[0], y)
             mkl.MaxPooling_F32.do_forward(
                                     x[0], y, self.indexes,
                                     self.sy, self.sx,

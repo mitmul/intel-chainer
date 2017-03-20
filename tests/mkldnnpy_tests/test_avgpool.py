@@ -37,7 +37,7 @@ mkldnn.AvgPooling_F32_do_forward(x, y, stride, stride,
                     padding, padding, ker, ker);
 print "y="
 print y
-#mkldnn.AvgPooling_F32_do_backward(gy, x, gx, stride, stride,
-#                    padding, padding, ker, ker);
-#print "gx="
-#print gx
+mkldnn.AvgPooling_F32_do_backward(gy, x, gx, stride, stride,
+                    padding, padding, ker, ker);
+print "gx="
+print gx

@@ -11,6 +11,7 @@ stride=1
 padding=1
 ker=3
 x = np.zeros((n, c, h, w), dtype=np.float32)
+x2 = np.zeros((n, c, h, w), dtype=np.float32)
 gy = np.zeros((n, c, h, w), dtype=np.float32)
 
 for i in range(n):
@@ -18,6 +19,7 @@ for i in range(n):
         for k in range(h):
             for l in range(w):
                 x[i, j, k, l] = math.sin(i+j+k+l)
+                x2[i, j, k, l] = math.sin(i+j+k+l)+1
 
 for i in range(n):
     for j in range(c):
@@ -27,19 +29,25 @@ for i in range(n):
 
 print "x="
 print x
-forward_obj = mkldnn.MaxPooling_F32_get_forward_object(x, stride, stride,
-                    padding, padding, ker, ker);
 
 y_h = conv.get_conv_outsize(h, k, stride, padding)
 y_w = conv.get_conv_outsize(w, k, stride, padding)
 y   = np.empty((n, c, y_h, y_w), dtype=x.dtype)
+y2   = np.empty((n, c, y_h, y_w), dtype=x.dtype)
 gx  = np.empty((n, c, h, w), dtype=x.dtype)
+ws  = np.empty((n, c, y_h, y_w), dtype=np.int32)
+ws2  = np.empty((n, c, y_h, y_w), dtype=np.int32)
 
-forward_obj.forward(x, y)
+mkldnn.MaxPooling_F32_do_forward(x, y, ws, stride, stride,
+                    padding, padding, ker, ker);
 print "y="
 print y
-backward_obj = mkldnn.MaxPooling_F32_get_backward_object(x, stride, stride,
+
+mkldnn.MaxPooling_F32_do_forward(x2, y2, ws2, stride, stride,
                     padding, padding, ker, ker);
-backward_obj.backward(gy, x, gx)
-print "gx="
-print gx
+print "y2="
+print y2
+#mkldnn.MaxPooling_F32_do_backward(gy, x, gx, ws, stride, stride,
+#                    padding, padding, ker, ker);
+#print "gx="
+#print gx

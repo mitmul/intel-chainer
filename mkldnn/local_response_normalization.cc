@@ -24,7 +24,7 @@ template<typename T>
 LocalResponseNormalization<T>::LocalResponseNormalization(
 	T* x, int x_d1, int x_d2, int x_d3, int x_d4,
     T* y, int y_d1, int y_d2, int y_d3, int y_d4,
-    int n, int k, double alpha, double beta)
+    int n, double k, double alpha, double beta)
 {
     google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
 
@@ -37,7 +37,8 @@ LocalResponseNormalization<T>::LocalResponseNormalization(
 	p.alpha = alpha;
 	p.beta = beta;
 	p.aprop_kind = prop_kind::forward_training;
-	p.local_size = 5;
+	p.local_size = n;
+	p.k = k;
 	p.data_format = memory::format::nchw;
 	p.diff_data_format = memory::format::nchw;
 	p.aalgorithm = algorithm::lrn_across_channels;

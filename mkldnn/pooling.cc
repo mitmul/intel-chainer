@@ -64,19 +64,16 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                             memory::format::any));
 
 
-    LOG(INFO) << "hello";
     // create a pooling descriptor
     fwd_desc_.reset(new pooling_forward::desc(prop_kind::forward, alg_kind,
                                          *x_md_, *y_md_,
                                          strides, kernel, padding, padding,
                                          padding_kind::zero));
 
-    LOG(INFO) << "hello";
     fwd_prim_desc_.reset(new pooling_forward::primitive_desc(
                                 *fwd_desc_, cpu_engine));
 
 
-    LOG(INFO) << "hello";
     /* create reorders between user and data if it is needed and
      *  add it to net before convolution */
     x_mem_ = user_x_mem_;
@@ -176,7 +173,9 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     user_gy_mem_.reset(new memory({{{y_tz}, memory_data_type<T>(),
                                       memory::format::nchw}, cpu_engine}));
     gy_md_.reset(new memory::desc({y_tz}, memory_data_type<T>(),
-                                   memory::format::any));
+                                    memory::format::nchw));
+                                    // TODO temporary walkaround, should be any
+                                    // but mkldnn needs any here
 
 
 

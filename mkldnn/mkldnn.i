@@ -5,6 +5,7 @@
     #include "common.h"
     #include "layer_factory.h"
     #include "layer.h"
+    #include "linear.h"
     #include "pooling.h"
     #include "max_pooling.h"
     #include "avg_pooling.h"
@@ -53,10 +54,29 @@
     {( float* gx, int gx_size)}
 %apply ( int* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
     {( int* ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4 )}
+    /* linear_2D interface*/
+%apply ( float* IN_ARRAY2, int DIM1, int DIM2 )
+    {( float* x, int x_d1, int x_d2 )}
+%apply ( float* IN_ARRAY2, int DIM1, int DIM2 )
+    {( float* gx, int gx_d1, int gx_d2 )}
+%apply ( float* IN_ARRAY2, int DIM1, int DIM2 )
+    {( float* W, int W_d1, int W_d2 )}
+%apply ( float* IN_ARRAY2, int DIM1, int DIM2 )
+    {( float* gW, int gW_d1, int gW_d2 )}
+%apply ( float* IN_ARRAY1, int DIM1)
+    {( float* b, int b_d1)}
+%apply ( float* IN_ARRAY1, int DIM1)
+    {( float* gb, int gb_d1)}
+%apply ( float* INPLACE_ARRAY2, int DIM1, int DIM2 )
+    {( float* y, int y_d1, int y_d2 )}
+%apply ( float* INPLACE_ARRAY2, int DIM1, int DIM2 )
+    {( float* gy, int gy_d1, int gy_d2 )}
+
 
 %include "common.h"
 %include "layer_factory.h"
 %include "layer.h"
+%include "linear.h"
 %include "pooling.h"
 %include "max_pooling.h"
 %include "avg_pooling.h"
@@ -74,3 +94,4 @@
 %template(AvgPooling_F32) AvgPooling<float>;
 %template(Softmax_F32) Softmax<float>;
 %template(LocalResponseNormalization_F32) LocalResponseNormalization<float>;
+%template(Linear_F32) MKLDNNLinear<float>;

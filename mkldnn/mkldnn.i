@@ -41,6 +41,8 @@
     {( float* y, int y_d1, int y_d2, int y_d3, int y_d4 )}
 %apply ( float* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
     {( float* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4 )}
+%apply ( int* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
+    {( int* ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4 )}
 
 %include "common.h"
 %include "layer_factory.h"

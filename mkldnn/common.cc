@@ -30,6 +30,6 @@ int global_init()
 
 bool enabled()
 {
-    return true;
+    return false;
 }
 

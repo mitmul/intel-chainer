@@ -163,7 +163,7 @@ void MKLDNNLinear<T>::backward_setup(T* x,  int x_d1, int x_d2,
     bwd_user_weights_diff_memory_.reset(new memory({{{weights_tz}, mpcsn, memory::format::oi}, cpu_engine}, gW));
     bwd_user_dst_diff_memory_.reset(new memory({{{dst_tz}, mpcsn, memory::format::nc}, cpu_engine}, gy));
     if (b != NULL)
-        bwd_user_bias_diff_memory_.reset(new memory({{{bias_tz}, mpcsn, memory::format::x}, cpu_engine}, b));
+        bwd_user_bias_diff_memory_.reset(new memory({{{bias_tz}, mpcsn, memory::format::x}, cpu_engine}, gb));
 
     //create internal memory primivive
     bwd_internal_src_memory_ = bwd_user_src_memory_;

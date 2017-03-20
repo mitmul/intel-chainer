@@ -59,9 +59,8 @@ class LocalResponseNormalization(function.Function):
                 # n, c, h, w = x.shape
                 print x[0].shape
                 self.y = numpy.empty(x[0].shape,dtype=x[0].dtype)
-                in_x = x[0]
                 self.mkldnn_lrn = mkldnn.LocalResponseNormalization_F32(
-                    in_x,self.y,self.n,self.k,self.alpha,self.beta)
+                    x[0],self.y,self.n,self.k,self.alpha,self.beta)
                 self.mkldnn_lrn.forward()
                 print "y = "+str(self.y)
                 return self.y,
@@ -81,15 +80,24 @@ class LocalResponseNormalization(function.Function):
             return self.y,
 
     def backward_cpu(self, x, gy):
-        half_n = self.n // 2
-        summand = self.y * gy[0] / self.unit_scale
-        sum_part = summand.copy()
-        for i in six.moves.range(1, half_n + 1):
-            sum_part[:, i:] += summand[:, :-i]
-            sum_part[:, :-i] += summand[:, i:]
+        if mkldnn.enabled():
+            if self.mkldnn_lrn is None:
+                gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
+                self.mkldnn_lrn.backward(gy[0],x[0],gx[0])
+                print "gx = "+str(gx)
+                return gx,
+            else:
+                return None
+        else:
+            half_n = self.n // 2
+            summand = self.y * gy[0] / self.unit_scale
+            sum_part = summand.copy()
+            for i in six.moves.range(1, half_n + 1):
+                sum_part[:, i:] += summand[:, :-i]
+                sum_part[:, :-i] += summand[:, i:]
 
-        gx = gy[0] * self.scale - 2 * self.alpha * self.beta * x[0] * sum_part
-        return gx,
+            gx = gy[0] * self.scale - 2 * self.alpha * self.beta * x[0] * sum_part
+            return gx,
 
     def forward_gpu(self, x):
         self.y = cuda.cupy.square(x[0])  # temporary

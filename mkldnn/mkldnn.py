@@ -175,6 +175,10 @@ class lrn_params(_object):
     __swig_getmethods__["beta"] = _mkldnn.lrn_params_beta_get
     if _newclass:
         beta = _swig_property(_mkldnn.lrn_params_beta_get, _mkldnn.lrn_params_beta_set)
+    __swig_setmethods__["k"] = _mkldnn.lrn_params_k_set
+    __swig_getmethods__["k"] = _mkldnn.lrn_params_k_get
+    if _newclass:
+        k = _swig_property(_mkldnn.lrn_params_k_get, _mkldnn.lrn_params_k_set)
     __swig_setmethods__["local_size"] = _mkldnn.lrn_params_local_size_set
     __swig_getmethods__["local_size"] = _mkldnn.lrn_params_local_size_get
     if _newclass:
@@ -401,6 +405,9 @@ class Relu_F32(_object):
         except __builtin__.Exception:
             self.this = this
 
+    def test_buf(self, x, y):
+        return _mkldnn.Relu_F32_test_buf(self, x, y)
+
     def forward_setup(self, x, y):
         return _mkldnn.Relu_F32_forward_setup(self, x, y)
 
@@ -547,8 +554,8 @@ class LocalResponseNormalization_F32(_object):
     def forward(self):
         return _mkldnn.LocalResponseNormalization_F32_forward(self)
 
-    def backward(self):
-        return _mkldnn.LocalResponseNormalization_F32_backward(self)
+    def backward(self, gy, x, gx):
+        return _mkldnn.LocalResponseNormalization_F32_backward(self, gy, x, gx)
 LocalResponseNormalization_F32_swigregister = _mkldnn.LocalResponseNormalization_F32_swigregister
 LocalResponseNormalization_F32_swigregister(LocalResponseNormalization_F32)
 

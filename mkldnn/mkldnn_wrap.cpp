@@ -5047,6 +5047,58 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_lrn_params_k_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:lrn_params_k_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_k_set" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "lrn_params_k_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->k = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_k_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:lrn_params_k_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_k_get" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  result = (double) ((arg1)->k);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_lrn_params_local_size_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   lrn_params *arg1 = (lrn_params *) 0 ;
@@ -9169,6 +9221,75 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Relu_F32_test_buf(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Relu< float > *arg1 = (Relu< float > *) 0 ;
+  float *arg2 = (float *) 0 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  float *arg7 = (float *) 0 ;
+  int arg8 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyArrayObject *array2 = NULL ;
+  int is_new_object2 = 0 ;
+  PyArrayObject *array7 = NULL ;
+  int i7 = 1 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Relu_F32_test_buf",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_ReluT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Relu_F32_test_buf" "', argument " "1"" of type '" "Relu< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Relu< float > * >(argp1);
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array2 = obj_to_array_contiguous_allow_conversion(obj1, NPY_FLOAT,
+      &is_new_object2);
+    if (!array2 || !require_dimensions(array2, 4) ||
+      !require_size(array2, size, 4)) SWIG_fail;
+    arg2 = (float*) array_data(array2);
+    arg3 = (int) array_size(array2,0);
+    arg4 = (int) array_size(array2,1);
+    arg5 = (int) array_size(array2,2);
+    arg6 = (int) array_size(array2,3);
+  }
+  {
+    array7 = obj_to_array_no_conversion(obj2, NPY_FLOAT);
+    if (!array7 || !require_dimensions(array7,1) || !require_contiguous(array7)
+      || !require_native(array7)) SWIG_fail;
+    arg7 = (float*) array_data(array7);
+    arg8 = 1;
+    for (i7=0; i7 < array_numdims(array7); ++i7) arg8 *= array_size(array7,i7);
+  }
+  result = (int)(arg1)->test_buf(arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  {
+    if (is_new_object2 && array2)
+    {
+      Py_DECREF(array2); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object2 && array2)
+    {
+      Py_DECREF(array2); 
+    }
+  }
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Relu_F32_forward_setup(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   Relu< float > *arg1 = (Relu< float > *) 0 ;
@@ -10521,7 +10642,7 @@ SWIGINTERN PyObject *_wrap_new_LocalResponseNormalization_F32__SWIG_1(PyObject *
   int arg9 ;
   int arg10 ;
   int arg11 ;
-  int arg12 ;
+  double arg12 ;
   double arg13 ;
   double arg14 ;
   PyArrayObject *array1 = NULL ;
@@ -10529,7 +10650,7 @@ SWIGINTERN PyObject *_wrap_new_LocalResponseNormalization_F32__SWIG_1(PyObject *
   PyArrayObject *array6 = NULL ;
   int val11 ;
   int ecode11 = 0 ;
-  int val12 ;
+  double val12 ;
   int ecode12 = 0 ;
   double val13 ;
   int ecode13 = 0 ;
@@ -10573,11 +10694,11 @@ SWIGINTERN PyObject *_wrap_new_LocalResponseNormalization_F32__SWIG_1(PyObject *
     SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "new_LocalResponseNormalization_F32" "', argument " "11"" of type '" "int""'");
   } 
   arg11 = static_cast< int >(val11);
-  ecode12 = SWIG_AsVal_int(obj3, &val12);
+  ecode12 = SWIG_AsVal_double(obj3, &val12);
   if (!SWIG_IsOK(ecode12)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "new_LocalResponseNormalization_F32" "', argument " "12"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "new_LocalResponseNormalization_F32" "', argument " "12"" of type '" "double""'");
   } 
-  arg12 = static_cast< int >(val12);
+  arg12 = static_cast< double >(val12);
   ecode13 = SWIG_AsVal_double(obj4, &val13);
   if (!SWIG_IsOK(ecode13)) {
     SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "new_LocalResponseNormalization_F32" "', argument " "13"" of type '" "double""'");
@@ -10640,7 +10761,7 @@ SWIGINTERN PyObject *_wrap_new_LocalResponseNormalization_F32(PyObject *self, Py
         }
         if (_v) {
           {
-            int res = SWIG_AsVal_int(argv[3], NULL);
+            int res = SWIG_AsVal_double(argv[3], NULL);
             _v = SWIG_CheckState(res);
           }
           if (_v) {
@@ -10667,7 +10788,7 @@ fail:
   SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_LocalResponseNormalization_F32'.\n"
     "  Possible C/C++ prototypes are:\n"
     "    LocalResponseNormalization< float >::LocalResponseNormalization()\n"
-    "    LocalResponseNormalization< float >::LocalResponseNormalization(float *,int,int,int,int,float *,int,int,int,int,int,int,double,double)\n");
+    "    LocalResponseNormalization< float >::LocalResponseNormalization(float *,int,int,int,int,float *,int,int,int,int,int,double,double,double)\n");
   return 0;
 }
 
@@ -10697,21 +10818,106 @@ fail:
 SWIGINTERN PyObject *_wrap_LocalResponseNormalization_F32_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   LocalResponseNormalization< float > *arg1 = (LocalResponseNormalization< float > *) 0 ;
+  float *arg2 = (float *) 0 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  float *arg7 = (float *) 0 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int arg11 ;
+  float *arg12 = (float *) 0 ;
+  int arg13 ;
+  int arg14 ;
+  int arg15 ;
+  int arg16 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
+  PyArrayObject *array2 = NULL ;
+  int is_new_object2 = 0 ;
+  PyArrayObject *array7 = NULL ;
+  int is_new_object7 = 0 ;
+  PyArrayObject *array12 = NULL ;
   PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:LocalResponseNormalization_F32_backward",&obj0)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:LocalResponseNormalization_F32_backward",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LocalResponseNormalizationT_float_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LocalResponseNormalization_F32_backward" "', argument " "1"" of type '" "LocalResponseNormalization< float > *""'"); 
   }
   arg1 = reinterpret_cast< LocalResponseNormalization< float > * >(argp1);
-  result = (int)(arg1)->backward();
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array2 = obj_to_array_contiguous_allow_conversion(obj1, NPY_FLOAT,
+      &is_new_object2);
+    if (!array2 || !require_dimensions(array2, 4) ||
+      !require_size(array2, size, 4)) SWIG_fail;
+    arg2 = (float*) array_data(array2);
+    arg3 = (int) array_size(array2,0);
+    arg4 = (int) array_size(array2,1);
+    arg5 = (int) array_size(array2,2);
+    arg6 = (int) array_size(array2,3);
+  }
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array7 = obj_to_array_contiguous_allow_conversion(obj2, NPY_FLOAT,
+      &is_new_object7);
+    if (!array7 || !require_dimensions(array7, 4) ||
+      !require_size(array7, size, 4)) SWIG_fail;
+    arg7 = (float*) array_data(array7);
+    arg8 = (int) array_size(array7,0);
+    arg9 = (int) array_size(array7,1);
+    arg10 = (int) array_size(array7,2);
+    arg11 = (int) array_size(array7,3);
+  }
+  {
+    array12 = obj_to_array_no_conversion(obj3, NPY_FLOAT);
+    if (!array12 || !require_dimensions(array12,4) || !require_contiguous(array12) ||
+      !require_native(array12)) SWIG_fail;
+    arg12 = (float*) array_data(array12);
+    arg13 = (int) array_size(array12,0);
+    arg14 = (int) array_size(array12,1);
+    arg15 = (int) array_size(array12,2);
+    arg16 = (int) array_size(array12,3);
+  }
+  result = (int)(arg1)->backward(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16);
   resultobj = SWIG_From_int(static_cast< int >(result));
+  {
+    if (is_new_object2 && array2)
+    {
+      Py_DECREF(array2); 
+    }
+  }
+  {
+    if (is_new_object7 && array7)
+    {
+      Py_DECREF(array7); 
+    }
+  }
   return resultobj;
 fail:
+  {
+    if (is_new_object2 && array2)
+    {
+      Py_DECREF(array2); 
+    }
+  }
+  {
+    if (is_new_object7 && array7)
+    {
+      Py_DECREF(array7); 
+    }
+  }
   return NULL;
 }
 
@@ -10746,6 +10952,8 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"lrn_params_alpha_get", _wrap_lrn_params_alpha_get, METH_VARARGS, NULL},
 	 { (char *)"lrn_params_beta_set", _wrap_lrn_params_beta_set, METH_VARARGS, NULL},
 	 { (char *)"lrn_params_beta_get", _wrap_lrn_params_beta_get, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_k_set", _wrap_lrn_params_k_set, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_k_get", _wrap_lrn_params_k_get, METH_VARARGS, NULL},
 	 { (char *)"lrn_params_local_size_set", _wrap_lrn_params_local_size_set, METH_VARARGS, NULL},
 	 { (char *)"lrn_params_local_size_get", _wrap_lrn_params_local_size_get, METH_VARARGS, NULL},
 	 { (char *)"lrn_params_aprop_kind_set", _wrap_lrn_params_aprop_kind_set, METH_VARARGS, NULL},
@@ -10792,6 +11000,7 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"delete_MaxPooling_F32", _wrap_delete_MaxPooling_F32, METH_VARARGS, NULL},
 	 { (char *)"MaxPooling_F32_swigregister", MaxPooling_F32_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_Relu_F32", _wrap_new_Relu_F32, METH_VARARGS, NULL},
+	 { (char *)"Relu_F32_test_buf", _wrap_Relu_F32_test_buf, METH_VARARGS, NULL},
 	 { (char *)"Relu_F32_forward_setup", _wrap_Relu_F32_forward_setup, METH_VARARGS, NULL},
 	 { (char *)"Relu_F32_forward", _wrap_Relu_F32_forward, METH_VARARGS, NULL},
 	 { (char *)"Relu_F32_backward_setup", _wrap_Relu_F32_backward_setup, METH_VARARGS, NULL},

@@ -9,6 +9,7 @@
     #include "max_pooling.h"
     #include "avg_pooling.h"
     #include "mkldnn_conv.h"
+    #include "relu.h"
     #include "mkldnn_softmax.h"
     #include "local_response_normalization.h"
 %}
@@ -41,6 +42,15 @@
     {( float* y, int y_d1, int y_d2, int y_d3, int y_d4 )}
 %apply ( float* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
     {( float* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4 )}
+    /* Relu_1D interface */
+%apply ( float* IN_ARRAY1, int DIM1)
+    {( float* x, int x_size)}
+%apply ( float* INPLACE_ARRAY1, int DIM1)
+    {( float* y, int y_size)}
+%apply ( float* IN_ARRAY1, int DIM1)
+    {( float* gy, int gy_size)}
+%apply ( float* INPLACE_ARRAY1, int DIM1)
+    {( float* gx, int gx_size)}
 %apply ( int* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
     {( int* ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4 )}
 
@@ -51,6 +61,7 @@
 %include "max_pooling.h"
 %include "avg_pooling.h"
 %include "mkldnn_conv.h"
+%include "relu.h"
 %include "mkldnn_softmax.h"
 %include "local_response_normalization.h"
 
@@ -58,6 +69,8 @@
 %template(Convolution2D_F32) Convolution2D<float>;
 %template(Pooling_F32) Pooling<float>;
 %template(MaxPooling_F32) MaxPooling<float>;
+%template(Layer_F32) Layer<float>;
+%template(Relu_F32) Relu<float>;
 %template(AvgPooling_F32) AvgPooling<float>;
 %template(Softmax_F32) Softmax<float>;
 %template(LocalResponseNormalization_F32) LocalResponseNormalization<float>;

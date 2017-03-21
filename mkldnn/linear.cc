@@ -48,21 +48,21 @@ int MKLDNNLinear<T>::setup_forward(T* x, int x_d1, int x_d2, //x_d1 = n, x_d2 = 
     
     memory::desc init_src_md({src_tz}, mpcsn, mfmt);
     memory::desc init_weights_md({weights_tz}, mpcsn, mfmt);
+
     memory::desc init_bias_md({bias_tz}, mpcsn, mfmt);
     memory::desc init_dst_md({dst_tz}, mpcsn, mfmt);
     
     //Initialize linear layer primitive descriptor
-    std::shared_ptr<inner_product_forward::desc> linearFwd_desc;
     if (b != NULL) {
-        linearFwd_desc.reset(new inner_product_forward::desc(prop_kind::forward, init_src_md, init_weights_md,
+        linear_fwd_desc_.reset(new inner_product_forward::desc(prop_kind::forward, init_src_md, init_weights_md,
                                                         init_bias_md, init_dst_md));
     } else {
-        linearFwd_desc.reset(new inner_product_forward::desc(prop_kind::forward, init_src_md, init_weights_md,
+        linear_fwd_desc_.reset(new inner_product_forward::desc(prop_kind::forward, init_src_md, init_weights_md,
                                                         init_dst_md));
     }
     //------Determing engine to use ----------
     //Current, treat the engine is MKLDNN:CPU
-    linearFwd_pd.reset(new inner_product_forward::primitive_desc(*linearFwd_desc, cpu_engine));
+    linear_fwd_pd_.reset(new inner_product_forward::primitive_desc(*linear_fwd_desc_, cpu_engine));
 
     //Create user memory primitive 
     user_src_memory_.reset(new memory({{{src_tz}, mpcsn, memory::format::nc}, cpu_engine}/*, x*/));
@@ -80,45 +80,44 @@ int MKLDNNLinear<T>::setup_forward(T* x, int x_d1, int x_d2, //x_d1 = n, x_d2 = 
     fwd_internal_dst_memory_ = user_dst_memory_;
     
    //create reoder primitve if needed
-    mkldnn::primitive linear_reorder_src;
-    mkldnn::primitive linear_reorder_weights;
-    mkldnn::primitive linear_reorder_dst;
     bool is_src_reordered = false;
     bool is_weights_reordered = false;
     bool is_dst_reordered = false;
     typedef typename memory::primitive_desc MemPD; // short name for memory::primitive_desc
     /* create reorder primitives between user src and internal src if required */
-    if ((*user_src_memory_).get_primitive_desc() != MemPD(linearFwd_pd.get()->src_primitive_desc())) {
-       fwd_internal_src_memory_.reset(new memory(linearFwd_pd.get()->src_primitive_desc()));
-       linear_reorder_src = reorder(*user_src_memory_, *fwd_internal_src_memory_);
+    if ((*user_src_memory_).get_primitive_desc() != MemPD(linear_fwd_pd_.get()->src_primitive_desc())) {
+       LOG(INFO) << "fwd reorder x";
+       fwd_internal_src_memory_.reset(new memory(linear_fwd_pd_.get()->src_primitive_desc()));
+       fwd_reorder_src_ = reorder(*user_src_memory_, *fwd_internal_src_memory_);
        is_src_reordered = true;
     }
     
     /* create reorder primitives between user weights and internal weights if required */
-    if ((*user_weights_memory_).get_primitive_desc() != MemPD(linearFwd_pd.get()->weights_primitive_desc())) {
-       fwd_internal_weights_memory_.reset(new memory(linearFwd_pd.get()->weights_primitive_desc()));
-       linear_reorder_weights = reorder(*user_weights_memory_, *fwd_internal_weights_memory_);
+    if ((*user_weights_memory_).get_primitive_desc() != MemPD(linear_fwd_pd_.get()->weights_primitive_desc())) {
+       LOG(INFO) << "fwd reorder W";
+       fwd_internal_weights_memory_.reset(new memory(linear_fwd_pd_.get()->weights_primitive_desc()));
+       fwd_reorder_weights_ = reorder(*user_weights_memory_, *fwd_internal_weights_memory_);
        is_weights_reordered = true;
     }
  
     /* create reorder primitives between user dst and internal dst if required */
-    if ((*user_dst_memory_).get_primitive_desc() != MemPD(linearFwd_pd.get()->dst_primitive_desc())) {
-       fwd_internal_dst_memory_.reset(new memory(linearFwd_pd.get()->dst_primitive_desc()));
-       linear_reorder_dst = reorder(*fwd_internal_dst_memory_, *user_dst_memory_);
+    if ((*user_dst_memory_).get_primitive_desc() != MemPD(linear_fwd_pd_.get()->dst_primitive_desc())) {
+       LOG(INFO) << "fwd reorder y";
+       fwd_internal_dst_memory_.reset(new memory(linear_fwd_pd_.get()->dst_primitive_desc()));
+       fwd_reorder_dst_ = reorder(*fwd_internal_dst_memory_, *user_dst_memory_);
        is_dst_reordered = true;
     }
-    std::shared_ptr<mkldnn::primitive> linear_fwd_;
     if (b != NULL)
-        linear_fwd_.reset(new inner_product_forward(*linearFwd_pd, *fwd_internal_src_memory_, *fwd_internal_weights_memory_, *fwd_internal_bias_memory_, *fwd_internal_dst_memory_));
+        linear_fwd_.reset(new inner_product_forward(*linear_fwd_pd_, *fwd_internal_src_memory_, *fwd_internal_weights_memory_, *fwd_internal_bias_memory_, *fwd_internal_dst_memory_));
     else
-        linear_fwd_.reset(new inner_product_forward(*linearFwd_pd, *fwd_internal_src_memory_, *fwd_internal_weights_memory_, *fwd_internal_dst_memory_));
+        linear_fwd_.reset(new inner_product_forward(*linear_fwd_pd_, *fwd_internal_src_memory_, *fwd_internal_weights_memory_, *fwd_internal_dst_memory_));
     if (is_src_reordered)
-        this->forward_primitives_.push_back(linear_reorder_src);
+        this->forward_primitives_.push_back(fwd_reorder_src_);
     if (is_weights_reordered)
-        this->forward_primitives_.push_back(linear_reorder_weights);
+        this->forward_primitives_.push_back(fwd_reorder_weights_);
     this->forward_primitives_.push_back(*linear_fwd_);
     if (is_dst_reordered)
-        this->forward_primitives_.push_back(linear_reorder_dst);
+        this->forward_primitives_.push_back(fwd_reorder_dst_);
     this->forward_first_use_ = true;
     return 0;
 }
@@ -152,21 +151,19 @@ int MKLDNNLinear<T>::setup_backward(T* x,  int x_d1, int x_d2,
     memory::desc init_dst_md({dst_tz}, mpcsn, mfmt);
     
     // Initialze linear primitive descriptor
-    std::shared_ptr<inner_product_backward_data::desc> linearBwdData_desc;
-    std::shared_ptr<inner_product_backward_weights::desc> linearBwdWeights_desc;
     
-    linearBwdData_desc.reset(new inner_product_backward_data::desc(init_src_md, init_weights_md, init_dst_md));
+    linear_bwd_data_desc_.reset(new inner_product_backward_data::desc(init_src_md, init_weights_md, init_dst_md));
     if (b != NULL){
-        linearBwdWeights_desc.reset(new inner_product_backward_weights::desc(init_src_md, init_weights_md, *init_bias_md_p, init_dst_md));
+        linear_bwd_weights_desc_.reset(new inner_product_backward_weights::desc(init_src_md, init_weights_md, *init_bias_md_p, init_dst_md));
     } else {
-        linearBwdWeights_desc.reset(new inner_product_backward_weights::desc(init_src_md, init_weights_md, *init_bias_md_p, init_dst_md));
+        linear_bwd_weights_desc_.reset(new inner_product_backward_weights::desc(init_src_md, init_weights_md, *init_bias_md_p, init_dst_md));
     }
     //-----Determining engine to use-----------------------
     //Current engine is MKLDNN:CPU
-    linearBwdData_pd.reset(new inner_product_backward_data::primitive_desc(*linearBwdData_desc,
-                cpu_engine, *linearFwd_pd));
-    linearBwdWeights_pd.reset(new inner_product_backward_weights::primitive_desc(*linearBwdWeights_desc,
-                cpu_engine, *linearFwd_pd));
+    linear_bwd_data_pd_.reset(new inner_product_backward_data::primitive_desc(*linear_bwd_data_desc_,
+                cpu_engine, *linear_fwd_pd_));
+    linear_bwd_weights_pd_.reset(new inner_product_backward_weights::primitive_desc(*linear_bwd_weights_desc_,
+                cpu_engine, *linear_fwd_pd_));
     //Create user memory primitive
     user_src_diff_memory_.reset(new memory({{{src_tz}, mpcsn, memory::format::nc}, cpu_engine}/*, gx*/));
     user_weights_diff_memory_.reset(new memory({{{weights_tz}, mpcsn, memory::format::oi}, cpu_engine}/*, gW*/));
@@ -183,11 +180,6 @@ int MKLDNNLinear<T>::setup_backward(T* x,  int x_d1, int x_d2,
     if (b != NULL) 
         bwd_internal_bias_diff_memory_ = user_bias_diff_memory_;
     //--------------check reorder-------------------------
-    mkldnn::primitive linear_reorder_src;
-    mkldnn::primitive linear_reorder_weights;
-    mkldnn::primitive linear_reorder_src_diff;
-    mkldnn::primitive linear_reorder_weights_diff;
-    mkldnn::primitive linear_reorder_dst_diff;
     bool is_src_reordered = false;
     bool is_weights_reordered = false;
     bool is_src_diff_reordered = false;
@@ -195,78 +187,76 @@ int MKLDNNLinear<T>::setup_backward(T* x,  int x_d1, int x_d2,
     bool is_dst_diff_reordered = false;
     typedef typename memory::primitive_desc MemPD; // short name for memory::primitive_desc
     if ((*user_src_memory_).get_primitive_desc() 
-            != MemPD(linearBwdWeights_pd.get()->src_primitive_desc())) {
-        // LOG(INFO) << "bwd reorder x";
-        bwd_internal_src_memory_.reset(new memory(linearBwdWeights_pd.get()->src_primitive_desc()));
-        linear_reorder_src = reorder(*user_src_memory_, *bwd_internal_src_memory_);
+            != MemPD(linear_bwd_weights_pd_.get()->src_primitive_desc())) {
+        LOG(INFO) << "bwd reorder x";
+        bwd_internal_src_memory_.reset(new memory(linear_bwd_weights_pd_.get()->src_primitive_desc()));
+        bwd_reorder_src_ = reorder(*user_src_memory_, *bwd_internal_src_memory_);
         is_src_reordered = true;
     }
     
     if ((*user_weights_memory_).get_primitive_desc() 
-            != MemPD(linearBwdData_pd.get()->weights_primitive_desc())) {
-        //LOG(INFO) << "bwd reorder w";
-        bwd_internal_weights_memory_.reset(new memory(linearBwdData_pd.get()->weights_primitive_desc()));
-        linear_reorder_weights = reorder(*user_weights_memory_, *bwd_internal_weights_memory_);
+            != MemPD(linear_bwd_data_pd_.get()->weights_primitive_desc())) {
+        LOG(INFO) << "bwd reorder w";
+        bwd_internal_weights_memory_.reset(new memory(linear_bwd_data_pd_.get()->weights_primitive_desc()));
+        bwd_reorder_weights_ = reorder(*user_weights_memory_, *bwd_internal_weights_memory_);
         is_weights_reordered = true;     
     }
 
     if ((*user_src_diff_memory_).get_primitive_desc() 
-            != MemPD(linearBwdData_pd.get()->diff_src_primitive_desc())) {
-        //LOG(INFO) << "bwd reorder gx";
-        bwd_internal_src_diff_memory_.reset(new memory(linearBwdData_pd.get()->diff_src_primitive_desc()));
-        linear_reorder_src_diff = reorder(*bwd_internal_src_diff_memory_, *user_src_diff_memory_);
+            != MemPD(linear_bwd_data_pd_.get()->diff_src_primitive_desc())) {
+        LOG(INFO) << "bwd reorder gx";
+        bwd_internal_src_diff_memory_.reset(new memory(linear_bwd_data_pd_.get()->diff_src_primitive_desc()));
+        bwd_reorder_src_diff_ = reorder(*bwd_internal_src_diff_memory_, *user_src_diff_memory_);
         is_src_diff_reordered = true;
     }
 
     if ((*user_weights_diff_memory_).get_primitive_desc() 
-            != MemPD(linearBwdWeights_pd.get()->diff_weights_primitive_desc())) {
-        //LOG(INFO) << "bwd reorder gw";
-        bwd_internal_weights_diff_memory_.reset(new memory(linearBwdWeights_pd.get()->diff_weights_primitive_desc()));
-        linear_reorder_weights_diff = reorder(*bwd_internal_weights_diff_memory_, *user_weights_diff_memory_);
+            != MemPD(linear_bwd_weights_pd_.get()->diff_weights_primitive_desc())) {
+        LOG(INFO) << "bwd reorder gw";
+        bwd_internal_weights_diff_memory_.reset(new memory(linear_bwd_weights_pd_.get()->diff_weights_primitive_desc()));
+        bwd_reorder_weights_diff_ = reorder(*bwd_internal_weights_diff_memory_, *user_weights_diff_memory_);
         is_weights_diff_reordered = true;
     }
 
     if ((*bwd_internal_dst_diff_memory_).get_primitive_desc()
-            != MemPD(linearBwdWeights_pd.get()->diff_dst_primitive_desc())) {
-        //LOG(INFO) << "bwd reorder gy";
-        bwd_internal_dst_diff_memory_.reset(new memory(linearBwdWeights_pd.get()->diff_dst_primitive_desc()));
-        linear_reorder_dst_diff = reorder(*user_dst_diff_memory_, *bwd_internal_dst_diff_memory_);
+            != MemPD(linear_bwd_weights_pd_.get()->diff_dst_primitive_desc())) {
+        LOG(INFO) << "bwd reorder gy";
+        bwd_internal_dst_diff_memory_.reset(new memory(linear_bwd_weights_pd_.get()->diff_dst_primitive_desc()));
+        bwd_reorder_dst_diff_ = reorder(*user_dst_diff_memory_, *bwd_internal_dst_diff_memory_);
         is_dst_diff_reordered = true;
     }
 
     //create linear bwd data primitive  
-    std::shared_ptr<mkldnn::primitive> linearBwdData;
-    std::shared_ptr<mkldnn::primitive> linearBwdWeights;
-    linearBwdData.reset(new inner_product_backward_data(*linearBwdData_pd, *bwd_internal_dst_diff_memory_,
+    linear_bwd_data_.reset(new inner_product_backward_data(*linear_bwd_data_pd_, *bwd_internal_dst_diff_memory_,
                             *bwd_internal_weights_memory_, *bwd_internal_src_diff_memory_));
     if (b != NULL) {
-        linearBwdWeights.reset(new inner_product_backward_weights(*linearBwdWeights_pd, *bwd_internal_src_memory_,
+        linear_bwd_weights_.reset(new inner_product_backward_weights(*linear_bwd_weights_pd_, *bwd_internal_src_memory_,
                             *bwd_internal_dst_diff_memory_, *bwd_internal_weights_diff_memory_,
                             *bwd_internal_bias_diff_memory_));
     } else {
-        linearBwdWeights.reset(new inner_product_backward_weights(*linearBwdWeights_pd, *bwd_internal_src_memory_,
+        linear_bwd_weights_.reset(new inner_product_backward_weights(*linear_bwd_weights_pd_, *bwd_internal_src_memory_,
                             *bwd_internal_dst_diff_memory_, *bwd_internal_weights_diff_memory_));
     }
     // create data liunear bwd stream (gx = gy dot W)
     if (is_weights_reordered) {
-        this->bwd_data_primitives_.push_back(linear_reorder_weights); }
+        this->bwd_data_primitives_.push_back(bwd_reorder_weights_); }
     if (is_dst_diff_reordered) {
-        this->bwd_data_primitives_.push_back(linear_reorder_dst_diff);
+        this->bwd_data_primitives_.push_back(bwd_reorder_dst_diff_);
     }
-    this->bwd_data_primitives_.push_back(*linearBwdData);
+    this->bwd_data_primitives_.push_back(*linear_bwd_data_);
     if (is_src_diff_reordered) {
-        this->bwd_data_primitives_.push_back(linear_reorder_src_diff);
+        this->bwd_data_primitives_.push_back(bwd_reorder_src_diff_);
     }
     // create weight linear bwd stream (gW = gy dot x)
     if (is_src_reordered) {
-        this->bwd_weights_primitives_.push_back(linear_reorder_src);
+        this->bwd_weights_primitives_.push_back(bwd_reorder_src_);
     }
     if (is_dst_diff_reordered) {
-        this->bwd_weights_primitives_.push_back(linear_reorder_dst_diff);
+        this->bwd_weights_primitives_.push_back(bwd_reorder_dst_diff_);
     }
-    this->bwd_weights_primitives_.push_back(*linearBwdWeights);
+    this->bwd_weights_primitives_.push_back(*linear_bwd_weights_);
     if (is_weights_diff_reordered) {
-        this->bwd_weights_primitives_.push_back(linear_reorder_weights_diff);
+        this->bwd_weights_primitives_.push_back(bwd_reorder_weights_diff_);
     }
     this->backward_first_use_ = true;
     return 0;
@@ -278,11 +268,12 @@ int MKLDNNLinear<T>::backward(T* x,  int x_d1, int x_d2,
                               T* b,  int b_d1,
                               T* gy, int gy_d1, int gy_d2,
                               T* gW, int gW_d1, int gW_d2,
+
                               T* gx, int gx_d1, int gx_d2,
                               T* gb, int gb_d1)
 {
     //LOG(INFO) <<"Linear backward with bias";
-    if (linearBwdData_pd == NULL) {
+    if (linear_bwd_data_pd_ == NULL) {
         setup_backward(x,  x_d1,  x_d2,
                        W,  W_d1,  W_d2,
                        b,  b_d1,
@@ -299,7 +290,7 @@ int MKLDNNLinear<T>::backward(T* x,  int x_d1, int x_d2,
     user_bias_diff_memory_->set_data_handle(gb);
 
     if (this->backward_first_use_) {
-        //LOG(INFO) << "linear backward first use";
+        LOG(INFO) << "linear backward first use";
         this->bwd_weights_stream_->submit(this->bwd_weights_primitives_).wait();
         this->bwd_data_stream_->submit(this->bwd_data_primitives_).wait();
         this->backward_first_use_ = false;
@@ -319,7 +310,7 @@ int MKLDNNLinear<T>::backward(T* x,  int x_d1, int x_d2,
 {
     //LOG(INFO) <<"Linear backward with bias";
 
-    if (linearBwdData_pd == NULL) {
+    if (linear_bwd_data_pd_ == NULL) {
         setup_backward(x,  x_d1,  x_d2,
                       W,  W_d1,  W_d2,
                       NULL,  -1,
@@ -336,7 +327,7 @@ int MKLDNNLinear<T>::backward(T* x,  int x_d1, int x_d2,
     user_src_diff_memory_->set_data_handle(gx);
 
     if (this->backward_first_use_) {
-        //LOG(INFO) << "linear backward first use";
+        LOG(INFO) << "linear backward first use";
         this->bwd_weights_stream_->submit(this->bwd_weights_primitives_).wait();
         this->bwd_data_stream_->submit(this->bwd_data_primitives_).wait();
         this->backward_first_use_ = false;
@@ -355,7 +346,7 @@ int MKLDNNLinear<T>::forward(T* x, int x_d1, int x_d2,
                              T* y, int y_d1, int y_d2)
 {
     //LOG(INFO) << "Linear forward";
-    if (linearFwd_pd == NULL) {
+    if (linear_fwd_pd_ == NULL) {
         setup_forward(x, x_d1, x_d2,
                       W, W_d1, W_d2,
                       b, b_d1,
@@ -368,7 +359,7 @@ int MKLDNNLinear<T>::forward(T* x, int x_d1, int x_d2,
     user_dst_memory_->set_data_handle(y);
 
     if (this->forward_first_use_) {
-        //LOG(INFO) << "linear forward first use";
+        LOG(INFO) << "linear forward first use";
         this->forward_stream_->submit(this->forward_primitives_).wait();
         this->forward_first_use_ = false;
     } else {
@@ -383,7 +374,7 @@ int MKLDNNLinear<T>::forward(T* x, int x_d1, int x_d2,
                              T* y, int y_d1, int y_d2)
 {
     LOG(INFO) << "Linear forward";
-    if (linearFwd_pd == NULL) {
+    if (linear_fwd_pd_ == NULL) {
         setup_forward(x, x_d1, x_d2,
                       W, W_d1, W_d2,
                       NULL, -1,
@@ -394,7 +385,7 @@ int MKLDNNLinear<T>::forward(T* x, int x_d1, int x_d2,
     user_dst_memory_->set_data_handle(y);
  
     if (this->forward_first_use_) {
-        //LOG(INFO) << "linear forward first use";
+        LOG(INFO) << "linear forward first use";
         this->forward_stream_->submit(this->forward_primitives_).wait();
         this->forward_first_use_ = false;
     } else {

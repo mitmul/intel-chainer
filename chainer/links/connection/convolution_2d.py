@@ -3,6 +3,7 @@ from chainer.functions.connection import convolution_2d
 from chainer import initializers
 from chainer import link
 from mkldnn import mkldnn
+from mkldnn import switch
 from chainer.utils import conv
 
 import numpy as np
@@ -110,11 +111,12 @@ class Convolution2D(link.Link):
                 self._initialize_params(x.shape[1])
 
         # For mkldnn backend
-        if mkldnn.enabled():
-            if self.W.dtype == np.float32:
-                self.mkldnn_conv = mkldnn.Convolution2D_F32()
-            elif self.W.dtype == np.float64:
-                self.mkldnn_conv = mkldnn.Convolution2D_F64()
+        if mkldnn.enabled() and switch.enable_conv is True:
+            if self.mkldnn_conv is None:
+                if self.W.dtype == np.float32:
+                    self.mkldnn_conv = mkldnn.Convolution2D_F32()
+                elif self.W.dtype == np.float64:
+                    self.mkldnn_conv = mkldnn.Convolution2D_F64()
         
         return convolution_2d.convolution_2d(
             x, self.W, self.b, self.stride, self.pad, self.use_cudnn,

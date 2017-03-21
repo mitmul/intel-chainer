@@ -31,6 +31,16 @@ public:
     Layer<float>* getRELULayer(int size);
     void          setRELULayer(int size,
                                Layer<float>*   layer);
+    // relu4d stream
+    Layer<float>* getRELU4dLayer(int x_d1,
+                                 int x_d2,
+                                 int x_d3,
+                                 int x_d4);
+    void setRELU4dLayer(int x_d1,
+                        int x_d2,
+                        int x_d3,
+                        int x_d4,
+                        Layer<float>* layer);
 
     // maxpool stream
     Layer<float>* getMaxPoolLayer(int             x_d1,

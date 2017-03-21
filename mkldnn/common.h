@@ -5,5 +5,5 @@
 
 int global_init();
 bool enabled();
-
+void setMkldnnEnable(bool isEnabled);
 #endif // _COMMON_H_

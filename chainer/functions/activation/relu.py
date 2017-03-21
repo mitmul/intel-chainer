@@ -4,7 +4,8 @@ from chainer import cuda
 from chainer import function
 from chainer import utils
 from chainer.utils import type_check
-
+from mkldnn import mkldnn as mkl
+from mkldnn import switch
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
@@ -28,7 +29,19 @@ class ReLU(function.Function):
         )
 
     def forward_cpu(self, x):
-        return utils.force_array(numpy.maximum(x[0], 0, dtype=x[0].dtype)),
+        if switch.enable_relu:
+            y = numpy.empty(x[0].shape, dtype=numpy.float32)
+            if x[0].ndim == 4:
+                mkl.Relu4D_F32.do_forward(x[0], y)
+            else:
+                #print (x[0].flags)
+                #print (x[0].shape)
+                in_x = x[0].ravel()
+                out_y = y.ravel()
+                mkl.Relu_F32.do_forward(in_x, out_y)
+            return utils.force_array(y),
+        else:
+            return utils.force_array(numpy.maximum(x[0], 0, dtype=x[0].dtype)),
 
     def forward_gpu(self, x):
         if (cuda.cudnn_enabled and self.use_cudnn and
@@ -41,7 +54,21 @@ class ReLU(function.Function):
         return y,
 
     def backward_cpu(self, x, gy):
-        return utils.force_array(gy[0] * (x[0] > 0)),
+        if switch.enable_relu:
+            gx = numpy.empty(x[0].shape, dtype=numpy.float32)
+            if x[0].ndim == 4:
+                #self.mkldnn_relu_4d.backward(x[0], gy[0], gx)
+                mkl.Relu4D_F32.do_backward(x[0], gy[0], gx)
+            else:
+                #print (x[0].flags)
+                #print (x[0].shape)
+                in_x = x[0].ravel()
+                in_gy = gy[0].ravel()
+                out_gx = gx.ravel()
+                mkl.Relu_F32.do_backward(in_x, in_gy, out_gx)
+            return utils.force_array(gx),
+        else:
+            return utils.force_array(gy[0] * (x[0] > 0)),
 
     def backward_gpu(self, x, gy):
         if (cuda.cudnn_enabled and self.use_cudnn and

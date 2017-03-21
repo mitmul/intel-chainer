@@ -48,7 +48,7 @@ class LinearFunction(function.Function):
             if b is not None:
                 self.linear_link.mkldnn_linear.forward(x, W, b, self.linear_link.y);
             else:
-                self.linear_link.mkldnn_linear.forward(x, W, b, self.linear_link.y);
+                self.linear_link.mkldnn_linear.forward(x, W, self.linear_link.y);
             return self.linear_link.y,
         else:
             y = x.dot(W.T).astype(x.dtype, copy=False)

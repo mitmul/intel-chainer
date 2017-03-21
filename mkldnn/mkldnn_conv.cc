@@ -2,6 +2,7 @@
 #include <iostream>
 #include "mkldnn.hpp"
 #include "mkldnn_conv.h"
+#include "utils.h"
 
 using namespace mkldnn;
 
@@ -28,7 +29,7 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
         int s1, int s2,
         int p1, int p2)
 {
-  //  LOG(INFO) << "Convolution forward_setup";
+    LOG(INFO) << "Convolution forward_setup";
 
     //LOG(INFO) << "x =(" << x_d1 << "," << x_d2 << "," << x_d3 << "," << x_d4 << ")";
     //LOG(INFO) << "W =(" << W_d1 << "," << W_d2 << "," << W_d3 << "," << W_d4 << ")";
@@ -43,26 +44,26 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
     padding_ = {p1, p2};
 
     /* create memory for user data */
-    user_src_memory_.reset(new memory({{{src_tz_}, memory::data_type::f32,
-                                      memory::format::nchw}, cpu_engine}, x));
+    user_src_memory_.reset(new memory({{{src_tz_}, memory_data_type<T>(),
+                                      memory::format::nchw}, cpu_engine}));
     user_weights_memory_.reset(new memory({{{weights_tz_},
-                                          memory::data_type::f32, memory::format::oihw}, cpu_engine}, W));
+                                          memory_data_type<T>(), memory::format::oihw}, cpu_engine}));
     /* in current design, output is also allocated in python part */
-    user_dst_memory_.reset(new memory({{{dst_tz_}, memory::data_type::f32,
-                                      memory::format::nchw}, cpu_engine}, y));
+    user_dst_memory_.reset(new memory({{{dst_tz_}, memory_data_type<T>(),
+                                      memory::format::nchw}, cpu_engine}));
     if (b != NULL)
         user_bias_memory_.reset(new memory({{{bias_tz_},
-                                      memory::data_type::f32, memory::format::x}, cpu_engine}, b));
+                                      memory_data_type<T>(), memory::format::x}, cpu_engine}));
     
     /* create memory descriptors for convolution data w/ no specified format */
-    src_md_.reset(new memory::desc({src_tz_}, memory::data_type::f32,
+    src_md_.reset(new memory::desc({src_tz_}, memory_data_type<T>(),
                                    memory::format::any));
     weights_md_.reset(new memory::desc({weights_tz_},
-                                       memory::data_type::f32, memory::format::any));
-    dst_md_.reset(new memory::desc({dst_tz_}, memory::data_type::f32,
+                                       memory_data_type<T>(), memory::format::any));
+    dst_md_.reset(new memory::desc({dst_tz_}, memory_data_type<T>(),
                                    memory::format::any));
     if (b != NULL)
-        bias_md_.reset(new memory::desc({bias_tz_}, memory::data_type::f32,
+        bias_md_.reset(new memory::desc({bias_tz_}, memory_data_type<T>(),
                                    memory::format::any));
     
     /* create a convolution */
@@ -82,36 +83,32 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
     /* create reorders between user and data if it is needed and
      *  add it to net before convolution */
     src_memory_ = user_src_memory_;
-    bool reorder_conv_src = false;
     if (memory::primitive_desc(fwd_prim_desc_.get()->src_primitive_desc()) 
             != user_src_memory_.get()->get_primitive_desc()) {
-    //    LOG(INFO) << "fwd reorder src dim";
+        //LOG(INFO) << "fwd reorder src dim";
         src_memory_.reset(new memory(fwd_prim_desc_.get()->src_primitive_desc()));
         conv_reorder_src_ = reorder(*user_src_memory_,*src_memory_);
-        reorder_conv_src = true;
+        fwd_reorder_conv_src_ = true;
     }
 
     weights_memory_ = user_weights_memory_;
-    bool reorder_conv_weights = false;
     if (memory::primitive_desc((*fwd_prim_desc_).weights_primitive_desc())
             != (*user_weights_memory_).get_primitive_desc()) {
-     //   LOG(INFO) << "fwd reorder weight dim";
+        //LOG(INFO) << "fwd reorder weight dim";
         weights_memory_.reset(new memory(fwd_prim_desc_.get()->weights_primitive_desc()));
         conv_reorder_weights_ = reorder(*user_weights_memory_, *weights_memory_);
-        reorder_conv_weights = true;
+        fwd_reorder_conv_weights_ = true;
     }
 
     dst_memory_ = user_dst_memory_;
-    bool reorder_conv_dst = false;
-
     if (memory::primitive_desc(fwd_prim_desc_.get()->dst_primitive_desc())
             != user_dst_memory_.get()->get_primitive_desc()) {
-     //   LOG(INFO) << "fwd reorder output dim";
+        //LOG(INFO) << "fwd reorder output dim";
         dst_memory_.reset(new memory(fwd_prim_desc_.get()->dst_primitive_desc()));
         conv_reorder_dst_ = reorder(*dst_memory_, *user_dst_memory_);
-        reorder_conv_dst = true;
+        fwd_reorder_conv_dst_ = true;
     }
-    
+
     /* create convolution primitive and add it to net */
     if (b != NULL)
         conv_fwd_.reset(new convolution_forward(*fwd_prim_desc_, *src_memory_,
@@ -121,14 +118,14 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
                                       *weights_memory_, *dst_memory_));
     
     //put all primitives into fwd_stream_
-    if (reorder_conv_src){
+    if (fwd_reorder_conv_src_){
         fwd_primitives_.push_back(conv_reorder_src_);
     }     
-    if (reorder_conv_weights){
+    if (fwd_reorder_conv_weights_){
         fwd_primitives_.push_back(conv_reorder_weights_);
     }     
     fwd_primitives_.push_back(*conv_fwd_);
-    if (reorder_conv_dst){
+    if (fwd_reorder_conv_dst_){
         fwd_primitives_.push_back(conv_reorder_dst_);
     }     
     return;
@@ -151,8 +148,23 @@ int Convolution2D<T>::forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
                 s1, s2,
                 p1, p2);
     }
- 
-    fwd_stream_->submit(fwd_primitives_);
+    //LOG(INFO) << "conv_fwd_:" << conv_fwd_;
+    //LOG(INFO) << "x=" << x << "; x_size=" << x_d1*x_d2*x_d3*x_d4*4;
+    
+    user_src_memory_->set_data_handle(x);
+    user_weights_memory_->set_data_handle(W);
+    if ( b != NULL ){
+        LOG(INFO) << "b=" << b;
+        user_bias_memory_->set_data_handle(b);
+    }
+    user_dst_memory_->set_data_handle(y);
+    if (fwd_first_run_) {
+        fwd_stream_->submit(fwd_primitives_).wait();
+        fwd_first_run_ = false;
+    } else {
+        fwd_stream_->rerun().wait();
+    }
+
     return 0;
 }
 
@@ -184,21 +196,21 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
         T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
         T* gb, int gb_d1)
 {
-    //LOG(INFO) << "Covolution backward_setup";
+    LOG(INFO) << "Covolution backward_setup";
     /* create user format memory*/
-    user_bwd_src_memory_.reset(new memory({{{ src_tz_ }, memory::data_type::f32,
-                memory::format::nchw }, cpu_engine }, x)); //x
-    user_bwd_weights_memory_.reset(new memory({{{ weights_tz_ }, memory::data_type::f32,
-                memory::format::oihw }, cpu_engine }, W)); //W
-    user_bwd_dst_memory_.reset(new memory({{{ dst_tz_ }, memory::data_type::f32,
-                memory::format::nchw }, cpu_engine }, gy)); //gy
-    user_bwd_diff_weights_memory_.reset(new memory({{{ weights_tz_ }, memory::data_type::f32,
-                memory::format::oihw }, cpu_engine }, gW)); //gW
-    user_bwd_diff_src_memory_.reset(new memory({{{ src_tz_ }, memory::data_type::f32,
-                memory::format::nchw }, cpu_engine }, gx)); //gx
+    user_bwd_src_memory_.reset(new memory({{{ src_tz_ }, memory_data_type<T>(),
+                memory::format::nchw }, cpu_engine })); //x
+    user_bwd_weights_memory_.reset(new memory({{{ weights_tz_ }, memory_data_type<T>(),
+                memory::format::oihw }, cpu_engine })); //W
+    user_bwd_diff_dst_memory_.reset(new memory({{{ dst_tz_ }, memory_data_type<T>(),
+                memory::format::nchw }, cpu_engine })); //gy
+    user_bwd_diff_weights_memory_.reset(new memory({{{ weights_tz_ }, memory_data_type<T>(),
+                memory::format::oihw }, cpu_engine })); //gW
+    user_bwd_diff_src_memory_.reset(new memory({{{ src_tz_ }, memory_data_type<T>(),
+                memory::format::nchw }, cpu_engine })); //gx
     if ( b != NULL ) {
-        user_bwd_diff_bias_memory_.reset(new memory({{{ bias_tz_}, memory::data_type::f32,
-                    memory::format::x,}, cpu_engine}, gb)); //gB
+        user_bwd_diff_bias_memory_.reset(new memory({{{ bias_tz_}, memory_data_type<T>(),
+                    memory::format::x,}, cpu_engine})); //gB
     }
 
     /* 
@@ -252,57 +264,52 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
 
     /* user_bwd_src_memory_ ==> x */
     bwd_src_memory_ = user_bwd_src_memory_;
-    bool reorder_bwd_src = false;
     if (memory::primitive_desc(bwd_weights_prim_desc_.get()->src_primitive_desc())
             != user_bwd_src_memory_.get()->get_primitive_desc()) {
       //  LOG(INFO) << "bwd reorder x";
         bwd_src_memory_.reset(new memory(bwd_weights_prim_desc_.get()->src_primitive_desc()));
         conv_bwd_reorder_src_ = reorder(*user_bwd_src_memory_, *bwd_src_memory_);
-        reorder_bwd_src = true;
+        bwd_reorder_src_ = true;
     }
 
-    /* user_bwd_dst_memory_ ==> gy */
-    bwd_diff_dst_memory_ = user_bwd_dst_memory_;
-    bool reorder_bwd_diff_dst = false;
+    /* user_bwd_diff_dst_memory_ ==> gy */
+    bwd_diff_dst_memory_ = user_bwd_diff_dst_memory_;
     if (memory::primitive_desc(bwd_weights_prim_desc_.get()->diff_dst_primitive_desc())
-            != user_bwd_dst_memory_.get()->get_primitive_desc()) {
+            != user_bwd_diff_dst_memory_.get()->get_primitive_desc()) {
       //  LOG(INFO) << "bwd reorder gy";
         bwd_diff_dst_memory_.reset(new memory(bwd_weights_prim_desc_.get()->diff_dst_primitive_desc()));
-        conv_bwd_reorder_dst_ = reorder(*user_bwd_dst_memory_, *bwd_diff_dst_memory_);
-        reorder_bwd_diff_dst = true;
+        conv_bwd_reorder_dst_ = reorder(*user_bwd_diff_dst_memory_, *bwd_diff_dst_memory_);
+        bwd_reorder_diff_dst_ = true;
     }
 
     /* user_bwd_diff_weights_memory_ ==> gW */
     bwd_diff_weights_memory_ = user_bwd_diff_weights_memory_;
-    bool reorder_bwd_diff_weights = false;
     if (memory::primitive_desc(bwd_weights_prim_desc_.get()->diff_weights_primitive_desc())
             != user_bwd_diff_weights_memory_.get()->get_primitive_desc()) {
        // LOG(INFO) << "bwd reorder gW";
         bwd_diff_weights_memory_.reset(new memory(bwd_weights_prim_desc_.get()->diff_weights_primitive_desc()));
         conv_bwd_reorder_diff_weights_ = reorder(*bwd_diff_weights_memory_, *user_bwd_diff_weights_memory_);
-        reorder_bwd_diff_weights = true;
+        bwd_reorder_diff_weights_ = true;
     }
 
     /* user_bwd_weights_memory_ ==> W */
     bwd_weights_memory_ = user_bwd_weights_memory_;
-    bool reorder_bwd_weights = false;
     if (memory::primitive_desc(bwd_data_prim_desc_.get()->weights_primitive_desc())
             != user_bwd_weights_memory_.get()->get_primitive_desc()) {
         // LOG(INFO) << "bwd reorder W";
         bwd_weights_memory_.reset(new memory(bwd_data_prim_desc_.get()->weights_primitive_desc()));
         conv_bwd_reorder_weights_ = reorder(*user_bwd_weights_memory_, *bwd_weights_memory_);
-        reorder_bwd_weights = true;
+        bwd_reorder_weights_ = true;
     }
 
     /* user_bwd_diff_src_memory_ ==> gX */
     bwd_diff_src_memory_ = user_bwd_diff_src_memory_;
-    bool reorder_bwd_diff_src = false;
     if (memory::primitive_desc(bwd_data_prim_desc_.get()->diff_src_primitive_desc())
             != user_bwd_diff_src_memory_.get()->get_primitive_desc()) {
         // LOG(INFO) << "bwd reorder gX";
         bwd_diff_src_memory_.reset(new memory(bwd_data_prim_desc_.get()->diff_src_primitive_desc()));
         conv_bwd_reorder_diff_src_ = reorder(*bwd_diff_src_memory_, *user_bwd_diff_src_memory_);
-        reorder_bwd_diff_src = true; 
+        bwd_reorder_diff_src_ = true; 
     } 
 
     /* create weight conv bwd prim */
@@ -341,14 +348,14 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
      * reorder_x -> reorder_gy -> weight_conv_bwd -> reoder_gW
      *
      */
-    if (reorder_bwd_src) {
+    if (bwd_reorder_src_) {
         bwd_weights_primitives_.push_back(conv_bwd_reorder_src_);
     }
-    if (reorder_bwd_diff_dst) {
+    if (bwd_reorder_diff_dst_) {
         bwd_weights_primitives_.push_back(conv_bwd_reorder_dst_);
     }
     bwd_weights_primitives_.push_back(*conv_bwd_weights_);
-    if (reorder_bwd_diff_weights) {
+    if (bwd_reorder_diff_weights_) {
         bwd_weights_primitives_.push_back(conv_bwd_reorder_diff_weights_);
     }
 
@@ -358,14 +365,14 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
      * reorder_W -> reorder_gy -> data_conv_bwd -> reorder_gX
      *
      */
-    if (reorder_bwd_weights) {
+    if (bwd_reorder_weights_) {
         bwd_data_primitives_.push_back(conv_bwd_reorder_weights_);
     }
-    if (reorder_bwd_diff_dst) {
+    if (bwd_reorder_diff_dst_) {
         bwd_data_primitives_.push_back(conv_bwd_reorder_dst_);
     }
     bwd_data_primitives_.push_back(*conv_bwd_data_);
-    if (reorder_bwd_diff_src) {
+    if (bwd_reorder_diff_src_) {
         bwd_data_primitives_.push_back(conv_bwd_reorder_diff_src_);
     }
 
@@ -392,8 +399,25 @@ int Convolution2D<T>::backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
                 gx, gx_d1, gx_d2, gx_d3, gx_d4,
                 gb, gb_d1);
     }
-    bwd_weights_stream_->submit(bwd_weights_primitives_);
-    bwd_data_stream_->submit(bwd_data_primitives_);
+    
+    user_bwd_src_memory_->set_data_handle(x); //x
+    user_bwd_weights_memory_->set_data_handle(W); //W
+    user_bwd_diff_src_memory_->set_data_handle(gx); //gx
+    user_bwd_diff_weights_memory_->set_data_handle(gW); //gW
+    user_bwd_diff_dst_memory_->set_data_handle(gy); //gy
+    
+    if (b!=NULL) {
+        user_bwd_diff_bias_memory_->set_data_handle(gb); //gb
+    }
+
+    if (bwd_first_run_) {
+        bwd_weights_stream_->submit(bwd_weights_primitives_).wait();
+        bwd_data_stream_->submit(bwd_data_primitives_).wait();
+        bwd_first_run_ = false;
+    } else {
+        bwd_weights_stream_->rerun().wait();
+        bwd_data_stream_->rerun().wait();
+    }
     return 0;
 }
 

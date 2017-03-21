@@ -86,5 +86,6 @@ class Linear(link.Link):
             with cuda.get_device(self._device_id):
                 self._initialize_params(x.size // x.shape[0])
         if switch.enable_linear:
-            self.mkldnn_linear = mkl.Linear_F32()
+            if self.mkldnn_linear is None:
+                self.mkldnn_linear = mkl.Linear_F32()
         return linear.linear(x, self.W, self.b, linear_link = self)

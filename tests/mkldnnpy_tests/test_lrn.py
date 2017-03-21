@@ -12,7 +12,7 @@ data.fill(333.33)
 # print y
 print data.shape
 f_lrn = F.local_response_normalization(data,1,3)
-# mkl.setMkldnnEnable(true)
+mkl.setMkldnnEnable(False)
 print mkl.enabled()
 # lrn = mkl.LocalResponseNormalization_F32(x,y,5,2,1e-4,.75)
 # print lrn.forward()

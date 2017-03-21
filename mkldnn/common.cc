@@ -9,6 +9,7 @@ using namespace mkldnn;
 
 engine cpu_engine(engine::cpu, 0);
 bool enableMkldnn = true;
+
 int global_init()
 {
     google::InitGoogleLogging("mkldnnpy");

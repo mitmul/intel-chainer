@@ -54,9 +54,11 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     // first run to forward setup and use that data for first run but it makes
     // interface not clean
     x_md_.reset(new memory::desc({x_tz}, memory_data_type<T>(),
-                            memory::format::nchw));  // TODO should be 'any' but
-                                                     // does not work on latest
-                                                     // mkldnn
+                            (x_d2 % 8) == 0 ?
+                              memory::format::nChw8c
+                            : memory::format::nchw)); // TODO should be 'any' but
+                                                      // does not work on latest
+                                                      // mkldnn
 
     user_y_mem_.reset(new memory({{{y_tz}, memory_data_type<T>(),
                             memory::format::nchw}, cpu_engine}/*,ydata*/));
@@ -65,7 +67,7 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
 
 
     // create a pooling descriptor
-    fwd_desc_.reset(new pooling_forward::desc(prop_kind::forward, alg_kind,
+    fwd_desc_.reset(new pooling_forward::desc(prop_kind::forward_training, alg_kind,
                                          *x_md_, *y_md_,
                                          strides, kernel, padding, padding,
                                          padding_kind::zero));
@@ -81,14 +83,12 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     bool reorder_x_p = false;
     bool reorder_y_p = false;
 
-    #if 0
     if (memory::primitive_desc(fwd_prim_desc_.get()->src_primitive_desc())
         != user_x_mem_->get_primitive_desc()) {
         x_mem_.reset(new memory(fwd_prim_desc_.get()->src_primitive_desc()));
         reorder_x_ = reorder(*user_x_mem_, *x_mem_);
         reorder_x_p = true;
     }
-    #endif
 
     if (memory::primitive_desc(fwd_prim_desc_->dst_primitive_desc())
         != user_y_mem_->get_primitive_desc()) {
@@ -173,11 +173,11 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     user_gy_mem_.reset(new memory({{{y_tz}, memory_data_type<T>(),
                                       memory::format::nchw}, cpu_engine}));
     gy_md_.reset(new memory::desc({y_tz}, memory_data_type<T>(),
-                                    memory::format::nchw));
+                                    (x_d2 % 8) == 0 ?
+                                      memory::format::nChw8c
+                                    : memory::format::nchw));
                                     // TODO temporary walkaround, should be any
                                     // but mkldnn needs any here
-
-
 
     // create a pooling descriptor
     bwd_desc_.reset(new pooling_backward::desc(
@@ -198,31 +198,29 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     bool reorder_x_p = false;
     bool reorder_y_p = false;
 
-    #if 0
-    if (memory::primitive_desc(bwd_prim_desc_.get()->diff_src_primitive_desc())
-        != user_gx_mem_->get_primitive_desc()) {
-        x_mem_.reset(new memory(
-                            bwd_prim_desc_.get()->diff_src_primitive_desc()));
-        reorder_gx_ = reorder(*x_mem_, *user_x_mem_);
-        reorder_x_p = true;
-    }
-
-    if (memory::primitive_desc(bwd_prim_desc_->dst_primitive_desc())
+    if (memory::primitive_desc(bwd_prim_desc_->diff_dst_primitive_desc())
         != user_gy_mem_->get_primitive_desc()) {
-        gy_mem_.reset(new memory(bwd_prim_desc_.get()->dst_primitive_desc()));
-        reorder_gy_ = reorder(*user_gy_mem_, *y_mem_);
+        gy_mem_.reset(new memory(bwd_prim_desc_.get()->diff_dst_primitive_desc()));
+        reorder_gy_ = reorder(*user_gy_mem_, *gy_mem_);
         reorder_y_p = true;
     }
-    #endif
+
+    if (memory::primitive_desc(bwd_prim_desc_.get()->diff_src_primitive_desc())
+        != user_gx_mem_->get_primitive_desc()) {
+        gx_mem_.reset(new memory(
+                            bwd_prim_desc_.get()->diff_src_primitive_desc()));
+        reorder_gx_ = reorder(*gx_mem_, *user_gx_mem_);
+        reorder_x_p = true;
+    }
 
     bwd_.reset(new pooling_backward(
             *bwd_prim_desc_, *gy_mem_, *workspace_memory_, *gx_mem_));
 
-    LOG(INFO) << "    reorder_src: " << reorder_x_p;
-    LOG(INFO) << "    reorder_dst: " << reorder_y_p;
-    if (reorder_x_p) this->backward_primitives_.push_back(reorder_x_);
+    LOG(INFO) << "    reorder_dst_diff: " << reorder_y_p;
+    LOG(INFO) << "    reorder_src_diff: " << reorder_x_p;
+    if (reorder_y_p) this->backward_primitives_.push_back(reorder_gy_);
     this->backward_primitives_.push_back(*bwd_);
-    if (reorder_y_p) this->backward_primitives_.push_back(reorder_y_);
+    if (reorder_x_p) this->backward_primitives_.push_back(reorder_gx_);
     this->backward_stream_ = new stream(stream::kind::eager);
 
     x_d1_     = x_d1;

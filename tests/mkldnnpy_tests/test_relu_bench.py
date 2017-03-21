@@ -11,7 +11,7 @@ datay.fill(333.33)
 
 total_forward = 0
 count = 0
-niter = 5
+niter = 15
 n_dry = 3
 
 

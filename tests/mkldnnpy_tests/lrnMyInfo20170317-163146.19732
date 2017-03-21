@@ -1,8 +1,0 @@
-Log file created at: 2017/03/17 16:31:46
-Running on machine: HEIMS
-Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg
-I0317 16:31:46.129024 19732 local_response_normalization.cc:31] LocalResponseNormalization
-I0317 16:31:46.129128 19732 local_response_normalization.cc:32]     xdim=(128,3,32,32)
-I0317 16:31:46.129134 19732 local_response_normalization.cc:33]     ydim=(128,64,32,32)
-I0317 16:31:46.129139 19732 local_response_normalization.cc:34]     n =(5)
-I0317 16:31:46.129143 19732 local_response_normalization.cc:35]     k =(2)

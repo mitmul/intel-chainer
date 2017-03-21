@@ -5,7 +5,7 @@ from chainer import cuda
 from chainer import function
 from chainer.utils import type_check
 from mkldnn import mkldnn
-
+from mkldnn import switch
 
 def _cu_conv_sum(y, x, n):
     # Convolutional sum
@@ -55,18 +55,19 @@ class LocalResponseNormalization(function.Function):
 
     def forward_cpu(self, x):
         # if mkldnn.enabled():
-        if self.mkldnn_lrn is None:
-            # n, c, h, w = x.shape
-            # print x[0].shape
-            self.y = numpy.empty(x[0].shape,dtype=x[0].dtype)
-            self.mkldnn_lrn = mkldnn.LocalResponseNormalization_F32(
-                x[0],self.y,self.n,self.k,self.alpha,self.beta)
-            self.mkldnn_lrn.forward()
-            # print "y = "+str(self.y)
-            # return self.y,
-        # else:
-            # return None
-        # else:
+        if switch.enable_lrn:
+            if self.mkldnn_lrn is None:
+                # n, c, h, w = x.shape
+                # print x[0].shape
+                self.y = numpy.empty(x[0].shape,dtype=x[0].dtype)
+                self.mkldnn_lrn = mkldnn.LocalResponseNormalization_F32(
+                    x[0],self.y,self.n,self.k,self.alpha,self.beta)
+                self.mkldnn_lrn.forward()
+                # print "y = "+str(self.y)
+                # return self.y,
+            # else:
+                # return None
+            # else:
         half_n = self.n // 2
         x2 = numpy.square(x[0])
         sum_part = x2.copy()
@@ -80,7 +81,7 @@ class LocalResponseNormalization(function.Function):
         return self.y,
 
     def backward_cpu(self, x, gy):
-        # if mkldnn.enabled():
+        # if switch.enable_lrn():
         #     if self.mkldnn_lrn is None:
         #         gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
         #         self.mkldnn_lrn.backward(gy[0],x[0],gx[0])

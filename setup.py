@@ -34,7 +34,7 @@ extensions = [
                 ],
         swig_opts=["-c++"],
         extra_compile_args=["-std=c++11", "-fopenmp"],
-        include_dirs=[numpy.get_include()],
+        include_dirs=["mkldnn/incl/", numpy.get_include()],
         libraries=['glog', 'stdc++', 'boost_system', 'mkldnn'],
     )
 ]

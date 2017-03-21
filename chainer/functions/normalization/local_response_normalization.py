@@ -54,7 +54,7 @@ class LocalResponseNormalization(function.Function):
         )
 
     def forward_cpu(self, x):
-        if mkldnnpy.enabled():
+        if mkldnn.enabled():
             if self.mkldnn_lrn is None:
                 # n, c, h, w = x.shape
                 print x[0].shape

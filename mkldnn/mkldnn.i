@@ -9,6 +9,7 @@
     #include "max_pooling.h"
     #include "avg_pooling.h"
     #include "mkldnn_conv.h"
+    #include "relu4d.h"
     #include "relu.h"
     #include "mkldnn_softmax.h"
     #include "local_response_normalization.h"
@@ -44,13 +45,13 @@
     {( float* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4 )}
     /* Relu_1D interface */
 %apply ( float* IN_ARRAY1, int DIM1)
-    {( float* x, int x_size)}
+    {( float* x, int x_d1)}
 %apply ( float* INPLACE_ARRAY1, int DIM1)
-    {( float* y, int y_size)}
+    {( float* y, int y_d1)}
 %apply ( float* IN_ARRAY1, int DIM1)
-    {( float* gy, int gy_size)}
+    {( float* gy, int gy_d1)}
 %apply ( float* INPLACE_ARRAY1, int DIM1)
-    {( float* gx, int gx_size)}
+    {( float* gx, int gx_d1)}
 %apply ( int* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
     {( int* ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4 )}
 
@@ -61,6 +62,7 @@
 %include "max_pooling.h"
 %include "avg_pooling.h"
 %include "mkldnn_conv.h"
+%include "relu4d.h"
 %include "relu.h"
 %include "mkldnn_softmax.h"
 %include "local_response_normalization.h"
@@ -70,6 +72,7 @@
 %template(Pooling_F32) Pooling<float>;
 %template(MaxPooling_F32) MaxPooling<float>;
 %template(Layer_F32) Layer<float>;
+%template(Relu4D_F32) Relu4D<float>;
 %template(Relu_F32) Relu<float>;
 %template(AvgPooling_F32) AvgPooling<float>;
 %template(Softmax_F32) Softmax<float>;

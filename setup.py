@@ -18,6 +18,8 @@ extensions = [
     Extension(
         "mkldnn._mkldnn",
         sources=[
+                "mkldnn/relu4d.cc",
+                "mkldnn/relu.cc",
                 "mkldnn/mkldnn_conv.cc",
                 "mkldnn/common.cc",
                 "mkldnn/cpu_info.cc",
@@ -25,7 +27,6 @@ extensions = [
                 "mkldnn/local_response_normalization.cc",
                 "mkldnn/pooling.cc",
                 "mkldnn/max_pooling.cc",
-                "mkldnn/relu.cc",
                 "mkldnn/avg_pooling.cc",
                 "mkldnn/mkldnn_softmax.cc",
                 "mkldnn/mkldnn.i"

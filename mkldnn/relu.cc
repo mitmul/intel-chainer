@@ -66,14 +66,12 @@ Relu<T>::Relu(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
 
 template<typename T>
 Relu<T>::Relu()
-#if 0
-: relu_user_src_memory_(NULL), relu_dst_memory_(NULL)
-               , relu_src_md_(NULL), relu_desc_(NULL), relu_prim_desc_(NULL)
-               , relu_fwd_(NULL), fw_stream_(NULL)
-               , relu_diff_dst_memory_(NULL), relu_diff_dst_md_(NULL)
+: relu_fwd_user_src_mem_(NULL), relu_fwd_dst_mem_(NULL)
+               , relu_fwd_src_md_(NULL), relu_fwd_desc_(NULL), relu_fwd_pd_(NULL)
+               , relu_fwd_(NULL), fwd_stream_(NULL)
+               , relu_diff_dst_mem_(NULL), relu_diff_dst_md_(NULL)
                , relu_bwd_desc_(NULL), relu_bwd_pd_(NULL)
-               , relu_bwd_(NULL), bw_stream_(NULL)
-#endif
+               , relu_bwd_(NULL), bwd_stream_(NULL)
 {
 
 }
@@ -115,6 +113,14 @@ int Relu<T>::forward_setup(T* x, int x_size,
 }
 
 template<typename T>
+void Relu<T>::fwd_reset_mem(T* x,
+                            T* y)
+{
+        relu_fwd_user_src_mem_->set_data_handle(x);
+        relu_fwd_dst_mem_->set_data_handle(y);
+}
+
+template<typename T>
 int Relu<T>::forward(T* x, int x_size,
                      T* y, int y_size)
 {
@@ -122,11 +128,12 @@ int Relu<T>::forward(T* x, int x_size,
     //LOG(INFO) << "Convolution forward";
     if (!fwd_stream_) {
         forward_setup(x, x_size, y, y_size);
+        fwd_reset_mem(x, y);
+        fwd_stream_->submit(fwd_primitives_).wait();
     } else {
-        relu_fwd_user_src_mem_->set_data_handle(x);
-        relu_fwd_dst_mem_->set_data_handle(y);
+        fwd_reset_mem(x, y);
+        fwd_stream_->rerun().wait();
     }
-    fwd_stream_->submit(fwd_primitives_).wait();
     return 0;
 }
 
@@ -187,6 +194,16 @@ int Relu<T>::backward_setup(T* x, int x_size,
 }
 
 template<typename T>
+void Relu<T>::bwd_reset_mem(T* x,
+                            T* gy,
+                            T* gx)
+{
+    relu_fwd_user_src_mem_->set_data_handle(x);
+    relu_diff_dst_mem_->set_data_handle(gy);
+    relu_diff_src_mem_->set_data_handle(gx);
+}
+
+template<typename T>
 int Relu<T>::backward(T* x, int x_size,
                       T* gy, int gy_size,
                       T* gx, int gx_size)
@@ -194,11 +211,12 @@ int Relu<T>::backward(T* x, int x_size,
     LOG(INFO) << "backward: " << x << " : " << x_size << " : " << gy << " : " << gy_size << " : " << gx << " : " << gx_size;
     if (!bwd_stream_) {
         backward_setup(x, x_size, gy, gy_size, gx, gx_size);
+        bwd_reset_mem(x, gy, gx);
+        bwd_stream_->submit(bwd_primitives_).wait();
+    } else {
+        bwd_reset_mem(x, gy, gx);
+        bwd_stream_->rerun().wait();
     }
-    relu_fwd_user_src_mem_->set_data_handle(x);
-    relu_diff_src_mem_->set_data_handle(gy);
-    relu_diff_src_mem_->set_data_handle(gx);
-    bwd_stream_->submit(bwd_primitives_).wait();
     return 0;
 }
 

@@ -71,6 +71,35 @@ void LayerFactory::setRELULayer(int size, Layer<float>*   layer)
     setLayer(key, layer);
 }
 
+#define RELU4D_PREFIX "relu4d_"
+
+Layer<float>* LayerFactory::getRELU4dLayer(
+        int x_d1, int x_d2, int x_d3, int x_d4)
+{
+    std::string key = RELU4D_PREFIX;
+
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(x_d3);
+    key += int_to_string(x_d4);
+
+    return getLayer(key);
+}
+
+void LayerFactory::setRELU4dLayer(
+        int x_d1, int x_d2, int x_d3, int x_d4,
+        Layer<float>* layer)
+{
+    std::string key = RELU4D_PREFIX;
+
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(x_d3);
+    key += int_to_string(x_d4);
+
+    setLayer(key, layer);
+}
+
 #define MAX_POOLING_PREFIX "maxpool_"
 Layer<float>* LayerFactory::getMaxPoolLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,

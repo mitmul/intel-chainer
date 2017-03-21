@@ -16,20 +16,24 @@ install_requires = [
 
 extensions = [
     Extension(
-        "_mkldnn",
+        "mkldnn._mkldnn",
         sources=[
                 "mkldnn/mkldnn_conv.cc",
                 "mkldnn/common.cc",
-                "mkldnn/stream_factory.cc",
+                "mkldnn/cpu_info.cc",
+                "mkldnn/layer_factory.cc",
+                "mkldnn/local_response_normalization.cc",
                 "mkldnn/pooling.cc",
                 "mkldnn/max_pooling.cc",
                 "mkldnn/relu.cc",
+                "mkldnn/avg_pooling.cc",
+                "mkldnn/mkldnn_softmax.cc",
                 "mkldnn/mkldnn.i"
                 ],
         swig_opts=["-c++"],
-        extra_compile_args=["-std=c++11"],
+        extra_compile_args=["-std=c++11", "-fopenmp"],
         include_dirs=[numpy.get_include()],
-        libraries=['glog', 'stdc++', 'mkldnn'],
+        libraries=['glog', 'stdc++', 'boost_system', 'mkldnn'],
     )
 ]
 

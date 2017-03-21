@@ -4,6 +4,7 @@ import six
 from chainer import cuda
 from chainer import function
 from chainer.utils import type_check
+from mkldnn import mkldnn
 
 
 def _cu_conv_sum(y, x, n):
@@ -41,6 +42,7 @@ class LocalResponseNormalization(function.Function):
         self.k = k
         self.alpha = alpha
         self.beta = beta
+        self.mkldnn_lrn = None
 
     def check_type_forward(self, in_types):
         type_check.expect(in_types.size() == 1)
@@ -52,16 +54,30 @@ class LocalResponseNormalization(function.Function):
         )
 
     def forward_cpu(self, x):
-        half_n = self.n // 2
-        x2 = numpy.square(x[0])
-        sum_part = x2.copy()
-        for i in six.moves.range(1, half_n + 1):
-            sum_part[:, i:] += x2[:, :-i]
-            sum_part[:, :-i] += x2[:, i:]
-        self.unit_scale = self.k + self.alpha * sum_part
-        self.scale = self.unit_scale ** -self.beta
-        self.y = x[0] * self.scale
-        return self.y,
+        if mkldnnpy.enabled():
+            if self.mkldnn_lrn is None:
+                # n, c, h, w = x.shape
+                print x[0].shape
+                self.y = numpy.empty(x[0].shape,dtype=x.dtype)
+                in_x = x[0]
+                self.mkldnn_lrn = mkldnnpy.LocalResponseNormalization_F32(
+                    in_x,self.y,self.n,self.k,self.alpha,self.beta)
+                # self.mkldnn_lrn.forward()
+                print "y = "+str(y) + ",y.ravel=" + str(y.reavel())
+                return self.y
+            else:
+                return None
+        else:
+            half_n = self.n // 2
+            x2 = numpy.square(x[0])
+            sum_part = x2.copy()
+            for i in six.moves.range(1, half_n + 1):
+                sum_part[:, i:] += x2[:, :-i]
+                sum_part[:, :-i] += x2[:, i:]
+            self.unit_scale = self.k + self.alpha * sum_part
+            self.scale = self.unit_scale ** -self.beta
+            self.y = x[0] * self.scale
+            return self.y,
 
     def backward_cpu(self, x, gy):
         half_n = self.n // 2

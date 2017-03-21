@@ -4,37 +4,40 @@ import chainer.links as L
 import numpy as np
 import time
 
-class ConvBench(chainer.Chain):
-    def __init__(self):
-        super(ConvBench, self).__init__(
-                conv1=L.Convolution2D(3, 64, 7, stride=2, pad=3),
-                )
-        
-    def forward(self, x):
-        self.conv1(x)
-        return
+from chainer import Variable
 
-model = ConvBench()
-data = np.ndarray((1, 3, 2240, 2240), dtype=np.float32)
-data.fill(333.33)
-
+batch = 1
+total_backward = 0
 total_forward = 0
 count = 0
+
 niter = 13
 n_dry = 3
 
+data = np.ndarray((batch, 3, 2240, 2240), dtype=np.float32)
+data.fill(333.33)
+y_grad = np.ones((batch, 64, 1120, 1120), dtype=np.float32)
 
+conv = L.Convolution2D(3, 64, 7, stride=2, pad=3)
+x = Variable(data)
 
 for i in range(niter):
-    x = np.asarray(data)
-
+    print "iter:", i
     start = time.time()
-    model.forward(x)
+    y = conv(x)
     end = time.time()
     if i > n_dry - 1:
         count += 1
         total_forward += (end-start)*1000
-
+	
+    y.grad = y_grad
+    start = time.time()
+    y.backward()
+    end = time.time()
+    if i > n_dry - 1:
+	total_backward += (end-start)*1000
 
 print("Average Forward: ", total_forward/count, "ms")
+print("Average Backward: ", total_backward/count, "ms")
+print("Average Total: ", (total_forward + total_backward)/count, "ms")
 

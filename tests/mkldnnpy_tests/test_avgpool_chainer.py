@@ -19,8 +19,8 @@ for i in range(1):
 
 print "x="
 print x
-y1 = F.max_pooling_2d(x, 3, stride=1, pad=1)
-y2 = F.max_pooling_2d(x, 3, stride=1, pad=1)
+y1 = F.average_pooling_2d(x, 3, stride=1, pad=1)
+y2 = F.average_pooling_2d(x, 3, stride=1, pad=1)
 
 print "y1="
 print y1.data

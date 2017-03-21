@@ -1,7 +1,9 @@
+#include <cstddef>
 #include <glog/logging.h>
 #include <iostream>
 #include "mkldnn.hpp"
 #include "common.h"
+#include "cpu_info.h"
 
 using namespace mkldnn;
 
@@ -15,6 +17,14 @@ int global_init()
 
     LOG(INFO) << "Global Init";
 
+    if (enabled()) {
+    /*
+     * 1. Set OpenMP thread num as core num
+     * 2. Bind OpenMP thread to core
+     */
+        OpenMpManager::bindOpenMpThreads();
+        OpenMpManager::printVerboseInformation();
+    }
     return 0;
 }
 

@@ -27,7 +27,7 @@ for i in range(n):
 
 print "x="
 print x
-forward_obj = mkldnn.MaxPooling_F32_get_forward_object(x, stride, stride,
+forward_obj = mkldnn.AvgPooling_F32_get_forward_object(x, stride, stride,
                     padding, padding, ker, ker);
 
 y_h = conv.get_conv_outsize(h, k, stride, padding)
@@ -38,7 +38,7 @@ gx  = np.empty((n, c, h, w), dtype=x.dtype)
 forward_obj.forward(x, y)
 print "y="
 print y
-backward_obj = mkldnn.MaxPooling_F32_get_backward_object(x, stride, stride,
+backward_obj = mkldnn.AvgPooling_F32_get_backward_object(x, stride, stride,
                     padding, padding, ker, ker);
 backward_obj.backward(gy, x, gx)
 print "gx="

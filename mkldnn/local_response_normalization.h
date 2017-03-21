@@ -8,7 +8,7 @@
 #include <memory>
 
 struct lrn_params {
-  double alpha, beta;
+  double alpha, beta,k;
   int local_size;
   mkldnn::prop_kind aprop_kind;
   mkldnn::algorithm aalgorithm;
@@ -23,11 +23,15 @@ public:
     LocalResponseNormalization();
     ~LocalResponseNormalization();
 
-    LocalResponseNormalization(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-                              T* y, int y_d1, int y_d2, int y_d3, int y_d4,
-                              int n, int k, double alpha, double beta);
+    LocalResponseNormalization(
+      T* x, int x_d1, int x_d2, int x_d3, int x_d4,
+      T* y, int y_d1, int y_d2, int y_d3, int y_d4,
+      int n, double k, double alpha, double beta);
     int forward();
-    int backward();
+    int backward( 
+      T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
+      T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
+      T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4);
 private:
     lrn_params p;
     std::shared_ptr<mkldnn::memory> src;

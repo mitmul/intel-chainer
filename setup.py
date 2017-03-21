@@ -24,6 +24,7 @@ extensions = [
                 "mkldnn/common.cc",
                 "mkldnn/cpu_info.cc",
                 "mkldnn/layer_factory.cc",
+                "mkldnn/linear.cc",
                 "mkldnn/local_response_normalization.cc",
                 "mkldnn/pooling.cc",
                 "mkldnn/max_pooling.cc",

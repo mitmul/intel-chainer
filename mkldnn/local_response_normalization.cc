@@ -24,7 +24,7 @@ template<typename T>
 LocalResponseNormalization<T>::LocalResponseNormalization(
 	T* x, int x_d1, int x_d2, int x_d3, int x_d4,
     T* y, int y_d1, int y_d2, int y_d3, int y_d4,
-    int n, int k, double alpha, double beta)
+    int n, double k, double alpha, double beta)
 {
     google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
 
@@ -37,7 +37,8 @@ LocalResponseNormalization<T>::LocalResponseNormalization(
 	p.alpha = alpha;
 	p.beta = beta;
 	p.aprop_kind = prop_kind::forward_training;
-	p.local_size = 5;
+	p.local_size = n;
+	p.k = k;
 	p.data_format = memory::format::nchw;
 	p.diff_data_format = memory::format::nchw;
 	p.aalgorithm = algorithm::lrn_across_channels;
@@ -51,15 +52,11 @@ LocalResponseNormalization<T>::LocalResponseNormalization(
 	   memory_data_type<T>(), p.data_format));
 	dst_desc.reset(new memory::desc({ lrn_dst_tz},
 	    memory_data_type<T>(), p.data_format));
-	diff_src_desc.reset(new memory::desc({ lrn_src_tz },
-	    memory_data_type<T>(), p.diff_data_format));
-	diff_dst_desc.reset(new memory::desc({ lrn_dst_tz },
-	    memory_data_type<T>(), p.diff_data_format));
+
 
 	src.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),p.data_format}, *eng}, x));
 	dst.reset(new memory({{{lrn_dst_tz}, memory_data_type<T>(),p.data_format}, *eng}, y));
-	diff_src.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),p.diff_data_format}, *eng}, x));
-	diff_dst.reset(new memory({{{lrn_dst_tz},memory_data_type<T>(),p.diff_data_format}, *eng}, y));
+	
 
 	is_training = p.aprop_kind == prop_kind::forward_training;
 
@@ -94,19 +91,39 @@ int LocalResponseNormalization<T>::forward(){
 	return 0;
 }
 template<typename T>
-int LocalResponseNormalization<T>::backward(){
-	auto lrn_desc = lrn_backward::desc(p.aalgorithm,
-		*src_desc, *diff_dst_desc,p.local_size, p.alpha, p.beta);
+int LocalResponseNormalization<T>::backward(
+	T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
+    T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
+    T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4){
 
+	LOG(INFO) << " backward";
+
+	src_desc.reset(new memory::desc({{x_d1, x_d2, x_d3, x_d4}},
+	    memory_data_type<T>(), memory::format::nchw));
+	diff_src_desc.reset(new memory::desc({{gx_d1, gx_d2, gx_d3, gx_d4}},
+	    memory_data_type<T>(), memory::format::nchw));
+	diff_dst_desc.reset(new memory::desc({{gy_d1, gy_d2, gy_d3, gy_d4}},
+	    memory_data_type<T>(), memory::format::nchw));
+
+	src.reset(new memory ({{{lrn_src_tz},memory_data_type<T>(),p.diff_data_format}, *eng}, x));
+	diff_src.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),p.diff_data_format}, *eng}, gx));
+	diff_dst.reset(new memory({{{lrn_dst_tz},memory_data_type<T>(),p.diff_data_format}, *eng}, gy));
+	// src_desc->set_data_handler(x);
+	// diff_src_desc->set_data_handler(gx);
+	// diff_dst_desc->set_data_handler(gy);
+
+	auto lrn_bwd_desc = lrn_backward::desc(p.aalgorithm,
+		*diff_src_desc, *diff_dst_desc,p.local_size, p.alpha, p.beta);
+ 	
 	// diff_src.reset(new memory({*diff_src_desc, *eng}));
 	// diff_dst.reset(new memory({*diff_dst_desc, *eng}));
-	auto lrn_prim_desc = lrn_backward::primitive_desc(lrn_desc, *eng,
+	auto lrn_bwd_prim_desc = lrn_backward::primitive_desc(lrn_bwd_desc, *eng,
 		*lrn_fwd_prim_desc);
 
 	// Execute
 	std::vector<primitive> pipeline;
 	auto s = stream(stream::kind::lazy);
-	auto l = lrn_backward(lrn_prim_desc, *src, *diff_dst, *workspace,
+	auto l = lrn_backward(lrn_bwd_prim_desc, *src, *diff_dst, *workspace,
 		*diff_src);
 	pipeline.push_back(l);
 	s.submit(pipeline).wait();

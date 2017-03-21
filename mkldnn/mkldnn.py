@@ -103,173 +103,109 @@ global_init = _mkldnn.global_init
 def enabled():
     return _mkldnn.enabled()
 enabled = _mkldnn.enabled
-class StreamFactory(_object):
+class LayerFactory(_object):
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, StreamFactory, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(self, LayerFactory, name, value)
     __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, StreamFactory, name)
+    __getattr__ = lambda self, name: _swig_getattr(self, LayerFactory, name)
 
     def __init__(self, *args, **kwargs):
         raise AttributeError("No constructor defined")
     __repr__ = _swig_repr
     if _newclass:
-        getInstance = staticmethod(_mkldnn.StreamFactory_getInstance)
+        getInstance = staticmethod(_mkldnn.LayerFactory_getInstance)
     else:
-        getInstance = _mkldnn.StreamFactory_getInstance
+        getInstance = _mkldnn.LayerFactory_getInstance
 
-    def getRELUFwdStream(self, input, output):
-        return _mkldnn.StreamFactory_getRELUFwdStream(self, input, output)
+    def getRELULayer(self, size):
+        return _mkldnn.LayerFactory_getRELULayer(self, size)
 
-    def setRELUFwdStream(self, input, output, layer):
-        return _mkldnn.StreamFactory_setRELUFwdStream(self, input, output, layer)
+    def setRELULayer(self, size, layer):
+        return _mkldnn.LayerFactory_setRELULayer(self, size, layer)
 
-    def getRELUBwdStream(self, input, output_diff, input_diff):
-        return _mkldnn.StreamFactory_getRELUBwdStream(self, input, output_diff, input_diff)
+    def getMaxPoolLayer(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w):
+        return _mkldnn.LayerFactory_getMaxPoolLayer(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w)
 
-    def setRELUBwdStream(self, input, output_diff, input_diff, layer):
-        return _mkldnn.StreamFactory_setRELUBwdStream(self, input, output_diff, input_diff, layer)
+    def setMaxPoolLayer(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer):
+        return _mkldnn.LayerFactory_setMaxPoolLayer(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer)
 
-    def getMaxPoolFwdStream(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w):
-        return _mkldnn.StreamFactory_getMaxPoolFwdStream(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w)
+    def getAvgPoolLayer(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w):
+        return _mkldnn.LayerFactory_getAvgPoolLayer(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w)
 
-    def setMaxPoolFwdStream(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer):
-        return _mkldnn.StreamFactory_setMaxPoolFwdStream(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer)
+    def setAvgPoolLayer(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer):
+        return _mkldnn.LayerFactory_setAvgPoolLayer(self, x_d1, x_d2, x_d3, x_d4, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer)
 
-    def setMaxPoolBwdStream(self, input_diff, output_diff, workspace, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer):
-        return _mkldnn.StreamFactory_setMaxPoolBwdStream(self, input_diff, output_diff, workspace, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer)
+    def getLRNLayer(self, x_d1, x_d2, x_d3, x_d4, local_size, alpha, beta):
+        return _mkldnn.LayerFactory_getLRNLayer(self, x_d1, x_d2, x_d3, x_d4, local_size, alpha, beta)
 
-    def getMaxPoolBwdStream(self, input_diff, output_diff, workspace, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w):
-        return _mkldnn.StreamFactory_getMaxPoolBwdStream(self, input_diff, output_diff, workspace, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w)
+    def setLRNLayer(self, x_d1, x_d2, x_d3, x_d4, local_size, alpha, beta, layer):
+        return _mkldnn.LayerFactory_setLRNLayer(self, x_d1, x_d2, x_d3, x_d4, local_size, alpha, beta, layer)
 
-    def getAvgPoolFwdStream(self, input, output, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w):
-        return _mkldnn.StreamFactory_getAvgPoolFwdStream(self, input, output, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w)
+    def getSoftmax2DLayer(self, d1, d2, axis):
+        return _mkldnn.LayerFactory_getSoftmax2DLayer(self, d1, d2, axis)
 
-    def setAvgPoolFwdStream(self, input, output, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer):
-        return _mkldnn.StreamFactory_setAvgPoolFwdStream(self, input, output, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer)
+    def setSoftmax2DLayer(self, d1, d2, axis, layer):
+        return _mkldnn.LayerFactory_setSoftmax2DLayer(self, d1, d2, axis, layer)
 
-    def setAvgPoolBwdStream(self, input_diff, output_diff, workspace, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer):
-        return _mkldnn.StreamFactory_setAvgPoolBwdStream(self, input_diff, output_diff, workspace, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w, layer)
+    def getSoftmax4DLayer(self, d1, d2, d3, d4, axis):
+        return _mkldnn.LayerFactory_getSoftmax4DLayer(self, d1, d2, d3, d4, axis)
 
-    def getAvgPoolBwdStream(self, input_diff, output_diff, workspace, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w):
-        return _mkldnn.StreamFactory_getAvgPoolBwdStream(self, input_diff, output_diff, workspace, stride_y, stride_x, ksize_h, ksize_w, pad_l_h, pad_l_w, pad_r_h, pad_r_w)
-
-    def getLRNFwdStream(self, input, output, local_size, alpha, beta):
-        return _mkldnn.StreamFactory_getLRNFwdStream(self, input, output, local_size, alpha, beta)
-
-    def setLRNFwdStream(self, input, output, local_size, alpha, beta, layer):
-        return _mkldnn.StreamFactory_setLRNFwdStream(self, input, output, local_size, alpha, beta, layer)
-
-    def getLRNBwdStream(self, input_diff, output_diff, local_size, alpha, beta):
-        return _mkldnn.StreamFactory_getLRNBwdStream(self, input_diff, output_diff, local_size, alpha, beta)
-
-    def setLRNBwdStream(self, input_diff, output_diff, local_size, alpha, beta, layer):
-        return _mkldnn.StreamFactory_setLRNBwdStream(self, input_diff, output_diff, local_size, alpha, beta, layer)
-
-    def getSoftmaxFwdStream(self, input, output, axis):
-        return _mkldnn.StreamFactory_getSoftmaxFwdStream(self, input, output, axis)
-
-    def setSoftmaxFwdStream(self, input, output, axis, layer):
-        return _mkldnn.StreamFactory_setSoftmaxFwdStream(self, input, output, axis, layer)
-    __swig_destroy__ = _mkldnn.delete_StreamFactory
+    def setSoftmax4DLayer(self, d1, d2, d3, d4, axis, layer):
+        return _mkldnn.LayerFactory_setSoftmax4DLayer(self, d1, d2, d3, d4, axis, layer)
+    __swig_destroy__ = _mkldnn.delete_LayerFactory
     __del__ = lambda self: None
-StreamFactory_swigregister = _mkldnn.StreamFactory_swigregister
-StreamFactory_swigregister(StreamFactory)
+LayerFactory_swigregister = _mkldnn.LayerFactory_swigregister
+LayerFactory_swigregister(LayerFactory)
 
-def StreamFactory_getInstance():
-    return _mkldnn.StreamFactory_getInstance()
-StreamFactory_getInstance = _mkldnn.StreamFactory_getInstance
+def LayerFactory_getInstance():
+    return _mkldnn.LayerFactory_getInstance()
+LayerFactory_getInstance = _mkldnn.LayerFactory_getInstance
 
-class Convolution2D_F32(_object):
+class lrn_params(_object):
     __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Convolution2D_F32, name, value)
+    __setattr__ = lambda self, name, value: _swig_setattr(self, lrn_params, name, value)
     __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, Convolution2D_F32, name)
+    __getattr__ = lambda self, name: _swig_getattr(self, lrn_params, name)
     __repr__ = _swig_repr
-
-    def __init__(self):
-        this = _mkldnn.new_Convolution2D_F32()
-        try:
-            self.this.append(this)
-        except __builtin__.Exception:
-            self.this = this
-    __swig_destroy__ = _mkldnn.delete_Convolution2D_F32
-    __del__ = lambda self: None
-
-    def forward_setup(self, x, W, b, y, s1, s2, p1, p2):
-        return _mkldnn.Convolution2D_F32_forward_setup(self, x, W, b, y, s1, s2, p1, p2)
-
-    def forward(self, *args):
-        return _mkldnn.Convolution2D_F32_forward(self, *args)
-
-    def backward_setup(self, x, W, b, gy, gW, gx, gb):
-        return _mkldnn.Convolution2D_F32_backward_setup(self, x, W, b, gy, gW, gx, gb)
-
-    def backward(self, *args):
-        return _mkldnn.Convolution2D_F32_backward(self, *args)
-Convolution2D_F32_swigregister = _mkldnn.Convolution2D_F32_swigregister
-Convolution2D_F32_swigregister(Convolution2D_F32)
-
-class Pooling_F32(_object):
-    __swig_setmethods__ = {}
-    __setattr__ = lambda self, name, value: _swig_setattr(self, Pooling_F32, name, value)
-    __swig_getmethods__ = {}
-    __getattr__ = lambda self, name: _swig_getattr(self, Pooling_F32, name)
-    __repr__ = _swig_repr
-
-    def forward(self, x, y):
-        return _mkldnn.Pooling_F32_forward(self, x, y)
-
-    def forward_setup(self, x_d1, x_d2, x_d3, x_d4, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind):
-        return _mkldnn.Pooling_F32_forward_setup(self, x_d1, x_d2, x_d3, x_d4, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind)
+    __swig_setmethods__["alpha"] = _mkldnn.lrn_params_alpha_set
+    __swig_getmethods__["alpha"] = _mkldnn.lrn_params_alpha_get
     if _newclass:
-        get_forward_object = staticmethod(_mkldnn.Pooling_F32_get_forward_object)
-    else:
-        get_forward_object = _mkldnn.Pooling_F32_get_forward_object
-
-    def __init__(self):
-        this = _mkldnn.new_Pooling_F32()
-        try:
-            self.this.append(this)
-        except __builtin__.Exception:
-            self.this = this
-    __swig_destroy__ = _mkldnn.delete_Pooling_F32
-    __del__ = lambda self: None
-Pooling_F32_swigregister = _mkldnn.Pooling_F32_swigregister
-Pooling_F32_swigregister(Pooling_F32)
-
-def Pooling_F32_get_forward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind):
-    return _mkldnn.Pooling_F32_get_forward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind)
-Pooling_F32_get_forward_object = _mkldnn.Pooling_F32_get_forward_object
-
-class MaxPooling_F32(Pooling_F32):
-    __swig_setmethods__ = {}
-    for _s in [Pooling_F32]:
-        __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
-    __setattr__ = lambda self, name, value: _swig_setattr(self, MaxPooling_F32, name, value)
-    __swig_getmethods__ = {}
-    for _s in [Pooling_F32]:
-        __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
-    __getattr__ = lambda self, name: _swig_getattr(self, MaxPooling_F32, name)
-    __repr__ = _swig_repr
+        alpha = _swig_property(_mkldnn.lrn_params_alpha_get, _mkldnn.lrn_params_alpha_set)
+    __swig_setmethods__["beta"] = _mkldnn.lrn_params_beta_set
+    __swig_getmethods__["beta"] = _mkldnn.lrn_params_beta_get
     if _newclass:
-        get_forward_object = staticmethod(_mkldnn.MaxPooling_F32_get_forward_object)
-    else:
-        get_forward_object = _mkldnn.MaxPooling_F32_get_forward_object
+        beta = _swig_property(_mkldnn.lrn_params_beta_get, _mkldnn.lrn_params_beta_set)
+    __swig_setmethods__["local_size"] = _mkldnn.lrn_params_local_size_set
+    __swig_getmethods__["local_size"] = _mkldnn.lrn_params_local_size_get
+    if _newclass:
+        local_size = _swig_property(_mkldnn.lrn_params_local_size_get, _mkldnn.lrn_params_local_size_set)
+    __swig_setmethods__["aprop_kind"] = _mkldnn.lrn_params_aprop_kind_set
+    __swig_getmethods__["aprop_kind"] = _mkldnn.lrn_params_aprop_kind_get
+    if _newclass:
+        aprop_kind = _swig_property(_mkldnn.lrn_params_aprop_kind_get, _mkldnn.lrn_params_aprop_kind_set)
+    __swig_setmethods__["aalgorithm"] = _mkldnn.lrn_params_aalgorithm_set
+    __swig_getmethods__["aalgorithm"] = _mkldnn.lrn_params_aalgorithm_get
+    if _newclass:
+        aalgorithm = _swig_property(_mkldnn.lrn_params_aalgorithm_get, _mkldnn.lrn_params_aalgorithm_set)
+    __swig_setmethods__["data_format"] = _mkldnn.lrn_params_data_format_set
+    __swig_getmethods__["data_format"] = _mkldnn.lrn_params_data_format_get
+    if _newclass:
+        data_format = _swig_property(_mkldnn.lrn_params_data_format_get, _mkldnn.lrn_params_data_format_set)
+    __swig_setmethods__["diff_data_format"] = _mkldnn.lrn_params_diff_data_format_set
+    __swig_getmethods__["diff_data_format"] = _mkldnn.lrn_params_diff_data_format_get
+    if _newclass:
+        diff_data_format = _swig_property(_mkldnn.lrn_params_diff_data_format_get, _mkldnn.lrn_params_diff_data_format_set)
 
     def __init__(self):
-        this = _mkldnn.new_MaxPooling_F32()
+        this = _mkldnn.new_lrn_params()
         try:
             self.this.append(this)
         except __builtin__.Exception:
             self.this = this
-    __swig_destroy__ = _mkldnn.delete_MaxPooling_F32
+    __swig_destroy__ = _mkldnn.delete_lrn_params
     __del__ = lambda self: None
-MaxPooling_F32_swigregister = _mkldnn.MaxPooling_F32_swigregister
-MaxPooling_F32_swigregister(MaxPooling_F32)
-
-def MaxPooling_F32_get_forward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w):
-    return _mkldnn.MaxPooling_F32_get_forward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w)
-MaxPooling_F32_get_forward_object = _mkldnn.MaxPooling_F32_get_forward_object
+lrn_params_swigregister = _mkldnn.lrn_params_swigregister
+lrn_params_swigregister(lrn_params)
 
 class Layer_F32(_object):
     __swig_setmethods__ = {}
@@ -301,6 +237,156 @@ class Layer_F32(_object):
 Layer_F32_swigregister = _mkldnn.Layer_F32_swigregister
 Layer_F32_swigregister(Layer_F32)
 
+class Convolution2D_F32(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Convolution2D_F32, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, Convolution2D_F32, name)
+    __repr__ = _swig_repr
+
+    def __init__(self):
+        this = _mkldnn.new_Convolution2D_F32()
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+    __swig_destroy__ = _mkldnn.delete_Convolution2D_F32
+    __del__ = lambda self: None
+
+    def forward_setup(self, x, W, b, y, s1, s2, p1, p2):
+        return _mkldnn.Convolution2D_F32_forward_setup(self, x, W, b, y, s1, s2, p1, p2)
+
+    def forward(self, *args):
+        return _mkldnn.Convolution2D_F32_forward(self, *args)
+
+    def backward_setup(self, x, W, b, gy, gW, gx, gb):
+        return _mkldnn.Convolution2D_F32_backward_setup(self, x, W, b, gy, gW, gx, gb)
+
+    def backward(self, *args):
+        return _mkldnn.Convolution2D_F32_backward(self, *args)
+Convolution2D_F32_swigregister = _mkldnn.Convolution2D_F32_swigregister
+Convolution2D_F32_swigregister(Convolution2D_F32)
+
+class Pooling_F32(Layer_F32):
+    __swig_setmethods__ = {}
+    for _s in [Layer_F32]:
+        __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Pooling_F32, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Layer_F32]:
+        __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
+    __getattr__ = lambda self, name: _swig_getattr(self, Pooling_F32, name)
+    __repr__ = _swig_repr
+
+    def forward(self, x, y, ws):
+        return _mkldnn.Pooling_F32_forward(self, x, y, ws)
+
+    def backward(self, gy, x, gx, ws):
+        return _mkldnn.Pooling_F32_backward(self, gy, x, gx, ws)
+
+    def forward_setup(self, x_d1, x_d2, x_d3, x_d4, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind):
+        return _mkldnn.Pooling_F32_forward_setup(self, x_d1, x_d2, x_d3, x_d4, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind)
+
+    def backward_setup(self, x_d1, x_d2, x_d3, x_d4, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind):
+        return _mkldnn.Pooling_F32_backward_setup(self, x_d1, x_d2, x_d3, x_d4, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind)
+    if _newclass:
+        get_forward_object = staticmethod(_mkldnn.Pooling_F32_get_forward_object)
+    else:
+        get_forward_object = _mkldnn.Pooling_F32_get_forward_object
+    if _newclass:
+        get_backward_object = staticmethod(_mkldnn.Pooling_F32_get_backward_object)
+    else:
+        get_backward_object = _mkldnn.Pooling_F32_get_backward_object
+    if _newclass:
+        do_forward = staticmethod(_mkldnn.Pooling_F32_do_forward)
+    else:
+        do_forward = _mkldnn.Pooling_F32_do_forward
+    if _newclass:
+        do_backward = staticmethod(_mkldnn.Pooling_F32_do_backward)
+    else:
+        do_backward = _mkldnn.Pooling_F32_do_backward
+
+    def __init__(self):
+        this = _mkldnn.new_Pooling_F32()
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+    __swig_destroy__ = _mkldnn.delete_Pooling_F32
+    __del__ = lambda self: None
+Pooling_F32_swigregister = _mkldnn.Pooling_F32_swigregister
+Pooling_F32_swigregister(Pooling_F32)
+
+def Pooling_F32_get_forward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind):
+    return _mkldnn.Pooling_F32_get_forward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind)
+Pooling_F32_get_forward_object = _mkldnn.Pooling_F32_get_forward_object
+
+def Pooling_F32_get_backward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind):
+    return _mkldnn.Pooling_F32_get_backward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w, alg_kind)
+Pooling_F32_get_backward_object = _mkldnn.Pooling_F32_get_backward_object
+
+def Pooling_F32_do_forward(*args):
+    return _mkldnn.Pooling_F32_do_forward(*args)
+Pooling_F32_do_forward = _mkldnn.Pooling_F32_do_forward
+
+def Pooling_F32_do_backward(*args):
+    return _mkldnn.Pooling_F32_do_backward(*args)
+Pooling_F32_do_backward = _mkldnn.Pooling_F32_do_backward
+
+class MaxPooling_F32(Pooling_F32):
+    __swig_setmethods__ = {}
+    for _s in [Pooling_F32]:
+        __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, MaxPooling_F32, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Pooling_F32]:
+        __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
+    __getattr__ = lambda self, name: _swig_getattr(self, MaxPooling_F32, name)
+    __repr__ = _swig_repr
+    if _newclass:
+        get_forward_object = staticmethod(_mkldnn.MaxPooling_F32_get_forward_object)
+    else:
+        get_forward_object = _mkldnn.MaxPooling_F32_get_forward_object
+    if _newclass:
+        get_backward_object = staticmethod(_mkldnn.MaxPooling_F32_get_backward_object)
+    else:
+        get_backward_object = _mkldnn.MaxPooling_F32_get_backward_object
+    if _newclass:
+        do_forward = staticmethod(_mkldnn.MaxPooling_F32_do_forward)
+    else:
+        do_forward = _mkldnn.MaxPooling_F32_do_forward
+    if _newclass:
+        do_backward = staticmethod(_mkldnn.MaxPooling_F32_do_backward)
+    else:
+        do_backward = _mkldnn.MaxPooling_F32_do_backward
+
+    def __init__(self):
+        this = _mkldnn.new_MaxPooling_F32()
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+    __swig_destroy__ = _mkldnn.delete_MaxPooling_F32
+    __del__ = lambda self: None
+MaxPooling_F32_swigregister = _mkldnn.MaxPooling_F32_swigregister
+MaxPooling_F32_swigregister(MaxPooling_F32)
+
+def MaxPooling_F32_get_forward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w):
+    return _mkldnn.MaxPooling_F32_get_forward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w)
+MaxPooling_F32_get_forward_object = _mkldnn.MaxPooling_F32_get_forward_object
+
+def MaxPooling_F32_get_backward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w):
+    return _mkldnn.MaxPooling_F32_get_backward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w)
+MaxPooling_F32_get_backward_object = _mkldnn.MaxPooling_F32_get_backward_object
+
+def MaxPooling_F32_do_forward(x, y, ws, s_y, s_x, p_h, p_w, ker_h, ker_w):
+    return _mkldnn.MaxPooling_F32_do_forward(x, y, ws, s_y, s_x, p_h, p_w, ker_h, ker_w)
+MaxPooling_F32_do_forward = _mkldnn.MaxPooling_F32_do_forward
+
+def MaxPooling_F32_do_backward(gy, x, gx, ws, s_y, s_x, p_h, p_w, ker_h, ker_w):
+    return _mkldnn.MaxPooling_F32_do_backward(gy, x, gx, ws, s_y, s_x, p_h, p_w, ker_h, ker_w)
+MaxPooling_F32_do_backward = _mkldnn.MaxPooling_F32_do_backward
+
 class Relu_F32(_object):
     __swig_setmethods__ = {}
     __setattr__ = lambda self, name, value: _swig_setattr(self, Relu_F32, name, value)
@@ -330,6 +416,141 @@ class Relu_F32(_object):
     __del__ = lambda self: None
 Relu_F32_swigregister = _mkldnn.Relu_F32_swigregister
 Relu_F32_swigregister(Relu_F32)
+
+class AvgPooling_F32(Pooling_F32):
+    __swig_setmethods__ = {}
+    for _s in [Pooling_F32]:
+        __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, AvgPooling_F32, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Pooling_F32]:
+        __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
+    __getattr__ = lambda self, name: _swig_getattr(self, AvgPooling_F32, name)
+    __repr__ = _swig_repr
+    if _newclass:
+        get_forward_object = staticmethod(_mkldnn.AvgPooling_F32_get_forward_object)
+    else:
+        get_forward_object = _mkldnn.AvgPooling_F32_get_forward_object
+    if _newclass:
+        get_backward_object = staticmethod(_mkldnn.AvgPooling_F32_get_backward_object)
+    else:
+        get_backward_object = _mkldnn.AvgPooling_F32_get_backward_object
+    if _newclass:
+        do_forward = staticmethod(_mkldnn.AvgPooling_F32_do_forward)
+    else:
+        do_forward = _mkldnn.AvgPooling_F32_do_forward
+    if _newclass:
+        do_backward = staticmethod(_mkldnn.AvgPooling_F32_do_backward)
+    else:
+        do_backward = _mkldnn.AvgPooling_F32_do_backward
+
+    def __init__(self):
+        this = _mkldnn.new_AvgPooling_F32()
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+    __swig_destroy__ = _mkldnn.delete_AvgPooling_F32
+    __del__ = lambda self: None
+AvgPooling_F32_swigregister = _mkldnn.AvgPooling_F32_swigregister
+AvgPooling_F32_swigregister(AvgPooling_F32)
+
+def AvgPooling_F32_get_forward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w):
+    return _mkldnn.AvgPooling_F32_get_forward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w)
+AvgPooling_F32_get_forward_object = _mkldnn.AvgPooling_F32_get_forward_object
+
+def AvgPooling_F32_get_backward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w):
+    return _mkldnn.AvgPooling_F32_get_backward_object(x, s_y, s_x, p_h, p_w, ker_h, ker_w)
+AvgPooling_F32_get_backward_object = _mkldnn.AvgPooling_F32_get_backward_object
+
+def AvgPooling_F32_do_forward(x, y, s_y, s_x, p_h, p_w, ker_h, ker_w):
+    return _mkldnn.AvgPooling_F32_do_forward(x, y, s_y, s_x, p_h, p_w, ker_h, ker_w)
+AvgPooling_F32_do_forward = _mkldnn.AvgPooling_F32_do_forward
+
+def AvgPooling_F32_do_backward(gy, x, gx, s_y, s_x, p_h, p_w, ker_h, ker_w):
+    return _mkldnn.AvgPooling_F32_do_backward(gy, x, gx, s_y, s_x, p_h, p_w, ker_h, ker_w)
+AvgPooling_F32_do_backward = _mkldnn.AvgPooling_F32_do_backward
+
+class Softmax_F32(Layer_F32):
+    __swig_setmethods__ = {}
+    for _s in [Layer_F32]:
+        __swig_setmethods__.update(getattr(_s, '__swig_setmethods__', {}))
+    __setattr__ = lambda self, name, value: _swig_setattr(self, Softmax_F32, name, value)
+    __swig_getmethods__ = {}
+    for _s in [Layer_F32]:
+        __swig_getmethods__.update(getattr(_s, '__swig_getmethods__', {}))
+    __getattr__ = lambda self, name: _swig_getattr(self, Softmax_F32, name)
+    __repr__ = _swig_repr
+
+    def __init__(self, *args):
+        this = _mkldnn.new_Softmax_F32(*args)
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+
+    def update_user_mem(self, x, y):
+        return _mkldnn.Softmax_F32_update_user_mem(self, x, y)
+
+    def update_user_data(self, src_mem, dst_mem):
+        return _mkldnn.Softmax_F32_update_user_data(self, src_mem, dst_mem)
+
+    def is_first_fwd(self):
+        return _mkldnn.Softmax_F32_is_first_fwd(self)
+
+    def mark_first_fwd(self):
+        return _mkldnn.Softmax_F32_mark_first_fwd(self)
+    if _newclass:
+        softmax_create_forward = staticmethod(_mkldnn.Softmax_F32_softmax_create_forward)
+    else:
+        softmax_create_forward = _mkldnn.Softmax_F32_softmax_create_forward
+
+    def get_res_size(self):
+        return _mkldnn.Softmax_F32_get_res_size(self)
+
+    def forward(self):
+        return _mkldnn.Softmax_F32_forward(self)
+
+    def backward(self):
+        return _mkldnn.Softmax_F32_backward(self)
+
+    def setup_forward(self):
+        return _mkldnn.Softmax_F32_setup_forward(self)
+
+    def setup_backward(self):
+        return _mkldnn.Softmax_F32_setup_backward(self)
+    __swig_destroy__ = _mkldnn.delete_Softmax_F32
+    __del__ = lambda self: None
+Softmax_F32_swigregister = _mkldnn.Softmax_F32_swigregister
+Softmax_F32_swigregister(Softmax_F32)
+
+def Softmax_F32_softmax_create_forward(x, y, dims, axis):
+    return _mkldnn.Softmax_F32_softmax_create_forward(x, y, dims, axis)
+Softmax_F32_softmax_create_forward = _mkldnn.Softmax_F32_softmax_create_forward
+
+class LocalResponseNormalization_F32(_object):
+    __swig_setmethods__ = {}
+    __setattr__ = lambda self, name, value: _swig_setattr(self, LocalResponseNormalization_F32, name, value)
+    __swig_getmethods__ = {}
+    __getattr__ = lambda self, name: _swig_getattr(self, LocalResponseNormalization_F32, name)
+    __repr__ = _swig_repr
+    __swig_destroy__ = _mkldnn.delete_LocalResponseNormalization_F32
+    __del__ = lambda self: None
+
+    def __init__(self, *args):
+        this = _mkldnn.new_LocalResponseNormalization_F32(*args)
+        try:
+            self.this.append(this)
+        except __builtin__.Exception:
+            self.this = this
+
+    def forward(self):
+        return _mkldnn.LocalResponseNormalization_F32_forward(self)
+
+    def backward(self):
+        return _mkldnn.LocalResponseNormalization_F32_backward(self)
+LocalResponseNormalization_F32_swigregister = _mkldnn.LocalResponseNormalization_F32_swigregister
+LocalResponseNormalization_F32_swigregister(LocalResponseNormalization_F32)
 
 # This file is compatible with both classic and new-style classes.
 

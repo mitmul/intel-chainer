@@ -3003,16 +3003,25 @@ SWIG_Python_NonDynamicSetAttr(PyObject *obj, PyObject *name, PyObject *value) {
 
 /* -------- TYPES TABLE (BEGIN) -------- */
 
-#define SWIGTYPE_p_Convolution2DT_float_t swig_types[0]
-#define SWIGTYPE_p_LayerT_float_t swig_types[1]
-#define SWIGTYPE_p_MaxPoolingT_float_t swig_types[2]
-#define SWIGTYPE_p_PoolingT_float_t swig_types[3]
-#define SWIGTYPE_p_ReluT_float_t swig_types[4]
-#define SWIGTYPE_p_StreamFactory swig_types[5]
-#define SWIGTYPE_p_char swig_types[6]
-#define SWIGTYPE_p_mkldnn__algorithm swig_types[7]
-static swig_type_info *swig_types[9];
-static swig_module_info swig_module = {swig_types, 8, 0, 0, 0, 0};
+#define SWIGTYPE_p_AvgPoolingT_float_t swig_types[0]
+#define SWIGTYPE_p_Convolution2DT_float_t swig_types[1]
+#define SWIGTYPE_p_LayerFactory swig_types[2]
+#define SWIGTYPE_p_LayerT_float_t swig_types[3]
+#define SWIGTYPE_p_LocalResponseNormalizationT_float_t swig_types[4]
+#define SWIGTYPE_p_MaxPoolingT_float_t swig_types[5]
+#define SWIGTYPE_p_PoolingT_float_t swig_types[6]
+#define SWIGTYPE_p_ReluT_float_t swig_types[7]
+#define SWIGTYPE_p_SoftmaxT_float_t swig_types[8]
+#define SWIGTYPE_p_char swig_types[9]
+#define SWIGTYPE_p_float swig_types[10]
+#define SWIGTYPE_p_int swig_types[11]
+#define SWIGTYPE_p_lrn_params swig_types[12]
+#define SWIGTYPE_p_mkldnn__algorithm swig_types[13]
+#define SWIGTYPE_p_mkldnn__memory__format swig_types[14]
+#define SWIGTYPE_p_mkldnn__prop_kind swig_types[15]
+#define SWIGTYPE_p_std__shared_ptrT_mkldnn__memory_t swig_types[16]
+static swig_type_info *swig_types[18];
+static swig_module_info swig_module = {swig_types, 17, 0, 0, 0, 0};
 #define SWIG_TypeQuery(name) SWIG_TypeQueryModule(&swig_module, &swig_module, name)
 #define SWIG_MangledTypeQuery(name) SWIG_MangledTypeQueryModule(&swig_module, &swig_module, name)
 
@@ -3119,11 +3128,15 @@ namespace swig {
 
     #define SWIG_FILE_WITH_INIT
     #include "common.h"
-    #include "stream_factory.h"
+    #include "layer_factory.h"
+    #include "layer.h"
     #include "pooling.h"
     #include "max_pooling.h"
+    #include "avg_pooling.h"
     #include "mkldnn_conv.h"
     #include "relu.h"
+    #include "mkldnn_softmax.h"
+    #include "local_response_normalization.h"
 
 
 #ifndef SWIG_FILE_WITH_INIT
@@ -3354,6 +3367,9 @@ SWIG_AsVal_float (PyObject * obj, float *val)
   }  
   return res;
 }
+
+
+  #define SWIG_From_double   PyFloat_FromDouble 
 
 
 #if NPY_API_VERSION < 0x00000007
@@ -3854,48 +3870,43 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_StreamFactory_getInstance(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_LayerFactory_getInstance(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  StreamFactory *result = 0 ;
+  LayerFactory *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)":StreamFactory_getInstance")) SWIG_fail;
-  result = (StreamFactory *) &StreamFactory::getInstance();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_StreamFactory, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)":LayerFactory_getInstance")) SWIG_fail;
+  result = (LayerFactory *) &LayerFactory::getInstance();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerFactory, 0 |  0 );
   return resultobj;
 fail:
   return NULL;
 }
 
 
-SWIGINTERN PyObject *_wrap_StreamFactory_getRELUFwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_LayerFactory_getRELULayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
+  int arg2 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res2 ;
-  int res3 ;
+  int val2 ;
+  int ecode2 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
   Layer< float > *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:StreamFactory_getRELUFwdStream",&obj0,&obj1,&obj2)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OO:LayerFactory_getRELULayer",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_getRELUFwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_getRELULayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
   }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_getRELUFwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_getRELUFwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  result = (Layer< float > *)(arg1)->getRELUFwdStream(arg2,arg3);
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_getRELULayer" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  result = (Layer< float > *)(arg1)->getRELULayer(arg2);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, 0 |  0 );
   return resultobj;
 fail:
@@ -3903,43 +3914,38 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_StreamFactory_setRELUFwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_LayerFactory_setRELULayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  Layer< float > *arg4 = (Layer< float > *) 0 ;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
+  int arg2 ;
+  Layer< float > *arg3 = (Layer< float > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  void *argp4 = 0 ;
-  int res4 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:StreamFactory_setRELUFwdStream",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OOO:LayerFactory_setRELULayer",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_setRELUFwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_setRELULayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
   }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_setRELUFwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_setRELULayer" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
   if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_setRELUFwdStream" "', argument " "3"" of type '" "void *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "LayerFactory_setRELULayer" "', argument " "3"" of type '" "Layer< float > *""'"); 
   }
-  res4 = SWIG_ConvertPtr(obj3, &argp4,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "StreamFactory_setRELUFwdStream" "', argument " "4"" of type '" "Layer< float > *""'"); 
-  }
-  arg4 = reinterpret_cast< Layer< float > * >(argp4);
-  (arg1)->setRELUFwdStream(arg2,arg3,arg4);
+  arg3 = reinterpret_cast< Layer< float > * >(argp3);
+  (arg1)->setRELULayer(arg2,arg3);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -3947,103 +3953,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_StreamFactory_getRELUBwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_LayerFactory_getMaxPoolLayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  void *arg4 = (void *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  int res4 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  Layer< float > *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:StreamFactory_getRELUBwdStream",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_getRELUBwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
-  }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_getRELUBwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_getRELUBwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  res4 = SWIG_ConvertPtr(obj3,SWIG_as_voidptrptr(&arg4), 0, 0);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "StreamFactory_getRELUBwdStream" "', argument " "4"" of type '" "void *""'"); 
-  }
-  result = (Layer< float > *)(arg1)->getRELUBwdStream(arg2,arg3,arg4);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_StreamFactory_setRELUBwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  void *arg4 = (void *) 0 ;
-  Layer< float > *arg5 = (Layer< float > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  int res4 ;
-  void *argp5 = 0 ;
-  int res5 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOO:StreamFactory_setRELUBwdStream",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_setRELUBwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
-  }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_setRELUBwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_setRELUBwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  res4 = SWIG_ConvertPtr(obj3,SWIG_as_voidptrptr(&arg4), 0, 0);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "StreamFactory_setRELUBwdStream" "', argument " "4"" of type '" "void *""'"); 
-  }
-  res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "StreamFactory_setRELUBwdStream" "', argument " "5"" of type '" "Layer< float > *""'"); 
-  }
-  arg5 = reinterpret_cast< Layer< float > * >(argp5);
-  (arg1)->setRELUBwdStream(arg2,arg3,arg4,arg5);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_StreamFactory_getMaxPoolFwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
   int arg2 ;
   int arg3 ;
   int arg4 ;
@@ -4097,73 +4009,73 @@ SWIGINTERN PyObject *_wrap_StreamFactory_getMaxPoolFwdStream(PyObject *SWIGUNUSE
   PyObject * obj12 = 0 ;
   Layer< float > *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOO:StreamFactory_getMaxPoolFwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOO:LayerFactory_getMaxPoolLayer",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
   }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "3"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = static_cast< int >(val3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "4"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "4"" of type '" "int""'");
   } 
   arg4 = static_cast< int >(val4);
   ecode5 = SWIG_AsVal_int(obj4, &val5);
   if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "5"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "5"" of type '" "int""'");
   } 
   arg5 = static_cast< int >(val5);
   ecode6 = SWIG_AsVal_int(obj5, &val6);
   if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "6"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "6"" of type '" "int""'");
   } 
   arg6 = static_cast< int >(val6);
   ecode7 = SWIG_AsVal_int(obj6, &val7);
   if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "7"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "7"" of type '" "int""'");
   } 
   arg7 = static_cast< int >(val7);
   ecode8 = SWIG_AsVal_int(obj7, &val8);
   if (!SWIG_IsOK(ecode8)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "8"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "8"" of type '" "int""'");
   } 
   arg8 = static_cast< int >(val8);
   ecode9 = SWIG_AsVal_int(obj8, &val9);
   if (!SWIG_IsOK(ecode9)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "9"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "9"" of type '" "int""'");
   } 
   arg9 = static_cast< int >(val9);
   ecode10 = SWIG_AsVal_int(obj9, &val10);
   if (!SWIG_IsOK(ecode10)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "10"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "10"" of type '" "int""'");
   } 
   arg10 = static_cast< int >(val10);
   ecode11 = SWIG_AsVal_int(obj10, &val11);
   if (!SWIG_IsOK(ecode11)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "11"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "11"" of type '" "int""'");
   } 
   arg11 = static_cast< int >(val11);
   ecode12 = SWIG_AsVal_int(obj11, &val12);
   if (!SWIG_IsOK(ecode12)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "12"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "12"" of type '" "int""'");
   } 
   arg12 = static_cast< int >(val12);
   ecode13 = SWIG_AsVal_int(obj12, &val13);
   if (!SWIG_IsOK(ecode13)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "StreamFactory_getMaxPoolFwdStream" "', argument " "13"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "LayerFactory_getMaxPoolLayer" "', argument " "13"" of type '" "int""'");
   } 
   arg13 = static_cast< int >(val13);
-  result = (Layer< float > *)(arg1)->getMaxPoolFwdStream(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13);
+  result = (Layer< float > *)(arg1)->getMaxPoolLayer(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, 0 |  0 );
   return resultobj;
 fail:
@@ -4171,9 +4083,9 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_StreamFactory_setMaxPoolFwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_LayerFactory_setMaxPoolLayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
   int arg2 ;
   int arg3 ;
   int arg4 ;
@@ -4230,78 +4142,78 @@ SWIGINTERN PyObject *_wrap_StreamFactory_setMaxPoolFwdStream(PyObject *SWIGUNUSE
   PyObject * obj12 = 0 ;
   PyObject * obj13 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOOO:StreamFactory_setMaxPoolFwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12,&obj13)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOOO:LayerFactory_setMaxPoolLayer",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12,&obj13)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
   }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
   ecode2 = SWIG_AsVal_int(obj1, &val2);
   if (!SWIG_IsOK(ecode2)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "2"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "2"" of type '" "int""'");
   } 
   arg2 = static_cast< int >(val2);
   ecode3 = SWIG_AsVal_int(obj2, &val3);
   if (!SWIG_IsOK(ecode3)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "3"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "3"" of type '" "int""'");
   } 
   arg3 = static_cast< int >(val3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "4"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "4"" of type '" "int""'");
   } 
   arg4 = static_cast< int >(val4);
   ecode5 = SWIG_AsVal_int(obj4, &val5);
   if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "5"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "5"" of type '" "int""'");
   } 
   arg5 = static_cast< int >(val5);
   ecode6 = SWIG_AsVal_int(obj5, &val6);
   if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "6"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "6"" of type '" "int""'");
   } 
   arg6 = static_cast< int >(val6);
   ecode7 = SWIG_AsVal_int(obj6, &val7);
   if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "7"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "7"" of type '" "int""'");
   } 
   arg7 = static_cast< int >(val7);
   ecode8 = SWIG_AsVal_int(obj7, &val8);
   if (!SWIG_IsOK(ecode8)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "8"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "8"" of type '" "int""'");
   } 
   arg8 = static_cast< int >(val8);
   ecode9 = SWIG_AsVal_int(obj8, &val9);
   if (!SWIG_IsOK(ecode9)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "9"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "9"" of type '" "int""'");
   } 
   arg9 = static_cast< int >(val9);
   ecode10 = SWIG_AsVal_int(obj9, &val10);
   if (!SWIG_IsOK(ecode10)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "10"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "10"" of type '" "int""'");
   } 
   arg10 = static_cast< int >(val10);
   ecode11 = SWIG_AsVal_int(obj10, &val11);
   if (!SWIG_IsOK(ecode11)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "11"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "11"" of type '" "int""'");
   } 
   arg11 = static_cast< int >(val11);
   ecode12 = SWIG_AsVal_int(obj11, &val12);
   if (!SWIG_IsOK(ecode12)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "12"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "12"" of type '" "int""'");
   } 
   arg12 = static_cast< int >(val12);
   ecode13 = SWIG_AsVal_int(obj12, &val13);
   if (!SWIG_IsOK(ecode13)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "13"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "13"" of type '" "int""'");
   } 
   arg13 = static_cast< int >(val13);
   res14 = SWIG_ConvertPtr(obj13, &argp14,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
   if (!SWIG_IsOK(res14)) {
-    SWIG_exception_fail(SWIG_ArgError(res14), "in method '" "StreamFactory_setMaxPoolFwdStream" "', argument " "14"" of type '" "Layer< float > *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res14), "in method '" "LayerFactory_setMaxPoolLayer" "', argument " "14"" of type '" "Layer< float > *""'"); 
   }
   arg14 = reinterpret_cast< Layer< float > * >(argp14);
-  (arg1)->setMaxPoolFwdStream(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14);
+  (arg1)->setMaxPoolLayer(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -4309,12 +4221,12 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_StreamFactory_setMaxPoolBwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_LayerFactory_getAvgPoolLayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  void *arg4 = (void *) 0 ;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
   int arg5 ;
   int arg6 ;
   int arg7 ;
@@ -4323,12 +4235,15 @@ SWIGINTERN PyObject *_wrap_StreamFactory_setMaxPoolBwdStream(PyObject *SWIGUNUSE
   int arg10 ;
   int arg11 ;
   int arg12 ;
-  Layer< float > *arg13 = (Layer< float > *) 0 ;
+  int arg13 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  int res4 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
   int val5 ;
   int ecode5 = 0 ;
   int val6 ;
@@ -4345,8 +4260,8 @@ SWIGINTERN PyObject *_wrap_StreamFactory_setMaxPoolBwdStream(PyObject *SWIGUNUSE
   int ecode11 = 0 ;
   int val12 ;
   int ecode12 = 0 ;
-  void *argp13 = 0 ;
-  int res13 = 0 ;
+  int val13 ;
+  int ecode13 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -4360,186 +4275,75 @@ SWIGINTERN PyObject *_wrap_StreamFactory_setMaxPoolBwdStream(PyObject *SWIGUNUSE
   PyObject * obj10 = 0 ;
   PyObject * obj11 = 0 ;
   PyObject * obj12 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOO:StreamFactory_setMaxPoolBwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
-  }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  res4 = SWIG_ConvertPtr(obj3,SWIG_as_voidptrptr(&arg4), 0, 0);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "4"" of type '" "void *""'"); 
-  }
-  ecode5 = SWIG_AsVal_int(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "5"" of type '" "int""'");
-  } 
-  arg5 = static_cast< int >(val5);
-  ecode6 = SWIG_AsVal_int(obj5, &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "6"" of type '" "int""'");
-  } 
-  arg6 = static_cast< int >(val6);
-  ecode7 = SWIG_AsVal_int(obj6, &val7);
-  if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "7"" of type '" "int""'");
-  } 
-  arg7 = static_cast< int >(val7);
-  ecode8 = SWIG_AsVal_int(obj7, &val8);
-  if (!SWIG_IsOK(ecode8)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "8"" of type '" "int""'");
-  } 
-  arg8 = static_cast< int >(val8);
-  ecode9 = SWIG_AsVal_int(obj8, &val9);
-  if (!SWIG_IsOK(ecode9)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "9"" of type '" "int""'");
-  } 
-  arg9 = static_cast< int >(val9);
-  ecode10 = SWIG_AsVal_int(obj9, &val10);
-  if (!SWIG_IsOK(ecode10)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "10"" of type '" "int""'");
-  } 
-  arg10 = static_cast< int >(val10);
-  ecode11 = SWIG_AsVal_int(obj10, &val11);
-  if (!SWIG_IsOK(ecode11)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "11"" of type '" "int""'");
-  } 
-  arg11 = static_cast< int >(val11);
-  ecode12 = SWIG_AsVal_int(obj11, &val12);
-  if (!SWIG_IsOK(ecode12)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "12"" of type '" "int""'");
-  } 
-  arg12 = static_cast< int >(val12);
-  res13 = SWIG_ConvertPtr(obj12, &argp13,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  if (!SWIG_IsOK(res13)) {
-    SWIG_exception_fail(SWIG_ArgError(res13), "in method '" "StreamFactory_setMaxPoolBwdStream" "', argument " "13"" of type '" "Layer< float > *""'"); 
-  }
-  arg13 = reinterpret_cast< Layer< float > * >(argp13);
-  (arg1)->setMaxPoolBwdStream(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_StreamFactory_getMaxPoolBwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  void *arg4 = (void *) 0 ;
-  int arg5 ;
-  int arg6 ;
-  int arg7 ;
-  int arg8 ;
-  int arg9 ;
-  int arg10 ;
-  int arg11 ;
-  int arg12 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  int res4 ;
-  int val5 ;
-  int ecode5 = 0 ;
-  int val6 ;
-  int ecode6 = 0 ;
-  int val7 ;
-  int ecode7 = 0 ;
-  int val8 ;
-  int ecode8 = 0 ;
-  int val9 ;
-  int ecode9 = 0 ;
-  int val10 ;
-  int ecode10 = 0 ;
-  int val11 ;
-  int ecode11 = 0 ;
-  int val12 ;
-  int ecode12 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  PyObject * obj6 = 0 ;
-  PyObject * obj7 = 0 ;
-  PyObject * obj8 = 0 ;
-  PyObject * obj9 = 0 ;
-  PyObject * obj10 = 0 ;
-  PyObject * obj11 = 0 ;
   Layer< float > *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOO:StreamFactory_getMaxPoolBwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOO:LayerFactory_getAvgPoolLayer",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
   }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  res4 = SWIG_ConvertPtr(obj3,SWIG_as_voidptrptr(&arg4), 0, 0);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "4"" of type '" "void *""'"); 
-  }
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = static_cast< int >(val4);
   ecode5 = SWIG_AsVal_int(obj4, &val5);
   if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "5"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "5"" of type '" "int""'");
   } 
   arg5 = static_cast< int >(val5);
   ecode6 = SWIG_AsVal_int(obj5, &val6);
   if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "6"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "6"" of type '" "int""'");
   } 
   arg6 = static_cast< int >(val6);
   ecode7 = SWIG_AsVal_int(obj6, &val7);
   if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "7"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "7"" of type '" "int""'");
   } 
   arg7 = static_cast< int >(val7);
   ecode8 = SWIG_AsVal_int(obj7, &val8);
   if (!SWIG_IsOK(ecode8)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "8"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "8"" of type '" "int""'");
   } 
   arg8 = static_cast< int >(val8);
   ecode9 = SWIG_AsVal_int(obj8, &val9);
   if (!SWIG_IsOK(ecode9)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "9"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "9"" of type '" "int""'");
   } 
   arg9 = static_cast< int >(val9);
   ecode10 = SWIG_AsVal_int(obj9, &val10);
   if (!SWIG_IsOK(ecode10)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "10"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "10"" of type '" "int""'");
   } 
   arg10 = static_cast< int >(val10);
   ecode11 = SWIG_AsVal_int(obj10, &val11);
   if (!SWIG_IsOK(ecode11)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "11"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "11"" of type '" "int""'");
   } 
   arg11 = static_cast< int >(val11);
   ecode12 = SWIG_AsVal_int(obj11, &val12);
   if (!SWIG_IsOK(ecode12)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "StreamFactory_getMaxPoolBwdStream" "', argument " "12"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "12"" of type '" "int""'");
   } 
   arg12 = static_cast< int >(val12);
-  result = (Layer< float > *)(arg1)->getMaxPoolBwdStream(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12);
+  ecode13 = SWIG_AsVal_int(obj12, &val13);
+  if (!SWIG_IsOK(ecode13)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "LayerFactory_getAvgPoolLayer" "', argument " "13"" of type '" "int""'");
+  } 
+  arg13 = static_cast< int >(val13);
+  result = (Layer< float > *)(arg1)->getAvgPoolLayer(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, 0 |  0 );
   return resultobj;
 fail:
@@ -4547,11 +4351,11 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_StreamFactory_getAvgPoolFwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_LayerFactory_setAvgPoolLayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
+  int arg2 ;
+  int arg3 ;
   int arg4 ;
   int arg5 ;
   int arg6 ;
@@ -4560,10 +4364,15 @@ SWIGINTERN PyObject *_wrap_StreamFactory_getAvgPoolFwdStream(PyObject *SWIGUNUSE
   int arg9 ;
   int arg10 ;
   int arg11 ;
+  int arg12 ;
+  int arg13 ;
+  Layer< float > *arg14 = (Layer< float > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res2 ;
-  int res3 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
   int val4 ;
   int ecode4 = 0 ;
   int val5 ;
@@ -4580,235 +4389,12 @@ SWIGINTERN PyObject *_wrap_StreamFactory_getAvgPoolFwdStream(PyObject *SWIGUNUSE
   int ecode10 = 0 ;
   int val11 ;
   int ecode11 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  PyObject * obj6 = 0 ;
-  PyObject * obj7 = 0 ;
-  PyObject * obj8 = 0 ;
-  PyObject * obj9 = 0 ;
-  PyObject * obj10 = 0 ;
-  Layer< float > *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOO:StreamFactory_getAvgPoolFwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_getAvgPoolFwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
-  }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_getAvgPoolFwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_getAvgPoolFwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  ecode4 = SWIG_AsVal_int(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "StreamFactory_getAvgPoolFwdStream" "', argument " "4"" of type '" "int""'");
-  } 
-  arg4 = static_cast< int >(val4);
-  ecode5 = SWIG_AsVal_int(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_getAvgPoolFwdStream" "', argument " "5"" of type '" "int""'");
-  } 
-  arg5 = static_cast< int >(val5);
-  ecode6 = SWIG_AsVal_int(obj5, &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_getAvgPoolFwdStream" "', argument " "6"" of type '" "int""'");
-  } 
-  arg6 = static_cast< int >(val6);
-  ecode7 = SWIG_AsVal_int(obj6, &val7);
-  if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "StreamFactory_getAvgPoolFwdStream" "', argument " "7"" of type '" "int""'");
-  } 
-  arg7 = static_cast< int >(val7);
-  ecode8 = SWIG_AsVal_int(obj7, &val8);
-  if (!SWIG_IsOK(ecode8)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "StreamFactory_getAvgPoolFwdStream" "', argument " "8"" of type '" "int""'");
-  } 
-  arg8 = static_cast< int >(val8);
-  ecode9 = SWIG_AsVal_int(obj8, &val9);
-  if (!SWIG_IsOK(ecode9)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "StreamFactory_getAvgPoolFwdStream" "', argument " "9"" of type '" "int""'");
-  } 
-  arg9 = static_cast< int >(val9);
-  ecode10 = SWIG_AsVal_int(obj9, &val10);
-  if (!SWIG_IsOK(ecode10)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "StreamFactory_getAvgPoolFwdStream" "', argument " "10"" of type '" "int""'");
-  } 
-  arg10 = static_cast< int >(val10);
-  ecode11 = SWIG_AsVal_int(obj10, &val11);
-  if (!SWIG_IsOK(ecode11)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "StreamFactory_getAvgPoolFwdStream" "', argument " "11"" of type '" "int""'");
-  } 
-  arg11 = static_cast< int >(val11);
-  result = (Layer< float > *)(arg1)->getAvgPoolFwdStream(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_StreamFactory_setAvgPoolFwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  int arg4 ;
-  int arg5 ;
-  int arg6 ;
-  int arg7 ;
-  int arg8 ;
-  int arg9 ;
-  int arg10 ;
-  int arg11 ;
-  Layer< float > *arg12 = (Layer< float > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  int val4 ;
-  int ecode4 = 0 ;
-  int val5 ;
-  int ecode5 = 0 ;
-  int val6 ;
-  int ecode6 = 0 ;
-  int val7 ;
-  int ecode7 = 0 ;
-  int val8 ;
-  int ecode8 = 0 ;
-  int val9 ;
-  int ecode9 = 0 ;
-  int val10 ;
-  int ecode10 = 0 ;
-  int val11 ;
-  int ecode11 = 0 ;
-  void *argp12 = 0 ;
-  int res12 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  PyObject * obj6 = 0 ;
-  PyObject * obj7 = 0 ;
-  PyObject * obj8 = 0 ;
-  PyObject * obj9 = 0 ;
-  PyObject * obj10 = 0 ;
-  PyObject * obj11 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOO:StreamFactory_setAvgPoolFwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
-  }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  ecode4 = SWIG_AsVal_int(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "4"" of type '" "int""'");
-  } 
-  arg4 = static_cast< int >(val4);
-  ecode5 = SWIG_AsVal_int(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "5"" of type '" "int""'");
-  } 
-  arg5 = static_cast< int >(val5);
-  ecode6 = SWIG_AsVal_int(obj5, &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "6"" of type '" "int""'");
-  } 
-  arg6 = static_cast< int >(val6);
-  ecode7 = SWIG_AsVal_int(obj6, &val7);
-  if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "7"" of type '" "int""'");
-  } 
-  arg7 = static_cast< int >(val7);
-  ecode8 = SWIG_AsVal_int(obj7, &val8);
-  if (!SWIG_IsOK(ecode8)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "8"" of type '" "int""'");
-  } 
-  arg8 = static_cast< int >(val8);
-  ecode9 = SWIG_AsVal_int(obj8, &val9);
-  if (!SWIG_IsOK(ecode9)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "9"" of type '" "int""'");
-  } 
-  arg9 = static_cast< int >(val9);
-  ecode10 = SWIG_AsVal_int(obj9, &val10);
-  if (!SWIG_IsOK(ecode10)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "10"" of type '" "int""'");
-  } 
-  arg10 = static_cast< int >(val10);
-  ecode11 = SWIG_AsVal_int(obj10, &val11);
-  if (!SWIG_IsOK(ecode11)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "11"" of type '" "int""'");
-  } 
-  arg11 = static_cast< int >(val11);
-  res12 = SWIG_ConvertPtr(obj11, &argp12,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  if (!SWIG_IsOK(res12)) {
-    SWIG_exception_fail(SWIG_ArgError(res12), "in method '" "StreamFactory_setAvgPoolFwdStream" "', argument " "12"" of type '" "Layer< float > *""'"); 
-  }
-  arg12 = reinterpret_cast< Layer< float > * >(argp12);
-  (arg1)->setAvgPoolFwdStream(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_StreamFactory_setAvgPoolBwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  void *arg4 = (void *) 0 ;
-  int arg5 ;
-  int arg6 ;
-  int arg7 ;
-  int arg8 ;
-  int arg9 ;
-  int arg10 ;
-  int arg11 ;
-  int arg12 ;
-  Layer< float > *arg13 = (Layer< float > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  int res4 ;
-  int val5 ;
-  int ecode5 = 0 ;
-  int val6 ;
-  int ecode6 = 0 ;
-  int val7 ;
-  int ecode7 = 0 ;
-  int val8 ;
-  int ecode8 = 0 ;
-  int val9 ;
-  int ecode9 = 0 ;
-  int val10 ;
-  int ecode10 = 0 ;
-  int val11 ;
-  int ecode11 = 0 ;
   int val12 ;
   int ecode12 = 0 ;
-  void *argp13 = 0 ;
-  int res13 = 0 ;
+  int val13 ;
+  int ecode13 = 0 ;
+  void *argp14 = 0 ;
+  int res14 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -4822,71 +4408,80 @@ SWIGINTERN PyObject *_wrap_StreamFactory_setAvgPoolBwdStream(PyObject *SWIGUNUSE
   PyObject * obj10 = 0 ;
   PyObject * obj11 = 0 ;
   PyObject * obj12 = 0 ;
+  PyObject * obj13 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOO:StreamFactory_setAvgPoolBwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOOOO:LayerFactory_setAvgPoolLayer",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11,&obj12,&obj13)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
   }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  res4 = SWIG_ConvertPtr(obj3,SWIG_as_voidptrptr(&arg4), 0, 0);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "4"" of type '" "void *""'"); 
-  }
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = static_cast< int >(val4);
   ecode5 = SWIG_AsVal_int(obj4, &val5);
   if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "5"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "5"" of type '" "int""'");
   } 
   arg5 = static_cast< int >(val5);
   ecode6 = SWIG_AsVal_int(obj5, &val6);
   if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "6"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "6"" of type '" "int""'");
   } 
   arg6 = static_cast< int >(val6);
   ecode7 = SWIG_AsVal_int(obj6, &val7);
   if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "7"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "7"" of type '" "int""'");
   } 
   arg7 = static_cast< int >(val7);
   ecode8 = SWIG_AsVal_int(obj7, &val8);
   if (!SWIG_IsOK(ecode8)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "8"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "8"" of type '" "int""'");
   } 
   arg8 = static_cast< int >(val8);
   ecode9 = SWIG_AsVal_int(obj8, &val9);
   if (!SWIG_IsOK(ecode9)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "9"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "9"" of type '" "int""'");
   } 
   arg9 = static_cast< int >(val9);
   ecode10 = SWIG_AsVal_int(obj9, &val10);
   if (!SWIG_IsOK(ecode10)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "10"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "10"" of type '" "int""'");
   } 
   arg10 = static_cast< int >(val10);
   ecode11 = SWIG_AsVal_int(obj10, &val11);
   if (!SWIG_IsOK(ecode11)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "11"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "11"" of type '" "int""'");
   } 
   arg11 = static_cast< int >(val11);
   ecode12 = SWIG_AsVal_int(obj11, &val12);
   if (!SWIG_IsOK(ecode12)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "12"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "12"" of type '" "int""'");
   } 
   arg12 = static_cast< int >(val12);
-  res13 = SWIG_ConvertPtr(obj12, &argp13,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  if (!SWIG_IsOK(res13)) {
-    SWIG_exception_fail(SWIG_ArgError(res13), "in method '" "StreamFactory_setAvgPoolBwdStream" "', argument " "13"" of type '" "Layer< float > *""'"); 
+  ecode13 = SWIG_AsVal_int(obj12, &val13);
+  if (!SWIG_IsOK(ecode13)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "13"" of type '" "int""'");
+  } 
+  arg13 = static_cast< int >(val13);
+  res14 = SWIG_ConvertPtr(obj13, &argp14,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res14)) {
+    SWIG_exception_fail(SWIG_ArgError(res14), "in method '" "LayerFactory_setAvgPoolLayer" "', argument " "14"" of type '" "Layer< float > *""'"); 
   }
-  arg13 = reinterpret_cast< Layer< float > * >(argp13);
-  (arg1)->setAvgPoolBwdStream(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13);
+  arg14 = reinterpret_cast< Layer< float > * >(argp14);
+  (arg1)->setAvgPoolLayer(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -4894,41 +4489,120 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_StreamFactory_getAvgPoolBwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_LayerFactory_getLRNLayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  void *arg4 = (void *) 0 ;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
   int arg5 ;
   int arg6 ;
-  int arg7 ;
-  int arg8 ;
-  int arg9 ;
-  int arg10 ;
-  int arg11 ;
-  int arg12 ;
+  float arg7 ;
+  float arg8 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  int res4 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
   int val5 ;
   int ecode5 = 0 ;
   int val6 ;
   int ecode6 = 0 ;
-  int val7 ;
+  float val7 ;
   int ecode7 = 0 ;
-  int val8 ;
+  float val8 ;
   int ecode8 = 0 ;
-  int val9 ;
-  int ecode9 = 0 ;
-  int val10 ;
-  int ecode10 = 0 ;
-  int val11 ;
-  int ecode11 = 0 ;
-  int val12 ;
-  int ecode12 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  Layer< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOO:LayerFactory_getLRNLayer",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_getLRNLayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
+  }
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_getLRNLayer" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LayerFactory_getLRNLayer" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "LayerFactory_getLRNLayer" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = static_cast< int >(val4);
+  ecode5 = SWIG_AsVal_int(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "LayerFactory_getLRNLayer" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = static_cast< int >(val5);
+  ecode6 = SWIG_AsVal_int(obj5, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "LayerFactory_getLRNLayer" "', argument " "6"" of type '" "int""'");
+  } 
+  arg6 = static_cast< int >(val6);
+  ecode7 = SWIG_AsVal_float(obj6, &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "LayerFactory_getLRNLayer" "', argument " "7"" of type '" "float""'");
+  } 
+  arg7 = static_cast< float >(val7);
+  ecode8 = SWIG_AsVal_float(obj7, &val8);
+  if (!SWIG_IsOK(ecode8)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "LayerFactory_getLRNLayer" "', argument " "8"" of type '" "float""'");
+  } 
+  arg8 = static_cast< float >(val8);
+  result = (Layer< float > *)(arg1)->getLRNLayer(arg2,arg3,arg4,arg5,arg6,arg7,arg8);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_LayerFactory_setLRNLayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  float arg7 ;
+  float arg8 ;
+  Layer< float > *arg9 = (Layer< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  float val7 ;
+  int ecode7 = 0 ;
+  float val8 ;
+  int ecode8 = 0 ;
+  void *argp9 = 0 ;
+  int res9 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
@@ -4938,204 +4612,54 @@ SWIGINTERN PyObject *_wrap_StreamFactory_getAvgPoolBwdStream(PyObject *SWIGUNUSE
   PyObject * obj6 = 0 ;
   PyObject * obj7 = 0 ;
   PyObject * obj8 = 0 ;
-  PyObject * obj9 = 0 ;
-  PyObject * obj10 = 0 ;
-  PyObject * obj11 = 0 ;
-  Layer< float > *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOO:StreamFactory_getAvgPoolBwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOO:LayerFactory_setLRNLayer",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_setLRNLayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
   }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  res4 = SWIG_ConvertPtr(obj3,SWIG_as_voidptrptr(&arg4), 0, 0);
-  if (!SWIG_IsOK(res4)) {
-    SWIG_exception_fail(SWIG_ArgError(res4), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "4"" of type '" "void *""'"); 
-  }
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_setLRNLayer" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LayerFactory_setLRNLayer" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "LayerFactory_setLRNLayer" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = static_cast< int >(val4);
   ecode5 = SWIG_AsVal_int(obj4, &val5);
   if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "5"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "LayerFactory_setLRNLayer" "', argument " "5"" of type '" "int""'");
   } 
   arg5 = static_cast< int >(val5);
   ecode6 = SWIG_AsVal_int(obj5, &val6);
   if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "6"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "LayerFactory_setLRNLayer" "', argument " "6"" of type '" "int""'");
   } 
   arg6 = static_cast< int >(val6);
-  ecode7 = SWIG_AsVal_int(obj6, &val7);
+  ecode7 = SWIG_AsVal_float(obj6, &val7);
   if (!SWIG_IsOK(ecode7)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "7"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "LayerFactory_setLRNLayer" "', argument " "7"" of type '" "float""'");
   } 
-  arg7 = static_cast< int >(val7);
-  ecode8 = SWIG_AsVal_int(obj7, &val8);
+  arg7 = static_cast< float >(val7);
+  ecode8 = SWIG_AsVal_float(obj7, &val8);
   if (!SWIG_IsOK(ecode8)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "8"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "LayerFactory_setLRNLayer" "', argument " "8"" of type '" "float""'");
   } 
-  arg8 = static_cast< int >(val8);
-  ecode9 = SWIG_AsVal_int(obj8, &val9);
-  if (!SWIG_IsOK(ecode9)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "9"" of type '" "int""'");
-  } 
-  arg9 = static_cast< int >(val9);
-  ecode10 = SWIG_AsVal_int(obj9, &val10);
-  if (!SWIG_IsOK(ecode10)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "10"" of type '" "int""'");
-  } 
-  arg10 = static_cast< int >(val10);
-  ecode11 = SWIG_AsVal_int(obj10, &val11);
-  if (!SWIG_IsOK(ecode11)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "11"" of type '" "int""'");
-  } 
-  arg11 = static_cast< int >(val11);
-  ecode12 = SWIG_AsVal_int(obj11, &val12);
-  if (!SWIG_IsOK(ecode12)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "StreamFactory_getAvgPoolBwdStream" "', argument " "12"" of type '" "int""'");
-  } 
-  arg12 = static_cast< int >(val12);
-  result = (Layer< float > *)(arg1)->getAvgPoolBwdStream(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_StreamFactory_getLRNFwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  int arg4 ;
-  float arg5 ;
-  float arg6 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  int val4 ;
-  int ecode4 = 0 ;
-  float val5 ;
-  int ecode5 = 0 ;
-  float val6 ;
-  int ecode6 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  Layer< float > *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:StreamFactory_getLRNFwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_getLRNFwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
+  arg8 = static_cast< float >(val8);
+  res9 = SWIG_ConvertPtr(obj8, &argp9,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res9)) {
+    SWIG_exception_fail(SWIG_ArgError(res9), "in method '" "LayerFactory_setLRNLayer" "', argument " "9"" of type '" "Layer< float > *""'"); 
   }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_getLRNFwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_getLRNFwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  ecode4 = SWIG_AsVal_int(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "StreamFactory_getLRNFwdStream" "', argument " "4"" of type '" "int""'");
-  } 
-  arg4 = static_cast< int >(val4);
-  ecode5 = SWIG_AsVal_float(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_getLRNFwdStream" "', argument " "5"" of type '" "float""'");
-  } 
-  arg5 = static_cast< float >(val5);
-  ecode6 = SWIG_AsVal_float(obj5, &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_getLRNFwdStream" "', argument " "6"" of type '" "float""'");
-  } 
-  arg6 = static_cast< float >(val6);
-  result = (Layer< float > *)(arg1)->getLRNFwdStream(arg2,arg3,arg4,arg5,arg6);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_StreamFactory_setLRNFwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  int arg4 ;
-  float arg5 ;
-  float arg6 ;
-  Layer< float > *arg7 = (Layer< float > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  int val4 ;
-  int ecode4 = 0 ;
-  float val5 ;
-  int ecode5 = 0 ;
-  float val6 ;
-  int ecode6 = 0 ;
-  void *argp7 = 0 ;
-  int res7 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  PyObject * obj6 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOO:StreamFactory_setLRNFwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_setLRNFwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
-  }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_setLRNFwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_setLRNFwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  ecode4 = SWIG_AsVal_int(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "StreamFactory_setLRNFwdStream" "', argument " "4"" of type '" "int""'");
-  } 
-  arg4 = static_cast< int >(val4);
-  ecode5 = SWIG_AsVal_float(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_setLRNFwdStream" "', argument " "5"" of type '" "float""'");
-  } 
-  arg5 = static_cast< float >(val5);
-  ecode6 = SWIG_AsVal_float(obj5, &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_setLRNFwdStream" "', argument " "6"" of type '" "float""'");
-  } 
-  arg6 = static_cast< float >(val6);
-  res7 = SWIG_ConvertPtr(obj6, &argp7,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  if (!SWIG_IsOK(res7)) {
-    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "StreamFactory_setLRNFwdStream" "', argument " "7"" of type '" "Layer< float > *""'"); 
-  }
-  arg7 = reinterpret_cast< Layer< float > * >(argp7);
-  (arg1)->setLRNFwdStream(arg2,arg3,arg4,arg5,arg6,arg7);
+  arg9 = reinterpret_cast< Layer< float > * >(argp9);
+  (arg1)->setLRNLayer(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -5143,150 +4667,18 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_StreamFactory_getLRNBwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_LayerFactory_getSoftmax2DLayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  int arg4 ;
-  float arg5 ;
-  float arg6 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  int val4 ;
-  int ecode4 = 0 ;
-  float val5 ;
-  int ecode5 = 0 ;
-  float val6 ;
-  int ecode6 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  Layer< float > *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:StreamFactory_getLRNBwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_getLRNBwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
-  }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_getLRNBwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_getLRNBwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  ecode4 = SWIG_AsVal_int(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "StreamFactory_getLRNBwdStream" "', argument " "4"" of type '" "int""'");
-  } 
-  arg4 = static_cast< int >(val4);
-  ecode5 = SWIG_AsVal_float(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_getLRNBwdStream" "', argument " "5"" of type '" "float""'");
-  } 
-  arg5 = static_cast< float >(val5);
-  ecode6 = SWIG_AsVal_float(obj5, &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_getLRNBwdStream" "', argument " "6"" of type '" "float""'");
-  } 
-  arg6 = static_cast< float >(val6);
-  result = (Layer< float > *)(arg1)->getLRNBwdStream(arg2,arg3,arg4,arg5,arg6);
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_StreamFactory_setLRNBwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
-  int arg4 ;
-  float arg5 ;
-  float arg6 ;
-  Layer< float > *arg7 = (Layer< float > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  int res2 ;
-  int res3 ;
-  int val4 ;
-  int ecode4 = 0 ;
-  float val5 ;
-  int ecode5 = 0 ;
-  float val6 ;
-  int ecode6 = 0 ;
-  void *argp7 = 0 ;
-  int res7 = 0 ;
-  PyObject * obj0 = 0 ;
-  PyObject * obj1 = 0 ;
-  PyObject * obj2 = 0 ;
-  PyObject * obj3 = 0 ;
-  PyObject * obj4 = 0 ;
-  PyObject * obj5 = 0 ;
-  PyObject * obj6 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"OOOOOOO:StreamFactory_setLRNBwdStream",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_setLRNBwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
-  }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_setLRNBwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_setLRNBwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
-  ecode4 = SWIG_AsVal_int(obj3, &val4);
-  if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "StreamFactory_setLRNBwdStream" "', argument " "4"" of type '" "int""'");
-  } 
-  arg4 = static_cast< int >(val4);
-  ecode5 = SWIG_AsVal_float(obj4, &val5);
-  if (!SWIG_IsOK(ecode5)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "StreamFactory_setLRNBwdStream" "', argument " "5"" of type '" "float""'");
-  } 
-  arg5 = static_cast< float >(val5);
-  ecode6 = SWIG_AsVal_float(obj5, &val6);
-  if (!SWIG_IsOK(ecode6)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "StreamFactory_setLRNBwdStream" "', argument " "6"" of type '" "float""'");
-  } 
-  arg6 = static_cast< float >(val6);
-  res7 = SWIG_ConvertPtr(obj6, &argp7,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  if (!SWIG_IsOK(res7)) {
-    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "StreamFactory_setLRNBwdStream" "', argument " "7"" of type '" "Layer< float > *""'"); 
-  }
-  arg7 = reinterpret_cast< Layer< float > * >(argp7);
-  (arg1)->setLRNBwdStream(arg2,arg3,arg4,arg5,arg6,arg7);
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_StreamFactory_getSoftmaxFwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
+  int arg2 ;
+  int arg3 ;
   int arg4 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res2 ;
-  int res3 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
   int val4 ;
   int ecode4 = 0 ;
   PyObject * obj0 = 0 ;
@@ -5295,26 +4687,28 @@ SWIGINTERN PyObject *_wrap_StreamFactory_getSoftmaxFwdStream(PyObject *SWIGUNUSE
   PyObject * obj3 = 0 ;
   Layer< float > *result = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOO:StreamFactory_getSoftmaxFwdStream",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:LayerFactory_getSoftmax2DLayer",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_getSoftmaxFwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_getSoftmax2DLayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
   }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_getSoftmaxFwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_getSoftmaxFwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_getSoftmax2DLayer" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LayerFactory_getSoftmax2DLayer" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "StreamFactory_getSoftmaxFwdStream" "', argument " "4"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "LayerFactory_getSoftmax2DLayer" "', argument " "4"" of type '" "int""'");
   } 
   arg4 = static_cast< int >(val4);
-  result = (Layer< float > *)(arg1)->getSoftmaxFwdStream(arg2,arg3,arg4);
+  result = (Layer< float > *)(arg1)->getSoftmax2DLayer(arg2,arg3,arg4);
   resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, 0 |  0 );
   return resultobj;
 fail:
@@ -5322,17 +4716,19 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_StreamFactory_setSoftmaxFwdStream(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_LayerFactory_setSoftmax2DLayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
-  void *arg2 = (void *) 0 ;
-  void *arg3 = (void *) 0 ;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
+  int arg2 ;
+  int arg3 ;
   int arg4 ;
   Layer< float > *arg5 = (Layer< float > *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
-  int res2 ;
-  int res3 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
   int val4 ;
   int ecode4 = 0 ;
   void *argp5 = 0 ;
@@ -5343,31 +4739,33 @@ SWIGINTERN PyObject *_wrap_StreamFactory_setSoftmaxFwdStream(PyObject *SWIGUNUSE
   PyObject * obj3 = 0 ;
   PyObject * obj4 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOOOO:StreamFactory_setSoftmaxFwdStream",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, 0 |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:LayerFactory_setSoftmax2DLayer",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "StreamFactory_setSoftmaxFwdStream" "', argument " "1"" of type '" "StreamFactory *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_setSoftmax2DLayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
   }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
-  res2 = SWIG_ConvertPtr(obj1,SWIG_as_voidptrptr(&arg2), 0, 0);
-  if (!SWIG_IsOK(res2)) {
-    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "StreamFactory_setSoftmaxFwdStream" "', argument " "2"" of type '" "void *""'"); 
-  }
-  res3 = SWIG_ConvertPtr(obj2,SWIG_as_voidptrptr(&arg3), 0, 0);
-  if (!SWIG_IsOK(res3)) {
-    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "StreamFactory_setSoftmaxFwdStream" "', argument " "3"" of type '" "void *""'"); 
-  }
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_setSoftmax2DLayer" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LayerFactory_setSoftmax2DLayer" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
   ecode4 = SWIG_AsVal_int(obj3, &val4);
   if (!SWIG_IsOK(ecode4)) {
-    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "StreamFactory_setSoftmaxFwdStream" "', argument " "4"" of type '" "int""'");
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "LayerFactory_setSoftmax2DLayer" "', argument " "4"" of type '" "int""'");
   } 
   arg4 = static_cast< int >(val4);
   res5 = SWIG_ConvertPtr(obj4, &argp5,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
   if (!SWIG_IsOK(res5)) {
-    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "StreamFactory_setSoftmaxFwdStream" "', argument " "5"" of type '" "Layer< float > *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res5), "in method '" "LayerFactory_setSoftmax2DLayer" "', argument " "5"" of type '" "Layer< float > *""'"); 
   }
   arg5 = reinterpret_cast< Layer< float > * >(argp5);
-  (arg1)->setSoftmaxFwdStream(arg2,arg3,arg4,arg5);
+  (arg1)->setSoftmax2DLayer(arg2,arg3,arg4,arg5);
   resultobj = SWIG_Py_Void();
   return resultobj;
 fail:
@@ -5375,19 +4773,161 @@ fail:
 }
 
 
-SWIGINTERN PyObject *_wrap_delete_StreamFactory(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *_wrap_LayerFactory_getSoftmax4DLayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
-  StreamFactory *arg1 = (StreamFactory *) 0 ;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  Layer< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:LayerFactory_getSoftmax4DLayer",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_getSoftmax4DLayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
+  }
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_getSoftmax4DLayer" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LayerFactory_getSoftmax4DLayer" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "LayerFactory_getSoftmax4DLayer" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = static_cast< int >(val4);
+  ecode5 = SWIG_AsVal_int(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "LayerFactory_getSoftmax4DLayer" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = static_cast< int >(val5);
+  ecode6 = SWIG_AsVal_int(obj5, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "LayerFactory_getSoftmax4DLayer" "', argument " "6"" of type '" "int""'");
+  } 
+  arg6 = static_cast< int >(val6);
+  result = (Layer< float > *)(arg1)->getSoftmax4DLayer(arg2,arg3,arg4,arg5,arg6);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, 0 |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_LayerFactory_setSoftmax4DLayer(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  Layer< float > *arg7 = (Layer< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  void *argp7 = 0 ;
+  int res7 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOO:LayerFactory_setSoftmax4DLayer",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LayerFactory_setSoftmax4DLayer" "', argument " "1"" of type '" "LayerFactory *""'"); 
+  }
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "LayerFactory_setSoftmax4DLayer" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "LayerFactory_setSoftmax4DLayer" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "LayerFactory_setSoftmax4DLayer" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = static_cast< int >(val4);
+  ecode5 = SWIG_AsVal_int(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "LayerFactory_setSoftmax4DLayer" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = static_cast< int >(val5);
+  ecode6 = SWIG_AsVal_int(obj5, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "LayerFactory_setSoftmax4DLayer" "', argument " "6"" of type '" "int""'");
+  } 
+  arg6 = static_cast< int >(val6);
+  res7 = SWIG_ConvertPtr(obj6, &argp7,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res7)) {
+    SWIG_exception_fail(SWIG_ArgError(res7), "in method '" "LayerFactory_setSoftmax4DLayer" "', argument " "7"" of type '" "Layer< float > *""'"); 
+  }
+  arg7 = reinterpret_cast< Layer< float > * >(argp7);
+  (arg1)->setSoftmax4DLayer(arg2,arg3,arg4,arg5,arg6,arg7);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_LayerFactory(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LayerFactory *arg1 = (LayerFactory *) 0 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyObject * obj0 = 0 ;
   
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_StreamFactory",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_StreamFactory, SWIG_POINTER_DISOWN |  0 );
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_LayerFactory",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerFactory, SWIG_POINTER_DISOWN |  0 );
   if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_StreamFactory" "', argument " "1"" of type '" "StreamFactory *""'"); 
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_LayerFactory" "', argument " "1"" of type '" "LayerFactory *""'"); 
   }
-  arg1 = reinterpret_cast< StreamFactory * >(argp1);
+  arg1 = reinterpret_cast< LayerFactory * >(argp1);
   delete arg1;
   resultobj = SWIG_Py_Void();
   return resultobj;
@@ -5396,10 +4936,576 @@ fail:
 }
 
 
-SWIGINTERN PyObject *StreamFactory_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+SWIGINTERN PyObject *LayerFactory_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_StreamFactory, SWIG_NewClientData(obj));
+  SWIG_TypeNewClientData(SWIGTYPE_p_LayerFactory, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_lrn_params_alpha_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:lrn_params_alpha_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_alpha_set" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "lrn_params_alpha_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->alpha = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_alpha_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:lrn_params_alpha_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_alpha_get" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  result = (double) ((arg1)->alpha);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_beta_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  double arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  double val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:lrn_params_beta_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_beta_set" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  ecode2 = SWIG_AsVal_double(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "lrn_params_beta_set" "', argument " "2"" of type '" "double""'");
+  } 
+  arg2 = static_cast< double >(val2);
+  if (arg1) (arg1)->beta = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_beta_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  double result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:lrn_params_beta_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_beta_get" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  result = (double) ((arg1)->beta);
+  resultobj = SWIG_From_double(static_cast< double >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_local_size_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:lrn_params_local_size_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_local_size_set" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "lrn_params_local_size_set" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  if (arg1) (arg1)->local_size = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_local_size_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:lrn_params_local_size_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_local_size_get" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  result = (int) ((arg1)->local_size);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_aprop_kind_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  mkldnn::prop_kind arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:lrn_params_aprop_kind_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_aprop_kind_set" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mkldnn__prop_kind,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "lrn_params_aprop_kind_set" "', argument " "2"" of type '" "mkldnn::prop_kind""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "lrn_params_aprop_kind_set" "', argument " "2"" of type '" "mkldnn::prop_kind""'");
+    } else {
+      mkldnn::prop_kind * temp = reinterpret_cast< mkldnn::prop_kind * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->aprop_kind = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_aprop_kind_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  mkldnn::prop_kind result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:lrn_params_aprop_kind_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_aprop_kind_get" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  result =  ((arg1)->aprop_kind);
+  resultobj = SWIG_NewPointerObj((new mkldnn::prop_kind(static_cast< const mkldnn::prop_kind& >(result))), SWIGTYPE_p_mkldnn__prop_kind, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_aalgorithm_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  mkldnn::algorithm arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:lrn_params_aalgorithm_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_aalgorithm_set" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mkldnn__algorithm,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "lrn_params_aalgorithm_set" "', argument " "2"" of type '" "mkldnn::algorithm""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "lrn_params_aalgorithm_set" "', argument " "2"" of type '" "mkldnn::algorithm""'");
+    } else {
+      mkldnn::algorithm * temp = reinterpret_cast< mkldnn::algorithm * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->aalgorithm = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_aalgorithm_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  mkldnn::algorithm result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:lrn_params_aalgorithm_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_aalgorithm_get" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  result =  ((arg1)->aalgorithm);
+  resultobj = SWIG_NewPointerObj((new mkldnn::algorithm(static_cast< const mkldnn::algorithm& >(result))), SWIGTYPE_p_mkldnn__algorithm, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_data_format_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  mkldnn::memory::format arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:lrn_params_data_format_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_data_format_set" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mkldnn__memory__format,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "lrn_params_data_format_set" "', argument " "2"" of type '" "mkldnn::memory::format""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "lrn_params_data_format_set" "', argument " "2"" of type '" "mkldnn::memory::format""'");
+    } else {
+      mkldnn::memory::format * temp = reinterpret_cast< mkldnn::memory::format * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->data_format = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_data_format_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  mkldnn::memory::format result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:lrn_params_data_format_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_data_format_get" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  result =  ((arg1)->data_format);
+  resultobj = SWIG_NewPointerObj((new mkldnn::memory::format(static_cast< const mkldnn::memory::format& >(result))), SWIGTYPE_p_mkldnn__memory__format, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_diff_data_format_set(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  mkldnn::memory::format arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:lrn_params_diff_data_format_set",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_diff_data_format_set" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_mkldnn__memory__format,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "lrn_params_diff_data_format_set" "', argument " "2"" of type '" "mkldnn::memory::format""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "lrn_params_diff_data_format_set" "', argument " "2"" of type '" "mkldnn::memory::format""'");
+    } else {
+      mkldnn::memory::format * temp = reinterpret_cast< mkldnn::memory::format * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  if (arg1) (arg1)->diff_data_format = arg2;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_lrn_params_diff_data_format_get(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  mkldnn::memory::format result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:lrn_params_diff_data_format_get",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "lrn_params_diff_data_format_get" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  result =  ((arg1)->diff_data_format);
+  resultobj = SWIG_NewPointerObj((new mkldnn::memory::format(static_cast< const mkldnn::memory::format& >(result))), SWIGTYPE_p_mkldnn__memory__format, SWIG_POINTER_OWN |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_lrn_params(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_lrn_params")) SWIG_fail;
+  result = (lrn_params *)new lrn_params();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_lrn_params, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_lrn_params(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  lrn_params *arg1 = (lrn_params *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_lrn_params",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_lrn_params, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_lrn_params" "', argument " "1"" of type '" "lrn_params *""'"); 
+  }
+  arg1 = reinterpret_cast< lrn_params * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *lrn_params_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_lrn_params, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_delete_Layer_F32(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Layer< float > *arg1 = (Layer< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_Layer_F32",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerT_float_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Layer_F32" "', argument " "1"" of type '" "Layer< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Layer< float > * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Layer_F32_forward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Layer< float > *arg1 = (Layer< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Layer_F32_forward",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Layer_F32_forward" "', argument " "1"" of type '" "Layer< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Layer< float > * >(argp1);
+  result = (int)(arg1)->forward();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Layer_F32_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Layer< float > *arg1 = (Layer< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Layer_F32_backward",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Layer_F32_backward" "', argument " "1"" of type '" "Layer< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Layer< float > * >(argp1);
+  result = (int)(arg1)->backward();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Layer_F32_setup_forward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Layer< float > *arg1 = (Layer< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Layer_F32_setup_forward",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Layer_F32_setup_forward" "', argument " "1"" of type '" "Layer< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Layer< float > * >(argp1);
+  result = (int)(arg1)->setup_forward();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Layer_F32_setup_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Layer< float > *arg1 = (Layer< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Layer_F32_setup_backward",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Layer_F32_setup_backward" "', argument " "1"" of type '" "Layer< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Layer< float > * >(argp1);
+  result = (int)(arg1)->setup_backward();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Layer_F32(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Layer< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_Layer_F32")) SWIG_fail;
+  result = (Layer< float > *)new Layer< float >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *Layer_F32_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_LayerT_float_t, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
@@ -6745,17 +6851,25 @@ SWIGINTERN PyObject *_wrap_Pooling_F32_forward(PyObject *SWIGUNUSEDPARM(self), P
   int arg9 ;
   int arg10 ;
   int arg11 ;
+  int *arg12 = (int *) 0 ;
+  int arg13 ;
+  int arg14 ;
+  int arg15 ;
+  int arg16 ;
   void *argp1 = 0 ;
   int res1 = 0 ;
   PyArrayObject *array2 = NULL ;
   int is_new_object2 = 0 ;
   PyArrayObject *array7 = NULL ;
+  PyArrayObject *array12 = NULL ;
+  int is_new_object12 = 0 ;
   PyObject * obj0 = 0 ;
   PyObject * obj1 = 0 ;
   PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
   int result;
   
-  if (!PyArg_ParseTuple(args,(char *)"OOO:Pooling_F32_forward",&obj0,&obj1,&obj2)) SWIG_fail;
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:Pooling_F32_forward",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
   res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PoolingT_float_t, 0 |  0 );
   if (!SWIG_IsOK(res1)) {
     SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pooling_F32_forward" "', argument " "1"" of type '" "Pooling< float > *""'"); 
@@ -6785,12 +6899,32 @@ SWIGINTERN PyObject *_wrap_Pooling_F32_forward(PyObject *SWIGUNUSEDPARM(self), P
     arg10 = (int) array_size(array7,2);
     arg11 = (int) array_size(array7,3);
   }
-  result = (int)(arg1)->forward(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11);
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array12 = obj_to_array_contiguous_allow_conversion(obj3, NPY_INT,
+      &is_new_object12);
+    if (!array12 || !require_dimensions(array12, 4) ||
+      !require_size(array12, size, 4)) SWIG_fail;
+    arg12 = (int*) array_data(array12);
+    arg13 = (int) array_size(array12,0);
+    arg14 = (int) array_size(array12,1);
+    arg15 = (int) array_size(array12,2);
+    arg16 = (int) array_size(array12,3);
+  }
+  result = (int)(arg1)->forward(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16);
   resultobj = SWIG_From_int(static_cast< int >(result));
   {
     if (is_new_object2 && array2)
     {
       Py_DECREF(array2); 
+    }
+  }
+  {
+    if (is_new_object12 && array12)
+    {
+      Py_DECREF(array12); 
     }
   }
   return resultobj;
@@ -6799,6 +6933,153 @@ fail:
     if (is_new_object2 && array2)
     {
       Py_DECREF(array2); 
+    }
+  }
+  {
+    if (is_new_object12 && array12)
+    {
+      Py_DECREF(array12); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pooling_F32_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Pooling< float > *arg1 = (Pooling< float > *) 0 ;
+  float *arg2 = (float *) 0 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  float *arg7 = (float *) 0 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int arg11 ;
+  float *arg12 = (float *) 0 ;
+  int arg13 ;
+  int arg14 ;
+  int arg15 ;
+  int arg16 ;
+  int *arg17 = (int *) 0 ;
+  int arg18 ;
+  int arg19 ;
+  int arg20 ;
+  int arg21 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyArrayObject *array2 = NULL ;
+  int is_new_object2 = 0 ;
+  PyArrayObject *array7 = NULL ;
+  int is_new_object7 = 0 ;
+  PyArrayObject *array12 = NULL ;
+  PyArrayObject *array17 = NULL ;
+  int is_new_object17 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOO:Pooling_F32_backward",&obj0,&obj1,&obj2,&obj3,&obj4)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PoolingT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pooling_F32_backward" "', argument " "1"" of type '" "Pooling< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Pooling< float > * >(argp1);
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array2 = obj_to_array_contiguous_allow_conversion(obj1, NPY_FLOAT,
+      &is_new_object2);
+    if (!array2 || !require_dimensions(array2, 4) ||
+      !require_size(array2, size, 4)) SWIG_fail;
+    arg2 = (float*) array_data(array2);
+    arg3 = (int) array_size(array2,0);
+    arg4 = (int) array_size(array2,1);
+    arg5 = (int) array_size(array2,2);
+    arg6 = (int) array_size(array2,3);
+  }
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array7 = obj_to_array_contiguous_allow_conversion(obj2, NPY_FLOAT,
+      &is_new_object7);
+    if (!array7 || !require_dimensions(array7, 4) ||
+      !require_size(array7, size, 4)) SWIG_fail;
+    arg7 = (float*) array_data(array7);
+    arg8 = (int) array_size(array7,0);
+    arg9 = (int) array_size(array7,1);
+    arg10 = (int) array_size(array7,2);
+    arg11 = (int) array_size(array7,3);
+  }
+  {
+    array12 = obj_to_array_no_conversion(obj3, NPY_FLOAT);
+    if (!array12 || !require_dimensions(array12,4) || !require_contiguous(array12) ||
+      !require_native(array12)) SWIG_fail;
+    arg12 = (float*) array_data(array12);
+    arg13 = (int) array_size(array12,0);
+    arg14 = (int) array_size(array12,1);
+    arg15 = (int) array_size(array12,2);
+    arg16 = (int) array_size(array12,3);
+  }
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array17 = obj_to_array_contiguous_allow_conversion(obj4, NPY_INT,
+      &is_new_object17);
+    if (!array17 || !require_dimensions(array17, 4) ||
+      !require_size(array17, size, 4)) SWIG_fail;
+    arg17 = (int*) array_data(array17);
+    arg18 = (int) array_size(array17,0);
+    arg19 = (int) array_size(array17,1);
+    arg20 = (int) array_size(array17,2);
+    arg21 = (int) array_size(array17,3);
+  }
+  result = (int)(arg1)->backward(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,arg17,arg18,arg19,arg20,arg21);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  {
+    if (is_new_object2 && array2)
+    {
+      Py_DECREF(array2); 
+    }
+  }
+  {
+    if (is_new_object7 && array7)
+    {
+      Py_DECREF(array7); 
+    }
+  }
+  {
+    if (is_new_object17 && array17)
+    {
+      Py_DECREF(array17); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object2 && array2)
+    {
+      Py_DECREF(array2); 
+    }
+  }
+  {
+    if (is_new_object7 && array7)
+    {
+      Py_DECREF(array7); 
+    }
+  }
+  {
+    if (is_new_object17 && array17)
+    {
+      Py_DECREF(array17); 
     }
   }
   return NULL;
@@ -6934,6 +7215,135 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_Pooling_F32_backward_setup(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Pooling< float > *arg1 = (Pooling< float > *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int arg11 ;
+  mkldnn::algorithm arg12 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  int val3 ;
+  int ecode3 = 0 ;
+  int val4 ;
+  int ecode4 = 0 ;
+  int val5 ;
+  int ecode5 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  int val7 ;
+  int ecode7 = 0 ;
+  int val8 ;
+  int ecode8 = 0 ;
+  int val9 ;
+  int ecode9 = 0 ;
+  int val10 ;
+  int ecode10 = 0 ;
+  int val11 ;
+  int ecode11 = 0 ;
+  void *argp12 ;
+  int res12 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  PyObject * obj9 = 0 ;
+  PyObject * obj10 = 0 ;
+  PyObject * obj11 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOOO:Pooling_F32_backward_setup",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10,&obj11)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_PoolingT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Pooling_F32_backward_setup" "', argument " "1"" of type '" "Pooling< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Pooling< float > * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "Pooling_F32_backward_setup" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  ecode3 = SWIG_AsVal_int(obj2, &val3);
+  if (!SWIG_IsOK(ecode3)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode3), "in method '" "Pooling_F32_backward_setup" "', argument " "3"" of type '" "int""'");
+  } 
+  arg3 = static_cast< int >(val3);
+  ecode4 = SWIG_AsVal_int(obj3, &val4);
+  if (!SWIG_IsOK(ecode4)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode4), "in method '" "Pooling_F32_backward_setup" "', argument " "4"" of type '" "int""'");
+  } 
+  arg4 = static_cast< int >(val4);
+  ecode5 = SWIG_AsVal_int(obj4, &val5);
+  if (!SWIG_IsOK(ecode5)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode5), "in method '" "Pooling_F32_backward_setup" "', argument " "5"" of type '" "int""'");
+  } 
+  arg5 = static_cast< int >(val5);
+  ecode6 = SWIG_AsVal_int(obj5, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "Pooling_F32_backward_setup" "', argument " "6"" of type '" "int""'");
+  } 
+  arg6 = static_cast< int >(val6);
+  ecode7 = SWIG_AsVal_int(obj6, &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "Pooling_F32_backward_setup" "', argument " "7"" of type '" "int""'");
+  } 
+  arg7 = static_cast< int >(val7);
+  ecode8 = SWIG_AsVal_int(obj7, &val8);
+  if (!SWIG_IsOK(ecode8)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "Pooling_F32_backward_setup" "', argument " "8"" of type '" "int""'");
+  } 
+  arg8 = static_cast< int >(val8);
+  ecode9 = SWIG_AsVal_int(obj8, &val9);
+  if (!SWIG_IsOK(ecode9)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "Pooling_F32_backward_setup" "', argument " "9"" of type '" "int""'");
+  } 
+  arg9 = static_cast< int >(val9);
+  ecode10 = SWIG_AsVal_int(obj9, &val10);
+  if (!SWIG_IsOK(ecode10)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "Pooling_F32_backward_setup" "', argument " "10"" of type '" "int""'");
+  } 
+  arg10 = static_cast< int >(val10);
+  ecode11 = SWIG_AsVal_int(obj10, &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "Pooling_F32_backward_setup" "', argument " "11"" of type '" "int""'");
+  } 
+  arg11 = static_cast< int >(val11);
+  {
+    res12 = SWIG_ConvertPtr(obj11, &argp12, SWIGTYPE_p_mkldnn__algorithm,  0  | 0);
+    if (!SWIG_IsOK(res12)) {
+      SWIG_exception_fail(SWIG_ArgError(res12), "in method '" "Pooling_F32_backward_setup" "', argument " "12"" of type '" "mkldnn::algorithm""'"); 
+    }  
+    if (!argp12) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Pooling_F32_backward_setup" "', argument " "12"" of type '" "mkldnn::algorithm""'");
+    } else {
+      mkldnn::algorithm * temp = reinterpret_cast< mkldnn::algorithm * >(argp12);
+      arg12 = *temp;
+      if (SWIG_IsNewObj(res12)) delete temp;
+    }
+  }
+  result = (int)(arg1)->backward_setup(arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12);
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_Pooling_F32_get_forward_object(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   float *arg1 = (float *) 0 ;
@@ -7049,6 +7459,1080 @@ fail:
     }
   }
   return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pooling_F32_get_backward_object(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int arg11 ;
+  mkldnn::algorithm arg12 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  int val7 ;
+  int ecode7 = 0 ;
+  int val8 ;
+  int ecode8 = 0 ;
+  int val9 ;
+  int ecode9 = 0 ;
+  int val10 ;
+  int ecode10 = 0 ;
+  int val11 ;
+  int ecode11 = 0 ;
+  void *argp12 ;
+  int res12 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  Pooling< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOO:Pooling_F32_get_backward_object",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  ecode6 = SWIG_AsVal_int(obj1, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "Pooling_F32_get_backward_object" "', argument " "6"" of type '" "int""'");
+  } 
+  arg6 = static_cast< int >(val6);
+  ecode7 = SWIG_AsVal_int(obj2, &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "Pooling_F32_get_backward_object" "', argument " "7"" of type '" "int""'");
+  } 
+  arg7 = static_cast< int >(val7);
+  ecode8 = SWIG_AsVal_int(obj3, &val8);
+  if (!SWIG_IsOK(ecode8)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "Pooling_F32_get_backward_object" "', argument " "8"" of type '" "int""'");
+  } 
+  arg8 = static_cast< int >(val8);
+  ecode9 = SWIG_AsVal_int(obj4, &val9);
+  if (!SWIG_IsOK(ecode9)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "Pooling_F32_get_backward_object" "', argument " "9"" of type '" "int""'");
+  } 
+  arg9 = static_cast< int >(val9);
+  ecode10 = SWIG_AsVal_int(obj5, &val10);
+  if (!SWIG_IsOK(ecode10)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "Pooling_F32_get_backward_object" "', argument " "10"" of type '" "int""'");
+  } 
+  arg10 = static_cast< int >(val10);
+  ecode11 = SWIG_AsVal_int(obj6, &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "Pooling_F32_get_backward_object" "', argument " "11"" of type '" "int""'");
+  } 
+  arg11 = static_cast< int >(val11);
+  {
+    res12 = SWIG_ConvertPtr(obj7, &argp12, SWIGTYPE_p_mkldnn__algorithm,  0  | 0);
+    if (!SWIG_IsOK(res12)) {
+      SWIG_exception_fail(SWIG_ArgError(res12), "in method '" "Pooling_F32_get_backward_object" "', argument " "12"" of type '" "mkldnn::algorithm""'"); 
+    }  
+    if (!argp12) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Pooling_F32_get_backward_object" "', argument " "12"" of type '" "mkldnn::algorithm""'");
+    } else {
+      mkldnn::algorithm * temp = reinterpret_cast< mkldnn::algorithm * >(argp12);
+      arg12 = *temp;
+      if (SWIG_IsNewObj(res12)) delete temp;
+    }
+  }
+  result = (Pooling< float > *)Pooling< float >::SWIGTEMPLATEDISAMBIGUATOR get_backward_object(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_PoolingT_float_t, 0 |  0 );
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pooling_F32_do_forward__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  float *arg6 = (float *) 0 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int *arg11 = (int *) 0 ;
+  int arg12 ;
+  int arg13 ;
+  int arg14 ;
+  int arg15 ;
+  int arg16 ;
+  int arg17 ;
+  int arg18 ;
+  int arg19 ;
+  int arg20 ;
+  int arg21 ;
+  mkldnn::algorithm arg22 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  PyArrayObject *array6 = NULL ;
+  PyArrayObject *array11 = NULL ;
+  int is_new_object11 = 0 ;
+  int val16 ;
+  int ecode16 = 0 ;
+  int val17 ;
+  int ecode17 = 0 ;
+  int val18 ;
+  int ecode18 = 0 ;
+  int val19 ;
+  int ecode19 = 0 ;
+  int val20 ;
+  int ecode20 = 0 ;
+  int val21 ;
+  int ecode21 = 0 ;
+  void *argp22 ;
+  int res22 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  PyObject * obj9 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOO:Pooling_F32_do_forward",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  {
+    array6 = obj_to_array_no_conversion(obj1, NPY_FLOAT);
+    if (!array6 || !require_dimensions(array6,4) || !require_contiguous(array6) ||
+      !require_native(array6)) SWIG_fail;
+    arg6 = (float*) array_data(array6);
+    arg7 = (int) array_size(array6,0);
+    arg8 = (int) array_size(array6,1);
+    arg9 = (int) array_size(array6,2);
+    arg10 = (int) array_size(array6,3);
+  }
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array11 = obj_to_array_contiguous_allow_conversion(obj2, NPY_INT,
+      &is_new_object11);
+    if (!array11 || !require_dimensions(array11, 4) ||
+      !require_size(array11, size, 4)) SWIG_fail;
+    arg11 = (int*) array_data(array11);
+    arg12 = (int) array_size(array11,0);
+    arg13 = (int) array_size(array11,1);
+    arg14 = (int) array_size(array11,2);
+    arg15 = (int) array_size(array11,3);
+  }
+  ecode16 = SWIG_AsVal_int(obj3, &val16);
+  if (!SWIG_IsOK(ecode16)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode16), "in method '" "Pooling_F32_do_forward" "', argument " "16"" of type '" "int""'");
+  } 
+  arg16 = static_cast< int >(val16);
+  ecode17 = SWIG_AsVal_int(obj4, &val17);
+  if (!SWIG_IsOK(ecode17)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode17), "in method '" "Pooling_F32_do_forward" "', argument " "17"" of type '" "int""'");
+  } 
+  arg17 = static_cast< int >(val17);
+  ecode18 = SWIG_AsVal_int(obj5, &val18);
+  if (!SWIG_IsOK(ecode18)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode18), "in method '" "Pooling_F32_do_forward" "', argument " "18"" of type '" "int""'");
+  } 
+  arg18 = static_cast< int >(val18);
+  ecode19 = SWIG_AsVal_int(obj6, &val19);
+  if (!SWIG_IsOK(ecode19)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode19), "in method '" "Pooling_F32_do_forward" "', argument " "19"" of type '" "int""'");
+  } 
+  arg19 = static_cast< int >(val19);
+  ecode20 = SWIG_AsVal_int(obj7, &val20);
+  if (!SWIG_IsOK(ecode20)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode20), "in method '" "Pooling_F32_do_forward" "', argument " "20"" of type '" "int""'");
+  } 
+  arg20 = static_cast< int >(val20);
+  ecode21 = SWIG_AsVal_int(obj8, &val21);
+  if (!SWIG_IsOK(ecode21)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode21), "in method '" "Pooling_F32_do_forward" "', argument " "21"" of type '" "int""'");
+  } 
+  arg21 = static_cast< int >(val21);
+  {
+    res22 = SWIG_ConvertPtr(obj9, &argp22, SWIGTYPE_p_mkldnn__algorithm,  0  | 0);
+    if (!SWIG_IsOK(res22)) {
+      SWIG_exception_fail(SWIG_ArgError(res22), "in method '" "Pooling_F32_do_forward" "', argument " "22"" of type '" "mkldnn::algorithm""'"); 
+    }  
+    if (!argp22) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Pooling_F32_do_forward" "', argument " "22"" of type '" "mkldnn::algorithm""'");
+    } else {
+      mkldnn::algorithm * temp = reinterpret_cast< mkldnn::algorithm * >(argp22);
+      arg22 = *temp;
+      if (SWIG_IsNewObj(res22)) delete temp;
+    }
+  }
+  Pooling< float >::SWIGTEMPLATEDISAMBIGUATOR do_forward(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,arg17,arg18,arg19,arg20,arg21,arg22);
+  resultobj = SWIG_Py_Void();
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object11 && array11)
+    {
+      Py_DECREF(array11); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object11 && array11)
+    {
+      Py_DECREF(array11); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pooling_F32_do_forward__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  float *arg6 = (float *) 0 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int arg11 ;
+  int arg12 ;
+  int arg13 ;
+  int arg14 ;
+  int arg15 ;
+  int arg16 ;
+  mkldnn::algorithm arg17 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  PyArrayObject *array6 = NULL ;
+  int val11 ;
+  int ecode11 = 0 ;
+  int val12 ;
+  int ecode12 = 0 ;
+  int val13 ;
+  int ecode13 = 0 ;
+  int val14 ;
+  int ecode14 = 0 ;
+  int val15 ;
+  int ecode15 = 0 ;
+  int val16 ;
+  int ecode16 = 0 ;
+  void *argp17 ;
+  int res17 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOO:Pooling_F32_do_forward",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  {
+    array6 = obj_to_array_no_conversion(obj1, NPY_FLOAT);
+    if (!array6 || !require_dimensions(array6,4) || !require_contiguous(array6) ||
+      !require_native(array6)) SWIG_fail;
+    arg6 = (float*) array_data(array6);
+    arg7 = (int) array_size(array6,0);
+    arg8 = (int) array_size(array6,1);
+    arg9 = (int) array_size(array6,2);
+    arg10 = (int) array_size(array6,3);
+  }
+  ecode11 = SWIG_AsVal_int(obj2, &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "Pooling_F32_do_forward" "', argument " "11"" of type '" "int""'");
+  } 
+  arg11 = static_cast< int >(val11);
+  ecode12 = SWIG_AsVal_int(obj3, &val12);
+  if (!SWIG_IsOK(ecode12)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "Pooling_F32_do_forward" "', argument " "12"" of type '" "int""'");
+  } 
+  arg12 = static_cast< int >(val12);
+  ecode13 = SWIG_AsVal_int(obj4, &val13);
+  if (!SWIG_IsOK(ecode13)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "Pooling_F32_do_forward" "', argument " "13"" of type '" "int""'");
+  } 
+  arg13 = static_cast< int >(val13);
+  ecode14 = SWIG_AsVal_int(obj5, &val14);
+  if (!SWIG_IsOK(ecode14)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode14), "in method '" "Pooling_F32_do_forward" "', argument " "14"" of type '" "int""'");
+  } 
+  arg14 = static_cast< int >(val14);
+  ecode15 = SWIG_AsVal_int(obj6, &val15);
+  if (!SWIG_IsOK(ecode15)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode15), "in method '" "Pooling_F32_do_forward" "', argument " "15"" of type '" "int""'");
+  } 
+  arg15 = static_cast< int >(val15);
+  ecode16 = SWIG_AsVal_int(obj7, &val16);
+  if (!SWIG_IsOK(ecode16)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode16), "in method '" "Pooling_F32_do_forward" "', argument " "16"" of type '" "int""'");
+  } 
+  arg16 = static_cast< int >(val16);
+  {
+    res17 = SWIG_ConvertPtr(obj8, &argp17, SWIGTYPE_p_mkldnn__algorithm,  0  | 0);
+    if (!SWIG_IsOK(res17)) {
+      SWIG_exception_fail(SWIG_ArgError(res17), "in method '" "Pooling_F32_do_forward" "', argument " "17"" of type '" "mkldnn::algorithm""'"); 
+    }  
+    if (!argp17) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Pooling_F32_do_forward" "', argument " "17"" of type '" "mkldnn::algorithm""'");
+    } else {
+      mkldnn::algorithm * temp = reinterpret_cast< mkldnn::algorithm * >(argp17);
+      arg17 = *temp;
+      if (SWIG_IsNewObj(res17)) delete temp;
+    }
+  }
+  Pooling< float >::SWIGTEMPLATEDISAMBIGUATOR do_forward(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,arg17);
+  resultobj = SWIG_Py_Void();
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pooling_F32_do_forward(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[11] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 10) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 9) {
+    int _v;
+    {
+      _v = is_array(argv[0]) || PySequence_Check(argv[0]);
+    }
+    if (_v) {
+      {
+        _v = is_array(argv[1]) && PyArray_EquivTypenums(array_type(argv[1]),
+          NPY_FLOAT);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          {
+            int res = SWIG_AsVal_int(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            {
+              int res = SWIG_AsVal_int(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              {
+                int res = SWIG_AsVal_int(argv[5], NULL);
+                _v = SWIG_CheckState(res);
+              }
+              if (_v) {
+                {
+                  int res = SWIG_AsVal_int(argv[6], NULL);
+                  _v = SWIG_CheckState(res);
+                }
+                if (_v) {
+                  {
+                    int res = SWIG_AsVal_int(argv[7], NULL);
+                    _v = SWIG_CheckState(res);
+                  }
+                  if (_v) {
+                    int res = SWIG_ConvertPtr(argv[8], 0, SWIGTYPE_p_mkldnn__algorithm, 0);
+                    _v = SWIG_CheckState(res);
+                    if (_v) {
+                      return _wrap_Pooling_F32_do_forward__SWIG_1(self, args);
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 10) {
+    int _v;
+    {
+      _v = is_array(argv[0]) || PySequence_Check(argv[0]);
+    }
+    if (_v) {
+      {
+        _v = is_array(argv[1]) && PyArray_EquivTypenums(array_type(argv[1]),
+          NPY_FLOAT);
+      }
+      if (_v) {
+        {
+          _v = is_array(argv[2]) || PySequence_Check(argv[2]);
+        }
+        if (_v) {
+          {
+            int res = SWIG_AsVal_int(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            {
+              int res = SWIG_AsVal_int(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              {
+                int res = SWIG_AsVal_int(argv[5], NULL);
+                _v = SWIG_CheckState(res);
+              }
+              if (_v) {
+                {
+                  int res = SWIG_AsVal_int(argv[6], NULL);
+                  _v = SWIG_CheckState(res);
+                }
+                if (_v) {
+                  {
+                    int res = SWIG_AsVal_int(argv[7], NULL);
+                    _v = SWIG_CheckState(res);
+                  }
+                  if (_v) {
+                    {
+                      int res = SWIG_AsVal_int(argv[8], NULL);
+                      _v = SWIG_CheckState(res);
+                    }
+                    if (_v) {
+                      int res = SWIG_ConvertPtr(argv[9], 0, SWIGTYPE_p_mkldnn__algorithm, 0);
+                      _v = SWIG_CheckState(res);
+                      if (_v) {
+                        return _wrap_Pooling_F32_do_forward__SWIG_0(self, args);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'Pooling_F32_do_forward'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    Pooling< float >::do_forward(float *,int,int,int,int,float *,int,int,int,int,int *,int,int,int,int,int,int,int,int,int,int,mkldnn::algorithm)\n"
+    "    Pooling< float >::do_forward(float *,int,int,int,int,float *,int,int,int,int,int,int,int,int,int,int,mkldnn::algorithm)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pooling_F32_do_backward__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  float *arg6 = (float *) 0 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  float *arg11 = (float *) 0 ;
+  int arg12 ;
+  int arg13 ;
+  int arg14 ;
+  int arg15 ;
+  int *arg16 = (int *) 0 ;
+  int arg17 ;
+  int arg18 ;
+  int arg19 ;
+  int arg20 ;
+  int arg21 ;
+  int arg22 ;
+  int arg23 ;
+  int arg24 ;
+  int arg25 ;
+  int arg26 ;
+  mkldnn::algorithm arg27 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  PyArrayObject *array6 = NULL ;
+  int is_new_object6 = 0 ;
+  PyArrayObject *array11 = NULL ;
+  PyArrayObject *array16 = NULL ;
+  int is_new_object16 = 0 ;
+  int val21 ;
+  int ecode21 = 0 ;
+  int val22 ;
+  int ecode22 = 0 ;
+  int val23 ;
+  int ecode23 = 0 ;
+  int val24 ;
+  int ecode24 = 0 ;
+  int val25 ;
+  int ecode25 = 0 ;
+  int val26 ;
+  int ecode26 = 0 ;
+  void *argp27 ;
+  int res27 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  PyObject * obj9 = 0 ;
+  PyObject * obj10 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOOO:Pooling_F32_do_backward",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9,&obj10)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array6 = obj_to_array_contiguous_allow_conversion(obj1, NPY_FLOAT,
+      &is_new_object6);
+    if (!array6 || !require_dimensions(array6, 4) ||
+      !require_size(array6, size, 4)) SWIG_fail;
+    arg6 = (float*) array_data(array6);
+    arg7 = (int) array_size(array6,0);
+    arg8 = (int) array_size(array6,1);
+    arg9 = (int) array_size(array6,2);
+    arg10 = (int) array_size(array6,3);
+  }
+  {
+    array11 = obj_to_array_no_conversion(obj2, NPY_FLOAT);
+    if (!array11 || !require_dimensions(array11,4) || !require_contiguous(array11) ||
+      !require_native(array11)) SWIG_fail;
+    arg11 = (float*) array_data(array11);
+    arg12 = (int) array_size(array11,0);
+    arg13 = (int) array_size(array11,1);
+    arg14 = (int) array_size(array11,2);
+    arg15 = (int) array_size(array11,3);
+  }
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array16 = obj_to_array_contiguous_allow_conversion(obj3, NPY_INT,
+      &is_new_object16);
+    if (!array16 || !require_dimensions(array16, 4) ||
+      !require_size(array16, size, 4)) SWIG_fail;
+    arg16 = (int*) array_data(array16);
+    arg17 = (int) array_size(array16,0);
+    arg18 = (int) array_size(array16,1);
+    arg19 = (int) array_size(array16,2);
+    arg20 = (int) array_size(array16,3);
+  }
+  ecode21 = SWIG_AsVal_int(obj4, &val21);
+  if (!SWIG_IsOK(ecode21)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode21), "in method '" "Pooling_F32_do_backward" "', argument " "21"" of type '" "int""'");
+  } 
+  arg21 = static_cast< int >(val21);
+  ecode22 = SWIG_AsVal_int(obj5, &val22);
+  if (!SWIG_IsOK(ecode22)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode22), "in method '" "Pooling_F32_do_backward" "', argument " "22"" of type '" "int""'");
+  } 
+  arg22 = static_cast< int >(val22);
+  ecode23 = SWIG_AsVal_int(obj6, &val23);
+  if (!SWIG_IsOK(ecode23)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode23), "in method '" "Pooling_F32_do_backward" "', argument " "23"" of type '" "int""'");
+  } 
+  arg23 = static_cast< int >(val23);
+  ecode24 = SWIG_AsVal_int(obj7, &val24);
+  if (!SWIG_IsOK(ecode24)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode24), "in method '" "Pooling_F32_do_backward" "', argument " "24"" of type '" "int""'");
+  } 
+  arg24 = static_cast< int >(val24);
+  ecode25 = SWIG_AsVal_int(obj8, &val25);
+  if (!SWIG_IsOK(ecode25)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode25), "in method '" "Pooling_F32_do_backward" "', argument " "25"" of type '" "int""'");
+  } 
+  arg25 = static_cast< int >(val25);
+  ecode26 = SWIG_AsVal_int(obj9, &val26);
+  if (!SWIG_IsOK(ecode26)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode26), "in method '" "Pooling_F32_do_backward" "', argument " "26"" of type '" "int""'");
+  } 
+  arg26 = static_cast< int >(val26);
+  {
+    res27 = SWIG_ConvertPtr(obj10, &argp27, SWIGTYPE_p_mkldnn__algorithm,  0  | 0);
+    if (!SWIG_IsOK(res27)) {
+      SWIG_exception_fail(SWIG_ArgError(res27), "in method '" "Pooling_F32_do_backward" "', argument " "27"" of type '" "mkldnn::algorithm""'"); 
+    }  
+    if (!argp27) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Pooling_F32_do_backward" "', argument " "27"" of type '" "mkldnn::algorithm""'");
+    } else {
+      mkldnn::algorithm * temp = reinterpret_cast< mkldnn::algorithm * >(argp27);
+      arg27 = *temp;
+      if (SWIG_IsNewObj(res27)) delete temp;
+    }
+  }
+  Pooling< float >::SWIGTEMPLATEDISAMBIGUATOR do_backward(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,arg17,arg18,arg19,arg20,arg21,arg22,arg23,arg24,arg25,arg26,arg27);
+  resultobj = SWIG_Py_Void();
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object6 && array6)
+    {
+      Py_DECREF(array6); 
+    }
+  }
+  {
+    if (is_new_object16 && array16)
+    {
+      Py_DECREF(array16); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object6 && array6)
+    {
+      Py_DECREF(array6); 
+    }
+  }
+  {
+    if (is_new_object16 && array16)
+    {
+      Py_DECREF(array16); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pooling_F32_do_backward__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  float *arg6 = (float *) 0 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  float *arg11 = (float *) 0 ;
+  int arg12 ;
+  int arg13 ;
+  int arg14 ;
+  int arg15 ;
+  int arg16 ;
+  int arg17 ;
+  int arg18 ;
+  int arg19 ;
+  int arg20 ;
+  int arg21 ;
+  mkldnn::algorithm arg22 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  PyArrayObject *array6 = NULL ;
+  int is_new_object6 = 0 ;
+  PyArrayObject *array11 = NULL ;
+  int val16 ;
+  int ecode16 = 0 ;
+  int val17 ;
+  int ecode17 = 0 ;
+  int val18 ;
+  int ecode18 = 0 ;
+  int val19 ;
+  int ecode19 = 0 ;
+  int val20 ;
+  int ecode20 = 0 ;
+  int val21 ;
+  int ecode21 = 0 ;
+  void *argp22 ;
+  int res22 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  PyObject * obj9 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOO:Pooling_F32_do_backward",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array6 = obj_to_array_contiguous_allow_conversion(obj1, NPY_FLOAT,
+      &is_new_object6);
+    if (!array6 || !require_dimensions(array6, 4) ||
+      !require_size(array6, size, 4)) SWIG_fail;
+    arg6 = (float*) array_data(array6);
+    arg7 = (int) array_size(array6,0);
+    arg8 = (int) array_size(array6,1);
+    arg9 = (int) array_size(array6,2);
+    arg10 = (int) array_size(array6,3);
+  }
+  {
+    array11 = obj_to_array_no_conversion(obj2, NPY_FLOAT);
+    if (!array11 || !require_dimensions(array11,4) || !require_contiguous(array11) ||
+      !require_native(array11)) SWIG_fail;
+    arg11 = (float*) array_data(array11);
+    arg12 = (int) array_size(array11,0);
+    arg13 = (int) array_size(array11,1);
+    arg14 = (int) array_size(array11,2);
+    arg15 = (int) array_size(array11,3);
+  }
+  ecode16 = SWIG_AsVal_int(obj3, &val16);
+  if (!SWIG_IsOK(ecode16)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode16), "in method '" "Pooling_F32_do_backward" "', argument " "16"" of type '" "int""'");
+  } 
+  arg16 = static_cast< int >(val16);
+  ecode17 = SWIG_AsVal_int(obj4, &val17);
+  if (!SWIG_IsOK(ecode17)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode17), "in method '" "Pooling_F32_do_backward" "', argument " "17"" of type '" "int""'");
+  } 
+  arg17 = static_cast< int >(val17);
+  ecode18 = SWIG_AsVal_int(obj5, &val18);
+  if (!SWIG_IsOK(ecode18)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode18), "in method '" "Pooling_F32_do_backward" "', argument " "18"" of type '" "int""'");
+  } 
+  arg18 = static_cast< int >(val18);
+  ecode19 = SWIG_AsVal_int(obj6, &val19);
+  if (!SWIG_IsOK(ecode19)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode19), "in method '" "Pooling_F32_do_backward" "', argument " "19"" of type '" "int""'");
+  } 
+  arg19 = static_cast< int >(val19);
+  ecode20 = SWIG_AsVal_int(obj7, &val20);
+  if (!SWIG_IsOK(ecode20)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode20), "in method '" "Pooling_F32_do_backward" "', argument " "20"" of type '" "int""'");
+  } 
+  arg20 = static_cast< int >(val20);
+  ecode21 = SWIG_AsVal_int(obj8, &val21);
+  if (!SWIG_IsOK(ecode21)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode21), "in method '" "Pooling_F32_do_backward" "', argument " "21"" of type '" "int""'");
+  } 
+  arg21 = static_cast< int >(val21);
+  {
+    res22 = SWIG_ConvertPtr(obj9, &argp22, SWIGTYPE_p_mkldnn__algorithm,  0  | 0);
+    if (!SWIG_IsOK(res22)) {
+      SWIG_exception_fail(SWIG_ArgError(res22), "in method '" "Pooling_F32_do_backward" "', argument " "22"" of type '" "mkldnn::algorithm""'"); 
+    }  
+    if (!argp22) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Pooling_F32_do_backward" "', argument " "22"" of type '" "mkldnn::algorithm""'");
+    } else {
+      mkldnn::algorithm * temp = reinterpret_cast< mkldnn::algorithm * >(argp22);
+      arg22 = *temp;
+      if (SWIG_IsNewObj(res22)) delete temp;
+    }
+  }
+  Pooling< float >::SWIGTEMPLATEDISAMBIGUATOR do_backward(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,arg17,arg18,arg19,arg20,arg21,arg22);
+  resultobj = SWIG_Py_Void();
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object6 && array6)
+    {
+      Py_DECREF(array6); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object6 && array6)
+    {
+      Py_DECREF(array6); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Pooling_F32_do_backward(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[12] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 11) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 10) {
+    int _v;
+    {
+      _v = is_array(argv[0]) || PySequence_Check(argv[0]);
+    }
+    if (_v) {
+      {
+        _v = is_array(argv[1]) || PySequence_Check(argv[1]);
+      }
+      if (_v) {
+        {
+          _v = is_array(argv[2]) && PyArray_EquivTypenums(array_type(argv[2]),
+            NPY_FLOAT);
+        }
+        if (_v) {
+          {
+            int res = SWIG_AsVal_int(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            {
+              int res = SWIG_AsVal_int(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              {
+                int res = SWIG_AsVal_int(argv[5], NULL);
+                _v = SWIG_CheckState(res);
+              }
+              if (_v) {
+                {
+                  int res = SWIG_AsVal_int(argv[6], NULL);
+                  _v = SWIG_CheckState(res);
+                }
+                if (_v) {
+                  {
+                    int res = SWIG_AsVal_int(argv[7], NULL);
+                    _v = SWIG_CheckState(res);
+                  }
+                  if (_v) {
+                    {
+                      int res = SWIG_AsVal_int(argv[8], NULL);
+                      _v = SWIG_CheckState(res);
+                    }
+                    if (_v) {
+                      int res = SWIG_ConvertPtr(argv[9], 0, SWIGTYPE_p_mkldnn__algorithm, 0);
+                      _v = SWIG_CheckState(res);
+                      if (_v) {
+                        return _wrap_Pooling_F32_do_backward__SWIG_1(self, args);
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  if (argc == 11) {
+    int _v;
+    {
+      _v = is_array(argv[0]) || PySequence_Check(argv[0]);
+    }
+    if (_v) {
+      {
+        _v = is_array(argv[1]) || PySequence_Check(argv[1]);
+      }
+      if (_v) {
+        {
+          _v = is_array(argv[2]) && PyArray_EquivTypenums(array_type(argv[2]),
+            NPY_FLOAT);
+        }
+        if (_v) {
+          {
+            _v = is_array(argv[3]) || PySequence_Check(argv[3]);
+          }
+          if (_v) {
+            {
+              int res = SWIG_AsVal_int(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              {
+                int res = SWIG_AsVal_int(argv[5], NULL);
+                _v = SWIG_CheckState(res);
+              }
+              if (_v) {
+                {
+                  int res = SWIG_AsVal_int(argv[6], NULL);
+                  _v = SWIG_CheckState(res);
+                }
+                if (_v) {
+                  {
+                    int res = SWIG_AsVal_int(argv[7], NULL);
+                    _v = SWIG_CheckState(res);
+                  }
+                  if (_v) {
+                    {
+                      int res = SWIG_AsVal_int(argv[8], NULL);
+                      _v = SWIG_CheckState(res);
+                    }
+                    if (_v) {
+                      {
+                        int res = SWIG_AsVal_int(argv[9], NULL);
+                        _v = SWIG_CheckState(res);
+                      }
+                      if (_v) {
+                        int res = SWIG_ConvertPtr(argv[10], 0, SWIGTYPE_p_mkldnn__algorithm, 0);
+                        _v = SWIG_CheckState(res);
+                        if (_v) {
+                          return _wrap_Pooling_F32_do_backward__SWIG_0(self, args);
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'Pooling_F32_do_backward'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    Pooling< float >::do_backward(float *,int,int,int,int,float *,int,int,int,int,float *,int,int,int,int,int *,int,int,int,int,int,int,int,int,int,int,mkldnn::algorithm)\n"
+    "    Pooling< float >::do_backward(float *,int,int,int,int,float *,int,int,int,int,float *,int,int,int,int,int,int,int,int,int,int,mkldnn::algorithm)\n");
+  return 0;
 }
 
 
@@ -7194,6 +8678,443 @@ fail:
 }
 
 
+SWIGINTERN PyObject *_wrap_MaxPooling_F32_get_backward_object(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int arg11 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  int val7 ;
+  int ecode7 = 0 ;
+  int val8 ;
+  int ecode8 = 0 ;
+  int val9 ;
+  int ecode9 = 0 ;
+  int val10 ;
+  int ecode10 = 0 ;
+  int val11 ;
+  int ecode11 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  Pooling< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOO:MaxPooling_F32_get_backward_object",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  ecode6 = SWIG_AsVal_int(obj1, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "MaxPooling_F32_get_backward_object" "', argument " "6"" of type '" "int""'");
+  } 
+  arg6 = static_cast< int >(val6);
+  ecode7 = SWIG_AsVal_int(obj2, &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "MaxPooling_F32_get_backward_object" "', argument " "7"" of type '" "int""'");
+  } 
+  arg7 = static_cast< int >(val7);
+  ecode8 = SWIG_AsVal_int(obj3, &val8);
+  if (!SWIG_IsOK(ecode8)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "MaxPooling_F32_get_backward_object" "', argument " "8"" of type '" "int""'");
+  } 
+  arg8 = static_cast< int >(val8);
+  ecode9 = SWIG_AsVal_int(obj4, &val9);
+  if (!SWIG_IsOK(ecode9)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "MaxPooling_F32_get_backward_object" "', argument " "9"" of type '" "int""'");
+  } 
+  arg9 = static_cast< int >(val9);
+  ecode10 = SWIG_AsVal_int(obj5, &val10);
+  if (!SWIG_IsOK(ecode10)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "MaxPooling_F32_get_backward_object" "', argument " "10"" of type '" "int""'");
+  } 
+  arg10 = static_cast< int >(val10);
+  ecode11 = SWIG_AsVal_int(obj6, &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "MaxPooling_F32_get_backward_object" "', argument " "11"" of type '" "int""'");
+  } 
+  arg11 = static_cast< int >(val11);
+  result = (Pooling< float > *)MaxPooling< float >::SWIGTEMPLATEDISAMBIGUATOR get_backward_object(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_PoolingT_float_t, 0 |  0 );
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MaxPooling_F32_do_forward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  float *arg6 = (float *) 0 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int *arg11 = (int *) 0 ;
+  int arg12 ;
+  int arg13 ;
+  int arg14 ;
+  int arg15 ;
+  int arg16 ;
+  int arg17 ;
+  int arg18 ;
+  int arg19 ;
+  int arg20 ;
+  int arg21 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  PyArrayObject *array6 = NULL ;
+  PyArrayObject *array11 = NULL ;
+  int is_new_object11 = 0 ;
+  int val16 ;
+  int ecode16 = 0 ;
+  int val17 ;
+  int ecode17 = 0 ;
+  int val18 ;
+  int ecode18 = 0 ;
+  int val19 ;
+  int ecode19 = 0 ;
+  int val20 ;
+  int ecode20 = 0 ;
+  int val21 ;
+  int ecode21 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOO:MaxPooling_F32_do_forward",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  {
+    array6 = obj_to_array_no_conversion(obj1, NPY_FLOAT);
+    if (!array6 || !require_dimensions(array6,4) || !require_contiguous(array6) ||
+      !require_native(array6)) SWIG_fail;
+    arg6 = (float*) array_data(array6);
+    arg7 = (int) array_size(array6,0);
+    arg8 = (int) array_size(array6,1);
+    arg9 = (int) array_size(array6,2);
+    arg10 = (int) array_size(array6,3);
+  }
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array11 = obj_to_array_contiguous_allow_conversion(obj2, NPY_INT,
+      &is_new_object11);
+    if (!array11 || !require_dimensions(array11, 4) ||
+      !require_size(array11, size, 4)) SWIG_fail;
+    arg11 = (int*) array_data(array11);
+    arg12 = (int) array_size(array11,0);
+    arg13 = (int) array_size(array11,1);
+    arg14 = (int) array_size(array11,2);
+    arg15 = (int) array_size(array11,3);
+  }
+  ecode16 = SWIG_AsVal_int(obj3, &val16);
+  if (!SWIG_IsOK(ecode16)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode16), "in method '" "MaxPooling_F32_do_forward" "', argument " "16"" of type '" "int""'");
+  } 
+  arg16 = static_cast< int >(val16);
+  ecode17 = SWIG_AsVal_int(obj4, &val17);
+  if (!SWIG_IsOK(ecode17)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode17), "in method '" "MaxPooling_F32_do_forward" "', argument " "17"" of type '" "int""'");
+  } 
+  arg17 = static_cast< int >(val17);
+  ecode18 = SWIG_AsVal_int(obj5, &val18);
+  if (!SWIG_IsOK(ecode18)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode18), "in method '" "MaxPooling_F32_do_forward" "', argument " "18"" of type '" "int""'");
+  } 
+  arg18 = static_cast< int >(val18);
+  ecode19 = SWIG_AsVal_int(obj6, &val19);
+  if (!SWIG_IsOK(ecode19)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode19), "in method '" "MaxPooling_F32_do_forward" "', argument " "19"" of type '" "int""'");
+  } 
+  arg19 = static_cast< int >(val19);
+  ecode20 = SWIG_AsVal_int(obj7, &val20);
+  if (!SWIG_IsOK(ecode20)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode20), "in method '" "MaxPooling_F32_do_forward" "', argument " "20"" of type '" "int""'");
+  } 
+  arg20 = static_cast< int >(val20);
+  ecode21 = SWIG_AsVal_int(obj8, &val21);
+  if (!SWIG_IsOK(ecode21)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode21), "in method '" "MaxPooling_F32_do_forward" "', argument " "21"" of type '" "int""'");
+  } 
+  arg21 = static_cast< int >(val21);
+  MaxPooling< float >::SWIGTEMPLATEDISAMBIGUATOR do_forward(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,arg17,arg18,arg19,arg20,arg21);
+  resultobj = SWIG_Py_Void();
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object11 && array11)
+    {
+      Py_DECREF(array11); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object11 && array11)
+    {
+      Py_DECREF(array11); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_MaxPooling_F32_do_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  float *arg6 = (float *) 0 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  float *arg11 = (float *) 0 ;
+  int arg12 ;
+  int arg13 ;
+  int arg14 ;
+  int arg15 ;
+  int *arg16 = (int *) 0 ;
+  int arg17 ;
+  int arg18 ;
+  int arg19 ;
+  int arg20 ;
+  int arg21 ;
+  int arg22 ;
+  int arg23 ;
+  int arg24 ;
+  int arg25 ;
+  int arg26 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  PyArrayObject *array6 = NULL ;
+  int is_new_object6 = 0 ;
+  PyArrayObject *array11 = NULL ;
+  PyArrayObject *array16 = NULL ;
+  int is_new_object16 = 0 ;
+  int val21 ;
+  int ecode21 = 0 ;
+  int val22 ;
+  int ecode22 = 0 ;
+  int val23 ;
+  int ecode23 = 0 ;
+  int val24 ;
+  int ecode24 = 0 ;
+  int val25 ;
+  int ecode25 = 0 ;
+  int val26 ;
+  int ecode26 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  PyObject * obj9 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOOO:MaxPooling_F32_do_backward",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8,&obj9)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array6 = obj_to_array_contiguous_allow_conversion(obj1, NPY_FLOAT,
+      &is_new_object6);
+    if (!array6 || !require_dimensions(array6, 4) ||
+      !require_size(array6, size, 4)) SWIG_fail;
+    arg6 = (float*) array_data(array6);
+    arg7 = (int) array_size(array6,0);
+    arg8 = (int) array_size(array6,1);
+    arg9 = (int) array_size(array6,2);
+    arg10 = (int) array_size(array6,3);
+  }
+  {
+    array11 = obj_to_array_no_conversion(obj2, NPY_FLOAT);
+    if (!array11 || !require_dimensions(array11,4) || !require_contiguous(array11) ||
+      !require_native(array11)) SWIG_fail;
+    arg11 = (float*) array_data(array11);
+    arg12 = (int) array_size(array11,0);
+    arg13 = (int) array_size(array11,1);
+    arg14 = (int) array_size(array11,2);
+    arg15 = (int) array_size(array11,3);
+  }
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array16 = obj_to_array_contiguous_allow_conversion(obj3, NPY_INT,
+      &is_new_object16);
+    if (!array16 || !require_dimensions(array16, 4) ||
+      !require_size(array16, size, 4)) SWIG_fail;
+    arg16 = (int*) array_data(array16);
+    arg17 = (int) array_size(array16,0);
+    arg18 = (int) array_size(array16,1);
+    arg19 = (int) array_size(array16,2);
+    arg20 = (int) array_size(array16,3);
+  }
+  ecode21 = SWIG_AsVal_int(obj4, &val21);
+  if (!SWIG_IsOK(ecode21)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode21), "in method '" "MaxPooling_F32_do_backward" "', argument " "21"" of type '" "int""'");
+  } 
+  arg21 = static_cast< int >(val21);
+  ecode22 = SWIG_AsVal_int(obj5, &val22);
+  if (!SWIG_IsOK(ecode22)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode22), "in method '" "MaxPooling_F32_do_backward" "', argument " "22"" of type '" "int""'");
+  } 
+  arg22 = static_cast< int >(val22);
+  ecode23 = SWIG_AsVal_int(obj6, &val23);
+  if (!SWIG_IsOK(ecode23)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode23), "in method '" "MaxPooling_F32_do_backward" "', argument " "23"" of type '" "int""'");
+  } 
+  arg23 = static_cast< int >(val23);
+  ecode24 = SWIG_AsVal_int(obj7, &val24);
+  if (!SWIG_IsOK(ecode24)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode24), "in method '" "MaxPooling_F32_do_backward" "', argument " "24"" of type '" "int""'");
+  } 
+  arg24 = static_cast< int >(val24);
+  ecode25 = SWIG_AsVal_int(obj8, &val25);
+  if (!SWIG_IsOK(ecode25)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode25), "in method '" "MaxPooling_F32_do_backward" "', argument " "25"" of type '" "int""'");
+  } 
+  arg25 = static_cast< int >(val25);
+  ecode26 = SWIG_AsVal_int(obj9, &val26);
+  if (!SWIG_IsOK(ecode26)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode26), "in method '" "MaxPooling_F32_do_backward" "', argument " "26"" of type '" "int""'");
+  } 
+  arg26 = static_cast< int >(val26);
+  MaxPooling< float >::SWIGTEMPLATEDISAMBIGUATOR do_backward(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,arg17,arg18,arg19,arg20,arg21,arg22,arg23,arg24,arg25,arg26);
+  resultobj = SWIG_Py_Void();
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object6 && array6)
+    {
+      Py_DECREF(array6); 
+    }
+  }
+  {
+    if (is_new_object16 && array16)
+    {
+      Py_DECREF(array16); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object6 && array6)
+    {
+      Py_DECREF(array6); 
+    }
+  }
+  {
+    if (is_new_object16 && array16)
+    {
+      Py_DECREF(array16); 
+    }
+  }
+  return NULL;
+}
+
+
 SWIGINTERN PyObject *_wrap_new_MaxPooling_F32(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
   PyObject *resultobj = 0;
   MaxPooling< float > *result = 0 ;
@@ -7232,135 +9153,6 @@ SWIGINTERN PyObject *MaxPooling_F32_swigregister(PyObject *SWIGUNUSEDPARM(self),
   PyObject *obj;
   if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
   SWIG_TypeNewClientData(SWIGTYPE_p_MaxPoolingT_float_t, SWIG_NewClientData(obj));
-  return SWIG_Py_Void();
-}
-
-SWIGINTERN PyObject *_wrap_delete_Layer_F32(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  Layer< float > *arg1 = (Layer< float > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:delete_Layer_F32",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerT_float_t, SWIG_POINTER_DISOWN |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Layer_F32" "', argument " "1"" of type '" "Layer< float > *""'"); 
-  }
-  arg1 = reinterpret_cast< Layer< float > * >(argp1);
-  delete arg1;
-  resultobj = SWIG_Py_Void();
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Layer_F32_forward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  Layer< float > *arg1 = (Layer< float > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:Layer_F32_forward",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Layer_F32_forward" "', argument " "1"" of type '" "Layer< float > *""'"); 
-  }
-  arg1 = reinterpret_cast< Layer< float > * >(argp1);
-  result = (int)(arg1)->forward();
-  resultobj = SWIG_From_int(static_cast< int >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Layer_F32_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  Layer< float > *arg1 = (Layer< float > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:Layer_F32_backward",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Layer_F32_backward" "', argument " "1"" of type '" "Layer< float > *""'"); 
-  }
-  arg1 = reinterpret_cast< Layer< float > * >(argp1);
-  result = (int)(arg1)->backward();
-  resultobj = SWIG_From_int(static_cast< int >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Layer_F32_setup_forward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  Layer< float > *arg1 = (Layer< float > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:Layer_F32_setup_forward",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Layer_F32_setup_forward" "', argument " "1"" of type '" "Layer< float > *""'"); 
-  }
-  arg1 = reinterpret_cast< Layer< float > * >(argp1);
-  result = (int)(arg1)->setup_forward();
-  resultobj = SWIG_From_int(static_cast< int >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_Layer_F32_setup_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  Layer< float > *arg1 = (Layer< float > *) 0 ;
-  void *argp1 = 0 ;
-  int res1 = 0 ;
-  PyObject * obj0 = 0 ;
-  int result;
-  
-  if (!PyArg_ParseTuple(args,(char *)"O:Layer_F32_setup_backward",&obj0)) SWIG_fail;
-  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LayerT_float_t, 0 |  0 );
-  if (!SWIG_IsOK(res1)) {
-    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Layer_F32_setup_backward" "', argument " "1"" of type '" "Layer< float > *""'"); 
-  }
-  arg1 = reinterpret_cast< Layer< float > * >(argp1);
-  result = (int)(arg1)->setup_backward();
-  resultobj = SWIG_From_int(static_cast< int >(result));
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *_wrap_new_Layer_F32(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *resultobj = 0;
-  Layer< float > *result = 0 ;
-  
-  if (!PyArg_ParseTuple(args,(char *)":new_Layer_F32")) SWIG_fail;
-  result = (Layer< float > *)new Layer< float >();
-  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LayerT_float_t, SWIG_POINTER_NEW |  0 );
-  return resultobj;
-fail:
-  return NULL;
-}
-
-
-SWIGINTERN PyObject *Layer_F32_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
-  PyObject *obj;
-  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
-  SWIG_TypeNewClientData(SWIGTYPE_p_LayerT_float_t, SWIG_NewClientData(obj));
   return SWIG_Py_Void();
 }
 
@@ -7719,31 +9511,1261 @@ SWIGINTERN PyObject *Relu_F32_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObj
   return SWIG_Py_Void();
 }
 
+SWIGINTERN PyObject *_wrap_AvgPooling_F32_get_forward_object(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int arg11 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  int val7 ;
+  int ecode7 = 0 ;
+  int val8 ;
+  int ecode8 = 0 ;
+  int val9 ;
+  int ecode9 = 0 ;
+  int val10 ;
+  int ecode10 = 0 ;
+  int val11 ;
+  int ecode11 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  Pooling< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOO:AvgPooling_F32_get_forward_object",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  ecode6 = SWIG_AsVal_int(obj1, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "AvgPooling_F32_get_forward_object" "', argument " "6"" of type '" "int""'");
+  } 
+  arg6 = static_cast< int >(val6);
+  ecode7 = SWIG_AsVal_int(obj2, &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "AvgPooling_F32_get_forward_object" "', argument " "7"" of type '" "int""'");
+  } 
+  arg7 = static_cast< int >(val7);
+  ecode8 = SWIG_AsVal_int(obj3, &val8);
+  if (!SWIG_IsOK(ecode8)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "AvgPooling_F32_get_forward_object" "', argument " "8"" of type '" "int""'");
+  } 
+  arg8 = static_cast< int >(val8);
+  ecode9 = SWIG_AsVal_int(obj4, &val9);
+  if (!SWIG_IsOK(ecode9)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "AvgPooling_F32_get_forward_object" "', argument " "9"" of type '" "int""'");
+  } 
+  arg9 = static_cast< int >(val9);
+  ecode10 = SWIG_AsVal_int(obj5, &val10);
+  if (!SWIG_IsOK(ecode10)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "AvgPooling_F32_get_forward_object" "', argument " "10"" of type '" "int""'");
+  } 
+  arg10 = static_cast< int >(val10);
+  ecode11 = SWIG_AsVal_int(obj6, &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "AvgPooling_F32_get_forward_object" "', argument " "11"" of type '" "int""'");
+  } 
+  arg11 = static_cast< int >(val11);
+  result = (Pooling< float > *)AvgPooling< float >::SWIGTEMPLATEDISAMBIGUATOR get_forward_object(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_PoolingT_float_t, 0 |  0 );
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_AvgPooling_F32_get_backward_object(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  int arg6 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int arg11 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  int val6 ;
+  int ecode6 = 0 ;
+  int val7 ;
+  int ecode7 = 0 ;
+  int val8 ;
+  int ecode8 = 0 ;
+  int val9 ;
+  int ecode9 = 0 ;
+  int val10 ;
+  int ecode10 = 0 ;
+  int val11 ;
+  int ecode11 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  Pooling< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOO:AvgPooling_F32_get_backward_object",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  ecode6 = SWIG_AsVal_int(obj1, &val6);
+  if (!SWIG_IsOK(ecode6)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode6), "in method '" "AvgPooling_F32_get_backward_object" "', argument " "6"" of type '" "int""'");
+  } 
+  arg6 = static_cast< int >(val6);
+  ecode7 = SWIG_AsVal_int(obj2, &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "AvgPooling_F32_get_backward_object" "', argument " "7"" of type '" "int""'");
+  } 
+  arg7 = static_cast< int >(val7);
+  ecode8 = SWIG_AsVal_int(obj3, &val8);
+  if (!SWIG_IsOK(ecode8)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode8), "in method '" "AvgPooling_F32_get_backward_object" "', argument " "8"" of type '" "int""'");
+  } 
+  arg8 = static_cast< int >(val8);
+  ecode9 = SWIG_AsVal_int(obj4, &val9);
+  if (!SWIG_IsOK(ecode9)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode9), "in method '" "AvgPooling_F32_get_backward_object" "', argument " "9"" of type '" "int""'");
+  } 
+  arg9 = static_cast< int >(val9);
+  ecode10 = SWIG_AsVal_int(obj5, &val10);
+  if (!SWIG_IsOK(ecode10)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode10), "in method '" "AvgPooling_F32_get_backward_object" "', argument " "10"" of type '" "int""'");
+  } 
+  arg10 = static_cast< int >(val10);
+  ecode11 = SWIG_AsVal_int(obj6, &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "AvgPooling_F32_get_backward_object" "', argument " "11"" of type '" "int""'");
+  } 
+  arg11 = static_cast< int >(val11);
+  result = (Pooling< float > *)AvgPooling< float >::SWIGTEMPLATEDISAMBIGUATOR get_backward_object(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_PoolingT_float_t, 0 |  0 );
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_AvgPooling_F32_do_forward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  float *arg6 = (float *) 0 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int arg11 ;
+  int arg12 ;
+  int arg13 ;
+  int arg14 ;
+  int arg15 ;
+  int arg16 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  PyArrayObject *array6 = NULL ;
+  int val11 ;
+  int ecode11 = 0 ;
+  int val12 ;
+  int ecode12 = 0 ;
+  int val13 ;
+  int ecode13 = 0 ;
+  int val14 ;
+  int ecode14 = 0 ;
+  int val15 ;
+  int ecode15 = 0 ;
+  int val16 ;
+  int ecode16 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOO:AvgPooling_F32_do_forward",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  {
+    array6 = obj_to_array_no_conversion(obj1, NPY_FLOAT);
+    if (!array6 || !require_dimensions(array6,4) || !require_contiguous(array6) ||
+      !require_native(array6)) SWIG_fail;
+    arg6 = (float*) array_data(array6);
+    arg7 = (int) array_size(array6,0);
+    arg8 = (int) array_size(array6,1);
+    arg9 = (int) array_size(array6,2);
+    arg10 = (int) array_size(array6,3);
+  }
+  ecode11 = SWIG_AsVal_int(obj2, &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "AvgPooling_F32_do_forward" "', argument " "11"" of type '" "int""'");
+  } 
+  arg11 = static_cast< int >(val11);
+  ecode12 = SWIG_AsVal_int(obj3, &val12);
+  if (!SWIG_IsOK(ecode12)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "AvgPooling_F32_do_forward" "', argument " "12"" of type '" "int""'");
+  } 
+  arg12 = static_cast< int >(val12);
+  ecode13 = SWIG_AsVal_int(obj4, &val13);
+  if (!SWIG_IsOK(ecode13)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "AvgPooling_F32_do_forward" "', argument " "13"" of type '" "int""'");
+  } 
+  arg13 = static_cast< int >(val13);
+  ecode14 = SWIG_AsVal_int(obj5, &val14);
+  if (!SWIG_IsOK(ecode14)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode14), "in method '" "AvgPooling_F32_do_forward" "', argument " "14"" of type '" "int""'");
+  } 
+  arg14 = static_cast< int >(val14);
+  ecode15 = SWIG_AsVal_int(obj6, &val15);
+  if (!SWIG_IsOK(ecode15)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode15), "in method '" "AvgPooling_F32_do_forward" "', argument " "15"" of type '" "int""'");
+  } 
+  arg15 = static_cast< int >(val15);
+  ecode16 = SWIG_AsVal_int(obj7, &val16);
+  if (!SWIG_IsOK(ecode16)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode16), "in method '" "AvgPooling_F32_do_forward" "', argument " "16"" of type '" "int""'");
+  } 
+  arg16 = static_cast< int >(val16);
+  AvgPooling< float >::SWIGTEMPLATEDISAMBIGUATOR do_forward(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16);
+  resultobj = SWIG_Py_Void();
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_AvgPooling_F32_do_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  float *arg6 = (float *) 0 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  float *arg11 = (float *) 0 ;
+  int arg12 ;
+  int arg13 ;
+  int arg14 ;
+  int arg15 ;
+  int arg16 ;
+  int arg17 ;
+  int arg18 ;
+  int arg19 ;
+  int arg20 ;
+  int arg21 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  PyArrayObject *array6 = NULL ;
+  int is_new_object6 = 0 ;
+  PyArrayObject *array11 = NULL ;
+  int val16 ;
+  int ecode16 = 0 ;
+  int val17 ;
+  int ecode17 = 0 ;
+  int val18 ;
+  int ecode18 = 0 ;
+  int val19 ;
+  int ecode19 = 0 ;
+  int val20 ;
+  int ecode20 = 0 ;
+  int val21 ;
+  int ecode21 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  PyObject * obj6 = 0 ;
+  PyObject * obj7 = 0 ;
+  PyObject * obj8 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOOOOO:AvgPooling_F32_do_backward",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5,&obj6,&obj7,&obj8)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array6 = obj_to_array_contiguous_allow_conversion(obj1, NPY_FLOAT,
+      &is_new_object6);
+    if (!array6 || !require_dimensions(array6, 4) ||
+      !require_size(array6, size, 4)) SWIG_fail;
+    arg6 = (float*) array_data(array6);
+    arg7 = (int) array_size(array6,0);
+    arg8 = (int) array_size(array6,1);
+    arg9 = (int) array_size(array6,2);
+    arg10 = (int) array_size(array6,3);
+  }
+  {
+    array11 = obj_to_array_no_conversion(obj2, NPY_FLOAT);
+    if (!array11 || !require_dimensions(array11,4) || !require_contiguous(array11) ||
+      !require_native(array11)) SWIG_fail;
+    arg11 = (float*) array_data(array11);
+    arg12 = (int) array_size(array11,0);
+    arg13 = (int) array_size(array11,1);
+    arg14 = (int) array_size(array11,2);
+    arg15 = (int) array_size(array11,3);
+  }
+  ecode16 = SWIG_AsVal_int(obj3, &val16);
+  if (!SWIG_IsOK(ecode16)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode16), "in method '" "AvgPooling_F32_do_backward" "', argument " "16"" of type '" "int""'");
+  } 
+  arg16 = static_cast< int >(val16);
+  ecode17 = SWIG_AsVal_int(obj4, &val17);
+  if (!SWIG_IsOK(ecode17)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode17), "in method '" "AvgPooling_F32_do_backward" "', argument " "17"" of type '" "int""'");
+  } 
+  arg17 = static_cast< int >(val17);
+  ecode18 = SWIG_AsVal_int(obj5, &val18);
+  if (!SWIG_IsOK(ecode18)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode18), "in method '" "AvgPooling_F32_do_backward" "', argument " "18"" of type '" "int""'");
+  } 
+  arg18 = static_cast< int >(val18);
+  ecode19 = SWIG_AsVal_int(obj6, &val19);
+  if (!SWIG_IsOK(ecode19)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode19), "in method '" "AvgPooling_F32_do_backward" "', argument " "19"" of type '" "int""'");
+  } 
+  arg19 = static_cast< int >(val19);
+  ecode20 = SWIG_AsVal_int(obj7, &val20);
+  if (!SWIG_IsOK(ecode20)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode20), "in method '" "AvgPooling_F32_do_backward" "', argument " "20"" of type '" "int""'");
+  } 
+  arg20 = static_cast< int >(val20);
+  ecode21 = SWIG_AsVal_int(obj8, &val21);
+  if (!SWIG_IsOK(ecode21)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode21), "in method '" "AvgPooling_F32_do_backward" "', argument " "21"" of type '" "int""'");
+  } 
+  arg21 = static_cast< int >(val21);
+  AvgPooling< float >::SWIGTEMPLATEDISAMBIGUATOR do_backward(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14,arg15,arg16,arg17,arg18,arg19,arg20,arg21);
+  resultobj = SWIG_Py_Void();
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object6 && array6)
+    {
+      Py_DECREF(array6); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object6 && array6)
+    {
+      Py_DECREF(array6); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_AvgPooling_F32(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  AvgPooling< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_AvgPooling_F32")) SWIG_fail;
+  result = (AvgPooling< float > *)new AvgPooling< float >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_AvgPoolingT_float_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_AvgPooling_F32(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  AvgPooling< float > *arg1 = (AvgPooling< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_AvgPooling_F32",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_AvgPoolingT_float_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_AvgPooling_F32" "', argument " "1"" of type '" "AvgPooling< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< AvgPooling< float > * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *AvgPooling_F32_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_AvgPoolingT_float_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_new_Softmax_F32__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Softmax< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_Softmax_F32")) SWIG_fail;
+  result = (Softmax< float > *)new Softmax< float >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_SoftmaxT_float_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Softmax_F32__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  int *arg1 = (int *) 0 ;
+  int arg2 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  int val2 ;
+  int ecode2 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  Softmax< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OO:new_Softmax_F32",&obj0,&obj1)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_int, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "new_Softmax_F32" "', argument " "1"" of type '" "int *""'"); 
+  }
+  arg1 = reinterpret_cast< int * >(argp1);
+  ecode2 = SWIG_AsVal_int(obj1, &val2);
+  if (!SWIG_IsOK(ecode2)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode2), "in method '" "new_Softmax_F32" "', argument " "2"" of type '" "int""'");
+  } 
+  arg2 = static_cast< int >(val2);
+  result = (Softmax< float > *)new Softmax< float >(arg1,arg2);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_SoftmaxT_float_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_Softmax_F32(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[3] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 2) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 0) {
+    return _wrap_new_Softmax_F32__SWIG_0(self, args);
+  }
+  if (argc == 2) {
+    int _v;
+    void *vptr = 0;
+    int res = SWIG_ConvertPtr(argv[0], &vptr, SWIGTYPE_p_int, 0);
+    _v = SWIG_CheckState(res);
+    if (_v) {
+      {
+        int res = SWIG_AsVal_int(argv[1], NULL);
+        _v = SWIG_CheckState(res);
+      }
+      if (_v) {
+        return _wrap_new_Softmax_F32__SWIG_1(self, args);
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_Softmax_F32'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    Softmax< float >::Softmax()\n"
+    "    Softmax< float >::Softmax(int *,int)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_Softmax_F32_update_user_mem(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Softmax< float > *arg1 = (Softmax< float > *) 0 ;
+  float *arg2 = (float *) 0 ;
+  float *arg3 = (float *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 = 0 ;
+  int res2 = 0 ;
+  void *argp3 = 0 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Softmax_F32_update_user_mem",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_SoftmaxT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Softmax_F32_update_user_mem" "', argument " "1"" of type '" "Softmax< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Softmax< float > * >(argp1);
+  res2 = SWIG_ConvertPtr(obj1, &argp2,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res2)) {
+    SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Softmax_F32_update_user_mem" "', argument " "2"" of type '" "float *""'"); 
+  }
+  arg2 = reinterpret_cast< float * >(argp2);
+  res3 = SWIG_ConvertPtr(obj2, &argp3,SWIGTYPE_p_float, 0 |  0 );
+  if (!SWIG_IsOK(res3)) {
+    SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Softmax_F32_update_user_mem" "', argument " "3"" of type '" "float *""'"); 
+  }
+  arg3 = reinterpret_cast< float * >(argp3);
+  (arg1)->update_user_mem(arg2,arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Softmax_F32_update_user_data(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Softmax< float > *arg1 = (Softmax< float > *) 0 ;
+  std::shared_ptr< mkldnn::memory > arg2 ;
+  std::shared_ptr< mkldnn::memory > arg3 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  void *argp2 ;
+  int res2 = 0 ;
+  void *argp3 ;
+  int res3 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOO:Softmax_F32_update_user_data",&obj0,&obj1,&obj2)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_SoftmaxT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Softmax_F32_update_user_data" "', argument " "1"" of type '" "Softmax< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Softmax< float > * >(argp1);
+  {
+    res2 = SWIG_ConvertPtr(obj1, &argp2, SWIGTYPE_p_std__shared_ptrT_mkldnn__memory_t,  0  | 0);
+    if (!SWIG_IsOK(res2)) {
+      SWIG_exception_fail(SWIG_ArgError(res2), "in method '" "Softmax_F32_update_user_data" "', argument " "2"" of type '" "std::shared_ptr< mkldnn::memory >""'"); 
+    }  
+    if (!argp2) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Softmax_F32_update_user_data" "', argument " "2"" of type '" "std::shared_ptr< mkldnn::memory >""'");
+    } else {
+      std::shared_ptr< mkldnn::memory > * temp = reinterpret_cast< std::shared_ptr< mkldnn::memory > * >(argp2);
+      arg2 = *temp;
+      if (SWIG_IsNewObj(res2)) delete temp;
+    }
+  }
+  {
+    res3 = SWIG_ConvertPtr(obj2, &argp3, SWIGTYPE_p_std__shared_ptrT_mkldnn__memory_t,  0  | 0);
+    if (!SWIG_IsOK(res3)) {
+      SWIG_exception_fail(SWIG_ArgError(res3), "in method '" "Softmax_F32_update_user_data" "', argument " "3"" of type '" "std::shared_ptr< mkldnn::memory >""'"); 
+    }  
+    if (!argp3) {
+      SWIG_exception_fail(SWIG_ValueError, "invalid null reference " "in method '" "Softmax_F32_update_user_data" "', argument " "3"" of type '" "std::shared_ptr< mkldnn::memory >""'");
+    } else {
+      std::shared_ptr< mkldnn::memory > * temp = reinterpret_cast< std::shared_ptr< mkldnn::memory > * >(argp3);
+      arg3 = *temp;
+      if (SWIG_IsNewObj(res3)) delete temp;
+    }
+  }
+  (arg1)->update_user_data(arg2,arg3);
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Softmax_F32_is_first_fwd(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Softmax< float > *arg1 = (Softmax< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  bool result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Softmax_F32_is_first_fwd",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_SoftmaxT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Softmax_F32_is_first_fwd" "', argument " "1"" of type '" "Softmax< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Softmax< float > * >(argp1);
+  result = (bool)(arg1)->is_first_fwd();
+  resultobj = SWIG_From_bool(static_cast< bool >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Softmax_F32_mark_first_fwd(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Softmax< float > *arg1 = (Softmax< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Softmax_F32_mark_first_fwd",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_SoftmaxT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Softmax_F32_mark_first_fwd" "', argument " "1"" of type '" "Softmax< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Softmax< float > * >(argp1);
+  (arg1)->mark_first_fwd();
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Softmax_F32_softmax_create_forward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  float *arg3 = (float *) 0 ;
+  int arg4 ;
+  int *arg5 = (int *) 0 ;
+  int arg6 ;
+  int arg7 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  PyArrayObject *array3 = NULL ;
+  int i3 = 1 ;
+  PyArrayObject *array5 = NULL ;
+  int is_new_object5 = 0 ;
+  int val7 ;
+  int ecode7 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  Softmax< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOO:Softmax_F32_softmax_create_forward",&obj0,&obj1,&obj2,&obj3)) SWIG_fail;
+  {
+    npy_intp size[1] = {
+      -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0,
+      NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 1) ||
+      !require_size(array1, size, 1)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+  }
+  {
+    array3 = obj_to_array_no_conversion(obj1, NPY_FLOAT);
+    if (!array3 || !require_dimensions(array3,1) || !require_contiguous(array3)
+      || !require_native(array3)) SWIG_fail;
+    arg3 = (float*) array_data(array3);
+    arg4 = 1;
+    for (i3=0; i3 < array_numdims(array3); ++i3) arg4 *= array_size(array3,i3);
+  }
+  {
+    npy_intp size[1] = {
+      -1 
+    };
+    array5 = obj_to_array_contiguous_allow_conversion(obj2,
+      NPY_INT,
+      &is_new_object5);
+    if (!array5 || !require_dimensions(array5, 1) ||
+      !require_size(array5, size, 1)) SWIG_fail;
+    arg5 = (int*) array_data(array5);
+    arg6 = (int) array_size(array5,0);
+  }
+  ecode7 = SWIG_AsVal_int(obj3, &val7);
+  if (!SWIG_IsOK(ecode7)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode7), "in method '" "Softmax_F32_softmax_create_forward" "', argument " "7"" of type '" "int""'");
+  } 
+  arg7 = static_cast< int >(val7);
+  result = (Softmax< float > *)Softmax< float >::SWIGTEMPLATEDISAMBIGUATOR softmax_create_forward(arg1,arg2,arg3,arg4,arg5,arg6,arg7);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_SoftmaxT_float_t, 0 |  0 );
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object5 && array5)
+    {
+      Py_DECREF(array5); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  {
+    if (is_new_object5 && array5)
+    {
+      Py_DECREF(array5); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Softmax_F32_get_res_size(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Softmax< float > *arg1 = (Softmax< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Softmax_F32_get_res_size",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_SoftmaxT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Softmax_F32_get_res_size" "', argument " "1"" of type '" "Softmax< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Softmax< float > * >(argp1);
+  result = (int)(arg1)->get_res_size();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Softmax_F32_forward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Softmax< float > *arg1 = (Softmax< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Softmax_F32_forward",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_SoftmaxT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Softmax_F32_forward" "', argument " "1"" of type '" "Softmax< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Softmax< float > * >(argp1);
+  result = (int)(arg1)->forward();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Softmax_F32_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Softmax< float > *arg1 = (Softmax< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Softmax_F32_backward",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_SoftmaxT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Softmax_F32_backward" "', argument " "1"" of type '" "Softmax< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Softmax< float > * >(argp1);
+  result = (int)(arg1)->backward();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Softmax_F32_setup_forward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Softmax< float > *arg1 = (Softmax< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Softmax_F32_setup_forward",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_SoftmaxT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Softmax_F32_setup_forward" "', argument " "1"" of type '" "Softmax< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Softmax< float > * >(argp1);
+  result = (int)(arg1)->setup_forward();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_Softmax_F32_setup_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Softmax< float > *arg1 = (Softmax< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:Softmax_F32_setup_backward",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_SoftmaxT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "Softmax_F32_setup_backward" "', argument " "1"" of type '" "Softmax< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Softmax< float > * >(argp1);
+  result = (int)(arg1)->setup_backward();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_Softmax_F32(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  Softmax< float > *arg1 = (Softmax< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_Softmax_F32",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_SoftmaxT_float_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_Softmax_F32" "', argument " "1"" of type '" "Softmax< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< Softmax< float > * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *Softmax_F32_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_SoftmaxT_float_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
+SWIGINTERN PyObject *_wrap_new_LocalResponseNormalization_F32__SWIG_0(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LocalResponseNormalization< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)":new_LocalResponseNormalization_F32")) SWIG_fail;
+  result = (LocalResponseNormalization< float > *)new LocalResponseNormalization< float >();
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LocalResponseNormalizationT_float_t, SWIG_POINTER_NEW |  0 );
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_delete_LocalResponseNormalization_F32(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LocalResponseNormalization< float > *arg1 = (LocalResponseNormalization< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:delete_LocalResponseNormalization_F32",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LocalResponseNormalizationT_float_t, SWIG_POINTER_DISOWN |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "delete_LocalResponseNormalization_F32" "', argument " "1"" of type '" "LocalResponseNormalization< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< LocalResponseNormalization< float > * >(argp1);
+  delete arg1;
+  resultobj = SWIG_Py_Void();
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_LocalResponseNormalization_F32__SWIG_1(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  float *arg1 = (float *) 0 ;
+  int arg2 ;
+  int arg3 ;
+  int arg4 ;
+  int arg5 ;
+  float *arg6 = (float *) 0 ;
+  int arg7 ;
+  int arg8 ;
+  int arg9 ;
+  int arg10 ;
+  int arg11 ;
+  int arg12 ;
+  double arg13 ;
+  double arg14 ;
+  PyArrayObject *array1 = NULL ;
+  int is_new_object1 = 0 ;
+  PyArrayObject *array6 = NULL ;
+  int val11 ;
+  int ecode11 = 0 ;
+  int val12 ;
+  int ecode12 = 0 ;
+  double val13 ;
+  int ecode13 = 0 ;
+  double val14 ;
+  int ecode14 = 0 ;
+  PyObject * obj0 = 0 ;
+  PyObject * obj1 = 0 ;
+  PyObject * obj2 = 0 ;
+  PyObject * obj3 = 0 ;
+  PyObject * obj4 = 0 ;
+  PyObject * obj5 = 0 ;
+  LocalResponseNormalization< float > *result = 0 ;
+  
+  if (!PyArg_ParseTuple(args,(char *)"OOOOOO:new_LocalResponseNormalization_F32",&obj0,&obj1,&obj2,&obj3,&obj4,&obj5)) SWIG_fail;
+  {
+    npy_intp size[4] = {
+      -1, -1, -1, -1 
+    };
+    array1 = obj_to_array_contiguous_allow_conversion(obj0, NPY_FLOAT,
+      &is_new_object1);
+    if (!array1 || !require_dimensions(array1, 4) ||
+      !require_size(array1, size, 4)) SWIG_fail;
+    arg1 = (float*) array_data(array1);
+    arg2 = (int) array_size(array1,0);
+    arg3 = (int) array_size(array1,1);
+    arg4 = (int) array_size(array1,2);
+    arg5 = (int) array_size(array1,3);
+  }
+  {
+    array6 = obj_to_array_no_conversion(obj1, NPY_FLOAT);
+    if (!array6 || !require_dimensions(array6,4) || !require_contiguous(array6) ||
+      !require_native(array6)) SWIG_fail;
+    arg6 = (float*) array_data(array6);
+    arg7 = (int) array_size(array6,0);
+    arg8 = (int) array_size(array6,1);
+    arg9 = (int) array_size(array6,2);
+    arg10 = (int) array_size(array6,3);
+  }
+  ecode11 = SWIG_AsVal_int(obj2, &val11);
+  if (!SWIG_IsOK(ecode11)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode11), "in method '" "new_LocalResponseNormalization_F32" "', argument " "11"" of type '" "int""'");
+  } 
+  arg11 = static_cast< int >(val11);
+  ecode12 = SWIG_AsVal_int(obj3, &val12);
+  if (!SWIG_IsOK(ecode12)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode12), "in method '" "new_LocalResponseNormalization_F32" "', argument " "12"" of type '" "int""'");
+  } 
+  arg12 = static_cast< int >(val12);
+  ecode13 = SWIG_AsVal_double(obj4, &val13);
+  if (!SWIG_IsOK(ecode13)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode13), "in method '" "new_LocalResponseNormalization_F32" "', argument " "13"" of type '" "double""'");
+  } 
+  arg13 = static_cast< double >(val13);
+  ecode14 = SWIG_AsVal_double(obj5, &val14);
+  if (!SWIG_IsOK(ecode14)) {
+    SWIG_exception_fail(SWIG_ArgError(ecode14), "in method '" "new_LocalResponseNormalization_F32" "', argument " "14"" of type '" "double""'");
+  } 
+  arg14 = static_cast< double >(val14);
+  result = (LocalResponseNormalization< float > *)new LocalResponseNormalization< float >(arg1,arg2,arg3,arg4,arg5,arg6,arg7,arg8,arg9,arg10,arg11,arg12,arg13,arg14);
+  resultobj = SWIG_NewPointerObj(SWIG_as_voidptr(result), SWIGTYPE_p_LocalResponseNormalizationT_float_t, SWIG_POINTER_NEW |  0 );
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return resultobj;
+fail:
+  {
+    if (is_new_object1 && array1)
+    {
+      Py_DECREF(array1); 
+    }
+  }
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_new_LocalResponseNormalization_F32(PyObject *self, PyObject *args) {
+  Py_ssize_t argc;
+  PyObject *argv[7] = {
+    0
+  };
+  Py_ssize_t ii;
+  
+  if (!PyTuple_Check(args)) SWIG_fail;
+  argc = args ? PyObject_Length(args) : 0;
+  for (ii = 0; (ii < 6) && (ii < argc); ii++) {
+    argv[ii] = PyTuple_GET_ITEM(args,ii);
+  }
+  if (argc == 0) {
+    return _wrap_new_LocalResponseNormalization_F32__SWIG_0(self, args);
+  }
+  if (argc == 6) {
+    int _v;
+    {
+      _v = is_array(argv[0]) || PySequence_Check(argv[0]);
+    }
+    if (_v) {
+      {
+        _v = is_array(argv[1]) && PyArray_EquivTypenums(array_type(argv[1]),
+          NPY_FLOAT);
+      }
+      if (_v) {
+        {
+          int res = SWIG_AsVal_int(argv[2], NULL);
+          _v = SWIG_CheckState(res);
+        }
+        if (_v) {
+          {
+            int res = SWIG_AsVal_int(argv[3], NULL);
+            _v = SWIG_CheckState(res);
+          }
+          if (_v) {
+            {
+              int res = SWIG_AsVal_double(argv[4], NULL);
+              _v = SWIG_CheckState(res);
+            }
+            if (_v) {
+              {
+                int res = SWIG_AsVal_double(argv[5], NULL);
+                _v = SWIG_CheckState(res);
+              }
+              if (_v) {
+                return _wrap_new_LocalResponseNormalization_F32__SWIG_1(self, args);
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+  
+fail:
+  SWIG_SetErrorMsg(PyExc_NotImplementedError,"Wrong number or type of arguments for overloaded function 'new_LocalResponseNormalization_F32'.\n"
+    "  Possible C/C++ prototypes are:\n"
+    "    LocalResponseNormalization< float >::LocalResponseNormalization()\n"
+    "    LocalResponseNormalization< float >::LocalResponseNormalization(float *,int,int,int,int,float *,int,int,int,int,int,int,double,double)\n");
+  return 0;
+}
+
+
+SWIGINTERN PyObject *_wrap_LocalResponseNormalization_F32_forward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LocalResponseNormalization< float > *arg1 = (LocalResponseNormalization< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:LocalResponseNormalization_F32_forward",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LocalResponseNormalizationT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LocalResponseNormalization_F32_forward" "', argument " "1"" of type '" "LocalResponseNormalization< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< LocalResponseNormalization< float > * >(argp1);
+  result = (int)(arg1)->forward();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *_wrap_LocalResponseNormalization_F32_backward(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *resultobj = 0;
+  LocalResponseNormalization< float > *arg1 = (LocalResponseNormalization< float > *) 0 ;
+  void *argp1 = 0 ;
+  int res1 = 0 ;
+  PyObject * obj0 = 0 ;
+  int result;
+  
+  if (!PyArg_ParseTuple(args,(char *)"O:LocalResponseNormalization_F32_backward",&obj0)) SWIG_fail;
+  res1 = SWIG_ConvertPtr(obj0, &argp1,SWIGTYPE_p_LocalResponseNormalizationT_float_t, 0 |  0 );
+  if (!SWIG_IsOK(res1)) {
+    SWIG_exception_fail(SWIG_ArgError(res1), "in method '" "LocalResponseNormalization_F32_backward" "', argument " "1"" of type '" "LocalResponseNormalization< float > *""'"); 
+  }
+  arg1 = reinterpret_cast< LocalResponseNormalization< float > * >(argp1);
+  result = (int)(arg1)->backward();
+  resultobj = SWIG_From_int(static_cast< int >(result));
+  return resultobj;
+fail:
+  return NULL;
+}
+
+
+SWIGINTERN PyObject *LocalResponseNormalization_F32_swigregister(PyObject *SWIGUNUSEDPARM(self), PyObject *args) {
+  PyObject *obj;
+  if (!PyArg_ParseTuple(args,(char *)"O:swigregister", &obj)) return NULL;
+  SWIG_TypeNewClientData(SWIGTYPE_p_LocalResponseNormalizationT_float_t, SWIG_NewClientData(obj));
+  return SWIG_Py_Void();
+}
+
 static PyMethodDef SwigMethods[] = {
 	 { (char *)"SWIG_PyInstanceMethod_New", (PyCFunction)SWIG_PyInstanceMethod_New, METH_O, NULL},
 	 { (char *)"global_init", _wrap_global_init, METH_VARARGS, NULL},
 	 { (char *)"enabled", _wrap_enabled, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_getInstance", _wrap_StreamFactory_getInstance, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_getRELUFwdStream", _wrap_StreamFactory_getRELUFwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_setRELUFwdStream", _wrap_StreamFactory_setRELUFwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_getRELUBwdStream", _wrap_StreamFactory_getRELUBwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_setRELUBwdStream", _wrap_StreamFactory_setRELUBwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_getMaxPoolFwdStream", _wrap_StreamFactory_getMaxPoolFwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_setMaxPoolFwdStream", _wrap_StreamFactory_setMaxPoolFwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_setMaxPoolBwdStream", _wrap_StreamFactory_setMaxPoolBwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_getMaxPoolBwdStream", _wrap_StreamFactory_getMaxPoolBwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_getAvgPoolFwdStream", _wrap_StreamFactory_getAvgPoolFwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_setAvgPoolFwdStream", _wrap_StreamFactory_setAvgPoolFwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_setAvgPoolBwdStream", _wrap_StreamFactory_setAvgPoolBwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_getAvgPoolBwdStream", _wrap_StreamFactory_getAvgPoolBwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_getLRNFwdStream", _wrap_StreamFactory_getLRNFwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_setLRNFwdStream", _wrap_StreamFactory_setLRNFwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_getLRNBwdStream", _wrap_StreamFactory_getLRNBwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_setLRNBwdStream", _wrap_StreamFactory_setLRNBwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_getSoftmaxFwdStream", _wrap_StreamFactory_getSoftmaxFwdStream, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_setSoftmaxFwdStream", _wrap_StreamFactory_setSoftmaxFwdStream, METH_VARARGS, NULL},
-	 { (char *)"delete_StreamFactory", _wrap_delete_StreamFactory, METH_VARARGS, NULL},
-	 { (char *)"StreamFactory_swigregister", StreamFactory_swigregister, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_getInstance", _wrap_LayerFactory_getInstance, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_getRELULayer", _wrap_LayerFactory_getRELULayer, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_setRELULayer", _wrap_LayerFactory_setRELULayer, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_getMaxPoolLayer", _wrap_LayerFactory_getMaxPoolLayer, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_setMaxPoolLayer", _wrap_LayerFactory_setMaxPoolLayer, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_getAvgPoolLayer", _wrap_LayerFactory_getAvgPoolLayer, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_setAvgPoolLayer", _wrap_LayerFactory_setAvgPoolLayer, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_getLRNLayer", _wrap_LayerFactory_getLRNLayer, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_setLRNLayer", _wrap_LayerFactory_setLRNLayer, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_getSoftmax2DLayer", _wrap_LayerFactory_getSoftmax2DLayer, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_setSoftmax2DLayer", _wrap_LayerFactory_setSoftmax2DLayer, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_getSoftmax4DLayer", _wrap_LayerFactory_getSoftmax4DLayer, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_setSoftmax4DLayer", _wrap_LayerFactory_setSoftmax4DLayer, METH_VARARGS, NULL},
+	 { (char *)"delete_LayerFactory", _wrap_delete_LayerFactory, METH_VARARGS, NULL},
+	 { (char *)"LayerFactory_swigregister", LayerFactory_swigregister, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_alpha_set", _wrap_lrn_params_alpha_set, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_alpha_get", _wrap_lrn_params_alpha_get, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_beta_set", _wrap_lrn_params_beta_set, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_beta_get", _wrap_lrn_params_beta_get, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_local_size_set", _wrap_lrn_params_local_size_set, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_local_size_get", _wrap_lrn_params_local_size_get, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_aprop_kind_set", _wrap_lrn_params_aprop_kind_set, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_aprop_kind_get", _wrap_lrn_params_aprop_kind_get, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_aalgorithm_set", _wrap_lrn_params_aalgorithm_set, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_aalgorithm_get", _wrap_lrn_params_aalgorithm_get, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_data_format_set", _wrap_lrn_params_data_format_set, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_data_format_get", _wrap_lrn_params_data_format_get, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_diff_data_format_set", _wrap_lrn_params_diff_data_format_set, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_diff_data_format_get", _wrap_lrn_params_diff_data_format_get, METH_VARARGS, NULL},
+	 { (char *)"new_lrn_params", _wrap_new_lrn_params, METH_VARARGS, NULL},
+	 { (char *)"delete_lrn_params", _wrap_delete_lrn_params, METH_VARARGS, NULL},
+	 { (char *)"lrn_params_swigregister", lrn_params_swigregister, METH_VARARGS, NULL},
+	 { (char *)"delete_Layer_F32", _wrap_delete_Layer_F32, METH_VARARGS, NULL},
+	 { (char *)"Layer_F32_forward", _wrap_Layer_F32_forward, METH_VARARGS, NULL},
+	 { (char *)"Layer_F32_backward", _wrap_Layer_F32_backward, METH_VARARGS, NULL},
+	 { (char *)"Layer_F32_setup_forward", _wrap_Layer_F32_setup_forward, METH_VARARGS, NULL},
+	 { (char *)"Layer_F32_setup_backward", _wrap_Layer_F32_setup_backward, METH_VARARGS, NULL},
+	 { (char *)"new_Layer_F32", _wrap_new_Layer_F32, METH_VARARGS, NULL},
+	 { (char *)"Layer_F32_swigregister", Layer_F32_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_Convolution2D_F32", _wrap_new_Convolution2D_F32, METH_VARARGS, NULL},
 	 { (char *)"delete_Convolution2D_F32", _wrap_delete_Convolution2D_F32, METH_VARARGS, NULL},
 	 { (char *)"Convolution2D_F32_forward_setup", _wrap_Convolution2D_F32_forward_setup, METH_VARARGS, NULL},
@@ -7752,22 +10774,23 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Convolution2D_F32_backward", _wrap_Convolution2D_F32_backward, METH_VARARGS, NULL},
 	 { (char *)"Convolution2D_F32_swigregister", Convolution2D_F32_swigregister, METH_VARARGS, NULL},
 	 { (char *)"Pooling_F32_forward", _wrap_Pooling_F32_forward, METH_VARARGS, NULL},
+	 { (char *)"Pooling_F32_backward", _wrap_Pooling_F32_backward, METH_VARARGS, NULL},
 	 { (char *)"Pooling_F32_forward_setup", _wrap_Pooling_F32_forward_setup, METH_VARARGS, NULL},
+	 { (char *)"Pooling_F32_backward_setup", _wrap_Pooling_F32_backward_setup, METH_VARARGS, NULL},
 	 { (char *)"Pooling_F32_get_forward_object", _wrap_Pooling_F32_get_forward_object, METH_VARARGS, NULL},
+	 { (char *)"Pooling_F32_get_backward_object", _wrap_Pooling_F32_get_backward_object, METH_VARARGS, NULL},
+	 { (char *)"Pooling_F32_do_forward", _wrap_Pooling_F32_do_forward, METH_VARARGS, NULL},
+	 { (char *)"Pooling_F32_do_backward", _wrap_Pooling_F32_do_backward, METH_VARARGS, NULL},
 	 { (char *)"new_Pooling_F32", _wrap_new_Pooling_F32, METH_VARARGS, NULL},
 	 { (char *)"delete_Pooling_F32", _wrap_delete_Pooling_F32, METH_VARARGS, NULL},
 	 { (char *)"Pooling_F32_swigregister", Pooling_F32_swigregister, METH_VARARGS, NULL},
 	 { (char *)"MaxPooling_F32_get_forward_object", _wrap_MaxPooling_F32_get_forward_object, METH_VARARGS, NULL},
+	 { (char *)"MaxPooling_F32_get_backward_object", _wrap_MaxPooling_F32_get_backward_object, METH_VARARGS, NULL},
+	 { (char *)"MaxPooling_F32_do_forward", _wrap_MaxPooling_F32_do_forward, METH_VARARGS, NULL},
+	 { (char *)"MaxPooling_F32_do_backward", _wrap_MaxPooling_F32_do_backward, METH_VARARGS, NULL},
 	 { (char *)"new_MaxPooling_F32", _wrap_new_MaxPooling_F32, METH_VARARGS, NULL},
 	 { (char *)"delete_MaxPooling_F32", _wrap_delete_MaxPooling_F32, METH_VARARGS, NULL},
 	 { (char *)"MaxPooling_F32_swigregister", MaxPooling_F32_swigregister, METH_VARARGS, NULL},
-	 { (char *)"delete_Layer_F32", _wrap_delete_Layer_F32, METH_VARARGS, NULL},
-	 { (char *)"Layer_F32_forward", _wrap_Layer_F32_forward, METH_VARARGS, NULL},
-	 { (char *)"Layer_F32_backward", _wrap_Layer_F32_backward, METH_VARARGS, NULL},
-	 { (char *)"Layer_F32_setup_forward", _wrap_Layer_F32_setup_forward, METH_VARARGS, NULL},
-	 { (char *)"Layer_F32_setup_backward", _wrap_Layer_F32_setup_backward, METH_VARARGS, NULL},
-	 { (char *)"new_Layer_F32", _wrap_new_Layer_F32, METH_VARARGS, NULL},
-	 { (char *)"Layer_F32_swigregister", Layer_F32_swigregister, METH_VARARGS, NULL},
 	 { (char *)"new_Relu_F32", _wrap_new_Relu_F32, METH_VARARGS, NULL},
 	 { (char *)"Relu_F32_forward_setup", _wrap_Relu_F32_forward_setup, METH_VARARGS, NULL},
 	 { (char *)"Relu_F32_forward", _wrap_Relu_F32_forward, METH_VARARGS, NULL},
@@ -7775,6 +10798,31 @@ static PyMethodDef SwigMethods[] = {
 	 { (char *)"Relu_F32_backward", _wrap_Relu_F32_backward, METH_VARARGS, NULL},
 	 { (char *)"delete_Relu_F32", _wrap_delete_Relu_F32, METH_VARARGS, NULL},
 	 { (char *)"Relu_F32_swigregister", Relu_F32_swigregister, METH_VARARGS, NULL},
+	 { (char *)"AvgPooling_F32_get_forward_object", _wrap_AvgPooling_F32_get_forward_object, METH_VARARGS, NULL},
+	 { (char *)"AvgPooling_F32_get_backward_object", _wrap_AvgPooling_F32_get_backward_object, METH_VARARGS, NULL},
+	 { (char *)"AvgPooling_F32_do_forward", _wrap_AvgPooling_F32_do_forward, METH_VARARGS, NULL},
+	 { (char *)"AvgPooling_F32_do_backward", _wrap_AvgPooling_F32_do_backward, METH_VARARGS, NULL},
+	 { (char *)"new_AvgPooling_F32", _wrap_new_AvgPooling_F32, METH_VARARGS, NULL},
+	 { (char *)"delete_AvgPooling_F32", _wrap_delete_AvgPooling_F32, METH_VARARGS, NULL},
+	 { (char *)"AvgPooling_F32_swigregister", AvgPooling_F32_swigregister, METH_VARARGS, NULL},
+	 { (char *)"new_Softmax_F32", _wrap_new_Softmax_F32, METH_VARARGS, NULL},
+	 { (char *)"Softmax_F32_update_user_mem", _wrap_Softmax_F32_update_user_mem, METH_VARARGS, NULL},
+	 { (char *)"Softmax_F32_update_user_data", _wrap_Softmax_F32_update_user_data, METH_VARARGS, NULL},
+	 { (char *)"Softmax_F32_is_first_fwd", _wrap_Softmax_F32_is_first_fwd, METH_VARARGS, NULL},
+	 { (char *)"Softmax_F32_mark_first_fwd", _wrap_Softmax_F32_mark_first_fwd, METH_VARARGS, NULL},
+	 { (char *)"Softmax_F32_softmax_create_forward", _wrap_Softmax_F32_softmax_create_forward, METH_VARARGS, NULL},
+	 { (char *)"Softmax_F32_get_res_size", _wrap_Softmax_F32_get_res_size, METH_VARARGS, NULL},
+	 { (char *)"Softmax_F32_forward", _wrap_Softmax_F32_forward, METH_VARARGS, NULL},
+	 { (char *)"Softmax_F32_backward", _wrap_Softmax_F32_backward, METH_VARARGS, NULL},
+	 { (char *)"Softmax_F32_setup_forward", _wrap_Softmax_F32_setup_forward, METH_VARARGS, NULL},
+	 { (char *)"Softmax_F32_setup_backward", _wrap_Softmax_F32_setup_backward, METH_VARARGS, NULL},
+	 { (char *)"delete_Softmax_F32", _wrap_delete_Softmax_F32, METH_VARARGS, NULL},
+	 { (char *)"Softmax_F32_swigregister", Softmax_F32_swigregister, METH_VARARGS, NULL},
+	 { (char *)"delete_LocalResponseNormalization_F32", _wrap_delete_LocalResponseNormalization_F32, METH_VARARGS, NULL},
+	 { (char *)"new_LocalResponseNormalization_F32", _wrap_new_LocalResponseNormalization_F32, METH_VARARGS, NULL},
+	 { (char *)"LocalResponseNormalization_F32_forward", _wrap_LocalResponseNormalization_F32_forward, METH_VARARGS, NULL},
+	 { (char *)"LocalResponseNormalization_F32_backward", _wrap_LocalResponseNormalization_F32_backward, METH_VARARGS, NULL},
+	 { (char *)"LocalResponseNormalization_F32_swigregister", LocalResponseNormalization_F32_swigregister, METH_VARARGS, NULL},
 	 { NULL, NULL, 0, NULL }
 };
 
@@ -7784,44 +10832,95 @@ static PyMethodDef SwigMethods[] = {
 static void *_p_MaxPoolingT_float_tTo_p_PoolingT_float_t(void *x, int *SWIGUNUSEDPARM(newmemory)) {
     return (void *)((Pooling< float > *)  ((MaxPooling< float > *) x));
 }
+static void *_p_AvgPoolingT_float_tTo_p_PoolingT_float_t(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((Pooling< float > *)  ((AvgPooling< float > *) x));
+}
+static void *_p_PoolingT_float_tTo_p_LayerT_float_t(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((Layer< float > *)  ((Pooling< float > *) x));
+}
+static void *_p_MaxPoolingT_float_tTo_p_LayerT_float_t(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((Layer< float > *) (Pooling< float > *) ((MaxPooling< float > *) x));
+}
+static void *_p_AvgPoolingT_float_tTo_p_LayerT_float_t(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((Layer< float > *) (Pooling< float > *) ((AvgPooling< float > *) x));
+}
+static void *_p_SoftmaxT_float_tTo_p_LayerT_float_t(void *x, int *SWIGUNUSEDPARM(newmemory)) {
+    return (void *)((Layer< float > *)  ((Softmax< float > *) x));
+}
+static swig_type_info _swigt__p_AvgPoolingT_float_t = {"_p_AvgPoolingT_float_t", "AvgPooling< float > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_Convolution2DT_float_t = {"_p_Convolution2DT_float_t", "Convolution2D< float > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_LayerFactory = {"_p_LayerFactory", "LayerFactory *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_LayerT_float_t = {"_p_LayerT_float_t", "Layer< float > *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_LocalResponseNormalizationT_float_t = {"_p_LocalResponseNormalizationT_float_t", "LocalResponseNormalization< float > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_MaxPoolingT_float_t = {"_p_MaxPoolingT_float_t", "MaxPooling< float > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_PoolingT_float_t = {"_p_PoolingT_float_t", "Pooling< float > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_ReluT_float_t = {"_p_ReluT_float_t", "Relu< float > *", 0, 0, (void*)0, 0};
-static swig_type_info _swigt__p_StreamFactory = {"_p_StreamFactory", "StreamFactory *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_SoftmaxT_float_t = {"_p_SoftmaxT_float_t", "Softmax< float > *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_char = {"_p_char", "char *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_float = {"_p_float", "float *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_int = {"_p_int", "int *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_lrn_params = {"_p_lrn_params", "lrn_params *", 0, 0, (void*)0, 0};
 static swig_type_info _swigt__p_mkldnn__algorithm = {"_p_mkldnn__algorithm", "mkldnn::algorithm *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_mkldnn__memory__format = {"_p_mkldnn__memory__format", "mkldnn::memory::format *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_mkldnn__prop_kind = {"_p_mkldnn__prop_kind", "mkldnn::prop_kind *", 0, 0, (void*)0, 0};
+static swig_type_info _swigt__p_std__shared_ptrT_mkldnn__memory_t = {"_p_std__shared_ptrT_mkldnn__memory_t", "std::shared_ptr< mkldnn::memory > *", 0, 0, (void*)0, 0};
 
 static swig_type_info *swig_type_initial[] = {
+  &_swigt__p_AvgPoolingT_float_t,
   &_swigt__p_Convolution2DT_float_t,
+  &_swigt__p_LayerFactory,
   &_swigt__p_LayerT_float_t,
+  &_swigt__p_LocalResponseNormalizationT_float_t,
   &_swigt__p_MaxPoolingT_float_t,
   &_swigt__p_PoolingT_float_t,
   &_swigt__p_ReluT_float_t,
-  &_swigt__p_StreamFactory,
+  &_swigt__p_SoftmaxT_float_t,
   &_swigt__p_char,
+  &_swigt__p_float,
+  &_swigt__p_int,
+  &_swigt__p_lrn_params,
   &_swigt__p_mkldnn__algorithm,
+  &_swigt__p_mkldnn__memory__format,
+  &_swigt__p_mkldnn__prop_kind,
+  &_swigt__p_std__shared_ptrT_mkldnn__memory_t,
 };
 
+static swig_cast_info _swigc__p_AvgPoolingT_float_t[] = {  {&_swigt__p_AvgPoolingT_float_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_Convolution2DT_float_t[] = {  {&_swigt__p_Convolution2DT_float_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_LayerT_float_t[] = {  {&_swigt__p_LayerT_float_t, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_LayerFactory[] = {  {&_swigt__p_LayerFactory, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_LayerT_float_t[] = {  {&_swigt__p_LayerT_float_t, 0, 0, 0},  {&_swigt__p_PoolingT_float_t, _p_PoolingT_float_tTo_p_LayerT_float_t, 0, 0},  {&_swigt__p_MaxPoolingT_float_t, _p_MaxPoolingT_float_tTo_p_LayerT_float_t, 0, 0},  {&_swigt__p_AvgPoolingT_float_t, _p_AvgPoolingT_float_tTo_p_LayerT_float_t, 0, 0},  {&_swigt__p_SoftmaxT_float_t, _p_SoftmaxT_float_tTo_p_LayerT_float_t, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_LocalResponseNormalizationT_float_t[] = {  {&_swigt__p_LocalResponseNormalizationT_float_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_MaxPoolingT_float_t[] = {  {&_swigt__p_MaxPoolingT_float_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_PoolingT_float_t[] = {  {&_swigt__p_PoolingT_float_t, 0, 0, 0},  {&_swigt__p_MaxPoolingT_float_t, _p_MaxPoolingT_float_tTo_p_PoolingT_float_t, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_PoolingT_float_t[] = {  {&_swigt__p_PoolingT_float_t, 0, 0, 0},  {&_swigt__p_MaxPoolingT_float_t, _p_MaxPoolingT_float_tTo_p_PoolingT_float_t, 0, 0},  {&_swigt__p_AvgPoolingT_float_t, _p_AvgPoolingT_float_tTo_p_PoolingT_float_t, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_ReluT_float_t[] = {  {&_swigt__p_ReluT_float_t, 0, 0, 0},{0, 0, 0, 0}};
-static swig_cast_info _swigc__p_StreamFactory[] = {  {&_swigt__p_StreamFactory, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_SoftmaxT_float_t[] = {  {&_swigt__p_SoftmaxT_float_t, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_char[] = {  {&_swigt__p_char, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_float[] = {  {&_swigt__p_float, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_int[] = {  {&_swigt__p_int, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_lrn_params[] = {  {&_swigt__p_lrn_params, 0, 0, 0},{0, 0, 0, 0}};
 static swig_cast_info _swigc__p_mkldnn__algorithm[] = {  {&_swigt__p_mkldnn__algorithm, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_mkldnn__memory__format[] = {  {&_swigt__p_mkldnn__memory__format, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_mkldnn__prop_kind[] = {  {&_swigt__p_mkldnn__prop_kind, 0, 0, 0},{0, 0, 0, 0}};
+static swig_cast_info _swigc__p_std__shared_ptrT_mkldnn__memory_t[] = {  {&_swigt__p_std__shared_ptrT_mkldnn__memory_t, 0, 0, 0},{0, 0, 0, 0}};
 
 static swig_cast_info *swig_cast_initial[] = {
+  _swigc__p_AvgPoolingT_float_t,
   _swigc__p_Convolution2DT_float_t,
+  _swigc__p_LayerFactory,
   _swigc__p_LayerT_float_t,
+  _swigc__p_LocalResponseNormalizationT_float_t,
   _swigc__p_MaxPoolingT_float_t,
   _swigc__p_PoolingT_float_t,
   _swigc__p_ReluT_float_t,
-  _swigc__p_StreamFactory,
+  _swigc__p_SoftmaxT_float_t,
   _swigc__p_char,
+  _swigc__p_float,
+  _swigc__p_int,
+  _swigc__p_lrn_params,
   _swigc__p_mkldnn__algorithm,
+  _swigc__p_mkldnn__memory__format,
+  _swigc__p_mkldnn__prop_kind,
+  _swigc__p_std__shared_ptrT_mkldnn__memory_t,
 };
 
 

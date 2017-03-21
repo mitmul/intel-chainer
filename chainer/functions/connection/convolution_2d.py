@@ -5,6 +5,7 @@ from chainer import function
 from chainer.utils import conv
 from chainer.utils import type_check
 from mkldnn import mkldnn
+from mkldnn import switch
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
@@ -39,7 +40,7 @@ class Convolution2DFunction(function.Function):
         self.cover_all = cover_all
         self.deterministic = deterministic
     
-        if mkldnn.enabled() and conv_link is None:
+        if mkldnn.enabled() and switch.enable_conv is True and conv_link is None:
             assert "conv_link can not be None in mkldnn enable model"
 
         self.conv_link = conv_link
@@ -72,7 +73,7 @@ class Convolution2DFunction(function.Function):
         out_c, input_c, kh, kw = W.shape
         n, c, h, w = x.shape
 
-        if mkldnn.enabled():
+        if mkldnn.enabled() and switch.enable_conv is True:
             out_h = conv.get_conv_outsize(h, kh, self.sy, self.ph,
                                       cover_all=self.cover_all)
             assert out_h > 0, 'Height in the output should be positive.'
@@ -178,7 +179,7 @@ class Convolution2DFunction(function.Function):
         out_c, input_c, kh, kw = W.shape
         gn, gout_c, gout_h, gout_w = gy.shape
 
-        if mkldnn.enabled():
+        if mkldnn.enabled() and switch.enable_conv is True:
             if self.conv_link.gW is None:
                 self.conv_link.gW = numpy.empty(shape=(out_c, input_c, kh, kw), dtype=W.dtype)
             

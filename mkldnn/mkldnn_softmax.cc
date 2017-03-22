@@ -52,10 +52,8 @@ Softmax<T>::softmax_create_forward(T* x, int dummy_x,
 
 	    // LayerFactory set map
             LayerFactory::getInstance().setSoftmax2DLayer(dims[0], dims[1], axis, inst);
-
-            LOG(INFO) << "New Softmax2D Instance: " << (void*)&inst << " !!!";
 	} else {
-            LOG(INFO) << "Reuse Softmax2D Instance: " << (void*)&inst << " !!!";
+	    ;
 	}
 
         // Update current user memory
@@ -73,10 +71,8 @@ Softmax<T>::softmax_create_forward(T* x, int dummy_x,
 
 	    // LayerFactory set map
             LayerFactory::getInstance().setSoftmax4DLayer(dims[0], dims[1], dims[2], dims[3], axis, inst);
-
-            LOG(INFO) << "New Softmax4D Instance: " << (void*)&inst << " !!!";
         } else {
-            LOG(INFO) << "Reuse Softmax4D Instance: " << (void*)&inst << " !!!";
+	    ;
 	}
 
         // Update current user memory
@@ -99,8 +95,6 @@ int Softmax_2D<T>::get_res_size()
 template<typename T>
 int Softmax_2D<T>::setup_forward()
 {
-    LOG(INFO) << "Softmax_2D::setup_forward";
-
     // (1) One shape specifies a certain primitive
     memory::dims src_tz = {dims[0], dims[1]};
     memory::dims dst_tz = {dims[0], dims[1]};
@@ -158,7 +152,6 @@ int Softmax_2D<T>::setup_forward()
 template<typename T>
 int Softmax_2D<T>::setup_backward()
 {
-    LOG(INFO) << "Softmax_2D::setup_backward";
     return 0;
 }
 
@@ -182,7 +175,6 @@ int Softmax_2D<T>::forward()
 template<typename T>
 int Softmax_2D<T>::backward()
 {
-    LOG(INFO) << "Softmax_2D::backward";
     return 0;
 }
 
@@ -196,14 +188,12 @@ int Softmax_4D<T>::get_res_size()
 template<typename T>
 int Softmax_4D<T>::setup_forward()
 {
-    LOG(INFO) << "Softmax_4D::setup_forward";
     return 0;
 }
 
 template<typename T>
 int Softmax_4D<T>::setup_backward()
 {
-    LOG(INFO) << "Softmax_4D::setup_backward";
     return 0;
 }
 
@@ -211,14 +201,12 @@ int Softmax_4D<T>::setup_backward()
 template<typename T>
 int Softmax_4D<T>::forward()
 {
-    LOG(INFO) << "Softmax_4D::forward";
     return 0;
 }
 
 template<typename T>
 int Softmax_4D<T>::backward()
 {
-    LOG(INFO) << "Softmax_4D::backward";
     return 0;
 }
 

@@ -14,6 +14,7 @@
     #include "relu.h"
     #include "mkldnn_softmax.h"
     #include "local_response_normalization.h"
+    #include "softmax_cross_entropy.h"
 %}
 
 %include "numpy.i"
@@ -37,9 +38,11 @@
      ( float* x, int dummy_x )}
 %apply ( float* INPLACE_ARRAY1, int DIM1 )
     {( float* gb, int gb_d1 ),
-     ( float* y, int dummy_y )}
+     ( float* y, int dummy_y ),
+     ( float* gx, int dummy_gx )}
 %apply ( int* IN_ARRAY1, int DIM1 )
-    {( int* dims, int ndim )}
+    {( int* dims, int ndim ),
+     ( int* label, int nlabel )}
 %apply ( float* INPLACE_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
     {( float* y, int y_d1, int y_d2, int y_d3, int y_d4 )}
 %apply ( float* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
@@ -88,6 +91,7 @@
 %include "relu.h"
 %include "mkldnn_softmax.h"
 %include "local_response_normalization.h"
+%include "softmax_cross_entropy.h"
 
 %template(Layer_F32) Layer<float>;
 %template(Convolution2D_F32) Convolution2D<float>;
@@ -100,3 +104,4 @@
 %template(Softmax_F32) Softmax<float>;
 %template(LocalResponseNormalization_F32) LocalResponseNormalization<float>;
 %template(Linear_F32) MKLDNNLinear<float>;
+%template(SoftmaxCrossEntropy_F32) SoftmaxCrossEntropy<float>;

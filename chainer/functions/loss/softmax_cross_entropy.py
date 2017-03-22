@@ -7,6 +7,9 @@ from chainer import function
 from chainer.functions.activation import log_softmax
 from chainer.utils import type_check
 
+from mkldnn import mkldnn
+from mkldnn import switch
+
 
 class SoftmaxCrossEntropy(function.Function):
 
@@ -56,7 +59,16 @@ class SoftmaxCrossEntropy(function.Function):
         if chainer.is_debug():
             self._check_input_values(x, t)
 
-        log_y = log_softmax._log_softmax(x, self.use_cudnn)
+        # Improve me
+        # It is disabled by default
+        if mkldnn.enabled() and switch.enable_softmax_cross_entropy is True:
+            y_out = numpy.empty(x.shape, dtype=numpy.float32)
+            mkldnn_sce_fwd = mkldnn.SoftmaxCrossEntropy_F32_softmax_cross_entropy_create_forward(x.shape)
+            mkldnn_sce_fwd.forward(x.ravel(), y_out.ravel(), x.shape)
+            log_y = y_out
+        else:
+            log_y = log_softmax._log_softmax(x, self.use_cudnn)
+
         if self.cache_score:
             self.y = numpy.exp(log_y)
         if self.class_weight is not None:
@@ -116,7 +128,15 @@ class SoftmaxCrossEntropy(function.Function):
             numpy.exp(y, out=y)
         if y.ndim == 2:
             gx = y
-            gx[numpy.arange(len(t)), numpy.maximum(t, 0)] -= 1
+
+            # Improve me
+            # It is disabled by default
+            if mkldnn.enabled() and switch.enable_softmax_cross_entropy is True:
+                mkldnn_sce_bwd = mkldnn.SoftmaxCrossEntropy_F32_softmax_cross_entropy_create_backward(gx.shape)
+                mkldnn_sce_bwd.backward(gx.ravel(), t.ravel(), gx.shape)
+            else:
+                gx[numpy.arange(len(t)), numpy.maximum(t, 0)] -= 1
+
             if self.class_weight is not None:
                 shape = [1 if d != 1 else -1 for d in six.moves.range(x.ndim)]
                 c = numpy.broadcast_to(

@@ -30,12 +30,13 @@ extensions = [
                 "mkldnn/max_pooling.cc",
                 "mkldnn/avg_pooling.cc",
                 "mkldnn/mkldnn_softmax.cc",
+                "mkldnn/softmax_cross_entropy.cc",
                 "mkldnn/mkldnn.i"
                 ],
         swig_opts=["-c++"],
         extra_compile_args=["-std=c++11", "-fopenmp"],
         include_dirs=["mkldnn/incl/", numpy.get_include()],
-        libraries=['glog', 'stdc++', 'boost_system', 'mkldnn'],
+        libraries=['glog', 'stdc++', 'boost_system', 'mkldnn', 'm'],
     )
 ]
 

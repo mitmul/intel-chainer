@@ -87,7 +87,7 @@ class LocalResponseNormalization(function.Function):
                 gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
                 self.mkldnn_lrn.backward(x[0],gy[0],gx)
                 # print "gx = "+str(gx)
-                # return gx,
+                return gx,
             # else:
             #     return None
         else:

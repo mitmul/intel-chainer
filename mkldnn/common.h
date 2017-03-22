@@ -3,7 +3,9 @@
 
 #include <mkldnn.hpp>
 
+#define PAGE_SIZE 4096
 int global_init();
 bool enabled();
 void setMkldnnEnable(bool isEnabled);
+extern unsigned char dummy[PAGE_SIZE];
 #endif // _COMMON_H_

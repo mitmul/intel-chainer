@@ -20,19 +20,25 @@ from mkldnn import switch
 # f_lrn = F.LocalResponseNormalization(1,3)
 # switch.enable_lrn = False
 # print f_lrn.forward_cpu(data)
-n = 5
+n = 3
 k = 2
 alpha = 1e-4
 beta = .75
-data = np.ndarray((10, 3, 2240, 2240), dtype=np.float32)
-data.fill(333.33)
-datay = np.ndarray((10, 3, 2240, 2240), dtype=np.float32)
-datay.fill(333.33)
+# data = np.ndarray((10, 3, 2240, 2240), dtype=np.float32)
+# data.fill(333.33)
+# datay = np.ndarray((10, 3, 2240, 2240), dtype=np.float32)
+# datay.fill(333.33)
+
+data = np.ndarray((2, 4, 5, 5), dtype=np.float32)
+data.fill(3)
+datay = np.ndarray((2, 4, 5, 5), dtype=np.float32)
+datay.fill(3)
+
 x = np.asarray(data),
 gy = np.asarray(datay),
 
-y = np.empty(shape=(10,3,2240,2240),dtype=np.float32)
-gx = np.empty(shape=(10,3,2240,2240),dtype=np.float32)
+y = np.empty((5, 2, 1, 1),dtype=np.float32)
+gx = np.empty((5, 2, 1, 1),dtype=np.float32)
 
 lrn = F.LocalResponseNormalization(n,k,alpha,.75)
 

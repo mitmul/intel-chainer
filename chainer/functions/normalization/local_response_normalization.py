@@ -76,10 +76,8 @@ class LocalResponseNormalization(function.Function):
                 sum_part[:, i:] += x2[:, :-i]
                 sum_part[:, :-i] += x2[:, i:]
             self.unit_scale = self.k + self.alpha * sum_part
-            self.unit_scale = self.alpha * sum_part
             self.scale = self.unit_scale ** -self.beta
             self.y = x[0] * self.scale
-            # print "numpy result y = "+str(self.y)
             return self.y,
 
     def backward_cpu(self, x, gy):
@@ -89,7 +87,7 @@ class LocalResponseNormalization(function.Function):
                 gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
                 self.mkldnn_lrn.backward(x[0],gy[0],gx)
                 # print "gx = "+str(gx)
-                # return gx,
+                return gx,
             # else:
             #     return None
         else:

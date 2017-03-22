@@ -72,6 +72,8 @@
     {( float* y, int y_d1, int y_d2 )}
 %apply ( float* INPLACE_ARRAY2, int DIM1, int DIM2 )
     {( float* gy, int gy_d1, int gy_d2 )}
+%apply ( int N, double K, double ALPHA, double BETA )
+    {( int n, double k, double alpha, double beta )}
 
 
 %include "common.h"

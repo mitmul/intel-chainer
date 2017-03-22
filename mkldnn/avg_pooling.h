@@ -8,7 +8,7 @@
 
 template <typename T>
 class AvgPooling:public Pooling<T> {
-public:
+private:
     static Pooling<T>* get_forward_object(
                       T* x, int x_d1, int x_d2, int x_d3, int x_d4,
                       int s_y, int s_x,
@@ -29,6 +29,7 @@ public:
                                               mkldnn::pooling_avg);
     };
 
+public:
     static void do_forward(
                 T* x, int x_d1, int x_d2, int x_d3, int x_d4,
                 T* y, int y_d1, int y_d2, int y_d3, int y_d4,

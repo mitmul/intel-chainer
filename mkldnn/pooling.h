@@ -23,6 +23,7 @@ public:
                  T*   gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
                  int* ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4);
 
+protected:
     int forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                       int s_y, int s_x,
                       int p_h, int p_w,
@@ -103,6 +104,7 @@ public:
         return pooling_backward;
     }
 
+public:
     static void do_forward(
                 T*   x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
                 T*   y,  int y_d1,  int y_d2,  int y_d3,  int y_d4,
@@ -169,8 +171,6 @@ public:
                     alg_kind);
     }
 private:
-    //mkldnn::stream* stream_;
-    //std::vector<mkldnn::primitive> primitives_;
     int x_d1_, x_d2_, x_d3_, x_d4_;
     int y_d1_, y_d2_, y_d3_, y_d4_;
     int s_y_, s_x_, p_h_, p_w_, ker_h_, ker_w_;

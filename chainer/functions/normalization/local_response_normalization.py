@@ -65,22 +65,22 @@ class LocalResponseNormalization(function.Function):
                 print "forward"
                 self.mkldnn_lrn.forward(x[0],self.y)
                 # print "mkldnn y = "+str(self.y)
-                # return self.y,
+                return self.y,
             # else:
                 # return None
-        #else:
-        half_n = self.n // 2
-        x2 = numpy.square(x[0])
-        sum_part = x2.copy()
-        for i in six.moves.range(1, half_n + 1):
-            sum_part[:, i:] += x2[:, :-i]
-            sum_part[:, :-i] += x2[:, i:]
-        self.unit_scale = self.k + self.alpha * sum_part
-        self.unit_scale = self.alpha * sum_part
-        self.scale = self.unit_scale ** -self.beta
-        self.y = x[0] * self.scale
-        # print "numpy result y = "+str(self.y)
-        return self.y,
+        else:
+            half_n = self.n // 2
+            x2 = numpy.square(x[0])
+            sum_part = x2.copy()
+            for i in six.moves.range(1, half_n + 1):
+                sum_part[:, i:] += x2[:, :-i]
+                sum_part[:, :-i] += x2[:, i:]
+            self.unit_scale = self.k + self.alpha * sum_part
+            self.unit_scale = self.alpha * sum_part
+            self.scale = self.unit_scale ** -self.beta
+            self.y = x[0] * self.scale
+            # print "numpy result y = "+str(self.y)
+            return self.y,
 
     def backward_cpu(self, x, gy):
         if switch.enable_lrn():
@@ -92,17 +92,17 @@ class LocalResponseNormalization(function.Function):
                 # return gx,
             # else:
             #     return None
-        # else:
+        else:
         # print "backward_cpu"
-        half_n = self.n // 2
-        summand = self.y * gy[0] / self.unit_scale
-        sum_part = summand.copy()
-        for i in six.moves.range(1, half_n + 1):
-            sum_part[:, i:] += summand[:, :-i]
-            sum_part[:, :-i] += summand[:, i:]
+            half_n = self.n // 2
+            summand = self.y * gy[0] / self.unit_scale
+            sum_part = summand.copy()
+            for i in six.moves.range(1, half_n + 1):
+                sum_part[:, i:] += summand[:, :-i]
+                sum_part[:, :-i] += summand[:, i:]
 
-        gx = gy[0] * self.scale - 2 * self.alpha * self.beta * x[0] * sum_part
-        return gx,
+            gx = gy[0] * self.scale - 2 * self.alpha * self.beta * x[0] * sum_part
+            return gx,
 
     def forward_gpu(self, x):
         self.y = cuda.cupy.square(x[0])  # temporary

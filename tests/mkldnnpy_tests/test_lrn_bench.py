@@ -3,6 +3,7 @@ import chainer.functions as F
 import chainer.links as L
 import numpy as np
 import time
+from mkldnn import switch 
 from mkldnn import mkldnn as mkl
 
 data = np.ndarray((10, 3, 2240, 2240), dtype=np.float32)
@@ -21,6 +22,7 @@ k = 2
 alpha = 1e-4
 beta = .75
 
+switch.enable_lrn = True
 for i in range(niter):
     x = np.asarray(data),
     gy = np.asarray(datay),
@@ -30,9 +32,10 @@ for i in range(niter):
 
     start = time.time()
     #model.forward(x)
-    lrn = mkl.LocalResponseNormalization_F32(n,k,alpha,.75)
-    lrn.forward(x[0],y)
-    lrn.backward(x[0],gy[0],gx)
+    lrn = F.LocalResponseNormalization(n,k,alpha,.75)
+    # lrn = F.local_response_normalization(data,5,2)
+    lrn.forward_cpu(x)
+    lrn.backward_cpu(x,gy)
     # lrn = F.LocalResponseNormalization(n,k,alpha,.75)
     # lrn.forward_cpu(x)
     # lrn.backward_cpu(x,gy)
@@ -44,7 +47,7 @@ for i in range(niter):
 
 print("Mkldnn Average Forward: ", total_forward/count, "ms")
 
-
+switch.enable_lrn = False
 for i in range(niter):
     x = np.asarray(data),
     gy = np.asarray(datay),

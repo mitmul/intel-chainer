@@ -1,5 +1,6 @@
 #include <glog/logging.h>
 #include <iostream>
+#include "common.h"
 #include "mkldnn.hpp"
 #include <memory>
 #include "linear.h"
@@ -65,12 +66,12 @@ int MKLDNNLinear<T>::setup_forward(T* x, int x_d1, int x_d2, //x_d1 = n, x_d2 = 
     linear_fwd_pd_.reset(new inner_product_forward::primitive_desc(*linear_fwd_desc_, cpu_engine));
 
     //Create user memory primitive 
-    user_src_memory_.reset(new memory({{{src_tz}, mpcsn, memory::format::nc}, cpu_engine}/*, x*/));
-    user_weights_memory_.reset(new memory({{{weights_tz}, mpcsn, memory::format::oi}, cpu_engine}/*, W*/));
+    user_src_memory_.reset(new memory({{{src_tz}, mpcsn, memory::format::nc}, cpu_engine}, dummy));
+    user_weights_memory_.reset(new memory({{{weights_tz}, mpcsn, memory::format::oi}, cpu_engine}, dummy));
     if (b != NULL)
-        user_bias_memory_.reset(new memory({{{bias_tz}, mpcsn, memory::format::x}, cpu_engine}/*, b*/));
+        user_bias_memory_.reset(new memory({{{bias_tz}, mpcsn, memory::format::x}, cpu_engine}, dummy));
     /* in current design, output is also allocated in python part */
-    user_dst_memory_.reset(new memory({{{dst_tz}, mpcsn, memory::format::nc}, cpu_engine}/*, y*/));
+    user_dst_memory_.reset(new memory({{{dst_tz}, mpcsn, memory::format::nc}, cpu_engine}, dummy));
     
 
     //create mkldnn memory primitive descripor
@@ -165,11 +166,11 @@ int MKLDNNLinear<T>::setup_backward(T* x,  int x_d1, int x_d2,
     linear_bwd_weights_pd_.reset(new inner_product_backward_weights::primitive_desc(*linear_bwd_weights_desc_,
                 cpu_engine, *linear_fwd_pd_));
     //Create user memory primitive
-    user_src_diff_memory_.reset(new memory({{{src_tz}, mpcsn, memory::format::nc}, cpu_engine}/*, gx*/));
-    user_weights_diff_memory_.reset(new memory({{{weights_tz}, mpcsn, memory::format::oi}, cpu_engine}/*, gW*/));
-    user_dst_diff_memory_.reset(new memory({{{dst_tz}, mpcsn, memory::format::nc}, cpu_engine}/*, gy*/));
+    user_src_diff_memory_.reset(new memory({{{src_tz}, mpcsn, memory::format::nc}, cpu_engine}, dummy));
+    user_weights_diff_memory_.reset(new memory({{{weights_tz}, mpcsn, memory::format::oi}, cpu_engine}, dummy));
+    user_dst_diff_memory_.reset(new memory({{{dst_tz}, mpcsn, memory::format::nc}, cpu_engine}, dummy));
     if (b != NULL)
-        user_bias_diff_memory_.reset(new memory({{{bias_tz}, mpcsn, memory::format::x}, cpu_engine}/*, gb*/));
+        user_bias_diff_memory_.reset(new memory({{{bias_tz}, mpcsn, memory::format::x}, cpu_engine}, dummy));
 
     //create internal memory primivive
     bwd_internal_src_memory_ = user_src_memory_;

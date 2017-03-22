@@ -1,5 +1,6 @@
 #include <glog/logging.h>
 #include <iostream>
+#include "common.h"
 #include "mkldnn.hpp"
 #include "mkldnn_conv.h"
 #include "utils.h"
@@ -45,15 +46,15 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
 
     /* create memory for user data */
     user_src_memory_.reset(new memory({{{src_tz_}, memory_data_type<T>(),
-                                      memory::format::nchw}, cpu_engine}));
+                                      memory::format::nchw}, cpu_engine}, dummy));
     user_weights_memory_.reset(new memory({{{weights_tz_},
-                                          memory_data_type<T>(), memory::format::oihw}, cpu_engine}));
+                                          memory_data_type<T>(), memory::format::oihw}, cpu_engine}, dummy));
     /* in current design, output is also allocated in python part */
     user_dst_memory_.reset(new memory({{{dst_tz_}, memory_data_type<T>(),
-                                      memory::format::nchw}, cpu_engine}));
+                                      memory::format::nchw}, cpu_engine}, dummy));
     if (b != NULL)
         user_bias_memory_.reset(new memory({{{bias_tz_},
-                                      memory_data_type<T>(), memory::format::x}, cpu_engine}));
+                                      memory_data_type<T>(), memory::format::x}, cpu_engine}, dummy));
     
     /* create memory descriptors for convolution data w/ no specified format */
     src_md_.reset(new memory::desc({src_tz_}, memory_data_type<T>(),
@@ -199,18 +200,18 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
     LOG(INFO) << "Covolution backward_setup";
     /* create user format memory*/
     user_bwd_src_memory_.reset(new memory({{{ src_tz_ }, memory_data_type<T>(),
-                memory::format::nchw }, cpu_engine })); //x
+                memory::format::nchw }, cpu_engine }, dummy)); //x
     user_bwd_weights_memory_.reset(new memory({{{ weights_tz_ }, memory_data_type<T>(),
-                memory::format::oihw }, cpu_engine })); //W
+                memory::format::oihw }, cpu_engine }, dummy)); //W
     user_bwd_diff_dst_memory_.reset(new memory({{{ dst_tz_ }, memory_data_type<T>(),
-                memory::format::nchw }, cpu_engine })); //gy
+                memory::format::nchw }, cpu_engine }, dummy)); //gy
     user_bwd_diff_weights_memory_.reset(new memory({{{ weights_tz_ }, memory_data_type<T>(),
-                memory::format::oihw }, cpu_engine })); //gW
+                memory::format::oihw }, cpu_engine }, dummy)); //gW
     user_bwd_diff_src_memory_.reset(new memory({{{ src_tz_ }, memory_data_type<T>(),
-                memory::format::nchw }, cpu_engine })); //gx
+                memory::format::nchw }, cpu_engine }, dummy)); //gx
     if ( b != NULL ) {
         user_bwd_diff_bias_memory_.reset(new memory({{{ bias_tz_}, memory_data_type<T>(),
-                    memory::format::x,}, cpu_engine})); //gB
+                    memory::format::x,}, cpu_engine}, dummy)); //gB
     }
 
     /* 

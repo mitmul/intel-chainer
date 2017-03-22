@@ -55,7 +55,7 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     // interface not clean
     x_md_.reset(new memory::desc({x_tz}, memory_data_type<T>(),
                             (x_d2 % 8) == 0 ?
-                              memory::format::nChw8c
+                              memory::format::any     // nChw8c/16c
                             : memory::format::nchw)); // TODO should be 'any' but
                                                       // does not work on latest
                                                       // mkldnn
@@ -174,7 +174,7 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                                       memory::format::nchw}, cpu_engine}));
     gy_md_.reset(new memory::desc({y_tz}, memory_data_type<T>(),
                                     (x_d2 % 8) == 0 ?
-                                      memory::format::nChw8c
+                                      memory::format::any      // nChw8c/16c
                                     : memory::format::nchw));
                                     // TODO temporary walkaround, should be any
                                     // but mkldnn needs any here

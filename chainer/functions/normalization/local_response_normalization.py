@@ -78,7 +78,6 @@ class LocalResponseNormalization(function.Function):
             self.unit_scale = self.k + self.alpha * sum_part
             self.scale = self.unit_scale ** -self.beta
             self.y = x[0] * self.scale
-            # print "numpy result y = "+str(self.y)
             return self.y,
 
     def backward_cpu(self, x, gy):

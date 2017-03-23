@@ -130,15 +130,15 @@ int LocalResponseNormalization<T>::backward_setup(
 {
 	/* Backward lrn */
     memory::dims lrn_src_tz = {x_d1, x_d2, x_d3, x_d4};
-    memory::dims lrn_diff_src_tz = {gy_d1, gy_d2, gy_d3, gy_d4};
-    memory::dims lrn_diff_dst_tz = {gx_d1, gx_d2, gx_d3, gx_d4};
+    memory::dims lrn_diff_src_tz = {gx_d1, gx_d2, gx_d3, gx_d4};
+    memory::dims lrn_diff_dst_tz = {gy_d1, gy_d2, gy_d3, gy_d4};
 
     lrn_bwd_user_src_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),
 		p.data_format}, *eng}, x));
 	lrn_diff_src_mem_.reset(new memory({{{lrn_diff_src_tz}, memory_data_type<T>(),
-		p.data_format}, *eng}, gy));
-	lrn_diff_dst_mem_.reset(new memory({{{lrn_diff_dst_tz}, memory_data_type<T>(),
 		p.data_format}, *eng}, gx));
+	lrn_diff_dst_mem_.reset(new memory({{{lrn_diff_dst_tz}, memory_data_type<T>(),
+		p.data_format}, *eng}, gy));
 
 	lrn_bwd_src_desc.reset(new memory::desc({lrn_src_tz},
 	    memory_data_type<T>(), p.data_format));
@@ -156,8 +156,11 @@ int LocalResponseNormalization<T>::backward_setup(
 	// lrn_bwd_.reset(new lrn_backward(*lrn_bwd_pd_, 
 	// 	*lrn_src_mem_, *lrn_diff_dst_mem_, *workspace,*lrn_diff_src_mem_));
 
+	// lrn_bwd_desc_.reset(new lrn_backward::desc(p.aalgorithm,
+	// 	lrn_fwd_pd_.get()->src_primitive_desc().desc(), *lrn_diff_dst_desc, 
+	// 	p.local_size, p.alpha, p.beta,p.k));
 	lrn_bwd_desc_.reset(new lrn_backward::desc(p.aalgorithm,
-		lrn_fwd_pd_.get()->src_primitive_desc().desc(), *lrn_diff_dst_desc, 
+		*lrn_diff_src_desc, *lrn_diff_dst_desc, 
 		p.local_size, p.alpha, p.beta,p.k));
 	lrn_bwd_pd_.reset(new lrn_backward::primitive_desc(*lrn_bwd_desc_, *eng,
 		*lrn_fwd_pd_));

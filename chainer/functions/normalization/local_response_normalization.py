@@ -61,10 +61,8 @@ class LocalResponseNormalization(function.Function):
                 # n, c, h, w = x.shape
                 # print x[0].shape
                 self.y = numpy.empty(x[0].shape,dtype=x[0].dtype)
-                self.mkldnn_lrn = mkldnn.LocalResponseNormalization_F32(self.n,self.k,self.alpha,self.beta)
-                # print "forward"
+                self.mkldnn_lrn = mkldnn.LocalResponseNormalization_F32(self.n,self.k,self.n*self.alpha,self.beta)
                 self.mkldnn_lrn.forward(x[0],self.y)
-                # print "mkldnn y = "+str(self.y)
                 return self.y,
             # else:
                 # return None
@@ -82,11 +80,9 @@ class LocalResponseNormalization(function.Function):
 
     def backward_cpu(self, x, gy):
         if switch.enable_lrn:
-            # print "lrn backward_cpu"
             if self.mkldnn_lrn:
                 gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
                 self.mkldnn_lrn.backward(x[0],gy[0],gx)
-                # print "gx = "+str(gx)
                 return gx,
             # else:
             #     return None

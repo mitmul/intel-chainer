@@ -225,51 +225,7 @@ int LocalResponseNormalization<T>::backward(
     }
     return 0;
 }
-#if 0
-template<typename T>
-LocalResponseNormalization<T>::LocalResponseNormalization(
-	T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-    T* y, int y_d1, int y_d2, int y_d3, int y_d4,
-    int n, double k, double alpha, double beta)
-{
-    google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
 
-    LOG(INFO) << "LocalResponseNormalization";
-    LOG(INFO) << "    xdim=(" << x_d1 << "," << x_d2 << "," << x_d3 << "," << x_d4 << ")";
-    LOG(INFO) << "    ydim=(" << y_d1 << "," << y_d2 << "," << y_d3 << "," << y_d4 << ")";
-    LOG(INFO) << "    n =(" << n <<  ")";
-    LOG(INFO) << "    k =(" << k <<  ")";
-
-	p.alpha = alpha;
-	p.beta = beta;
-	p.aprop_kind = prop_kind::forward_training;
-	p.local_size = n;
-	p.k = k;
-	p.data_format = memory::format::nchw;
-	p.diff_data_format = memory::format::any;
-	p.aalgorithm = algorithm::lrn_across_channels;
-
-	memory::dims x_tz = {x_d1, x_d2, x_d3, x_d4};
-	memory::dims y_tz = {y_d1, y_d2, y_d3, y_d4};
-
-	eng.reset(new engine(engine::kind::cpu, 0));
-
-	src.reset(new memory({{{x_tz}, memory_data_type<T>()
-		,p.data_format}, *eng}, x));
-	src_desc.reset(new memory::desc({ x_tz },
-		memory_data_type<T>(), p.data_format));
-
-	dst.reset(new memory({{{y_tz}, memory_data_type<T>()
-		,p.data_format}, *eng}, y));
-	dst_desc.reset(new memory::desc({ y_tz},
-	    memory_data_type<T>(), p.diff_data_format));
-  	// y_md_.reset(new memory::desc({y_tz}, memory_data_type<T>(),
-   //      memory::format::any));
-	is_training = p.aprop_kind == prop_kind::forward_training;
-
-}
-
-#endif
 template<typename T>
 int LocalResponseNormalization<T>::forward()
 {

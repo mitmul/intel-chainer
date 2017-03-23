@@ -10,6 +10,9 @@ using namespace mkldnn;
 engine cpu_engine(engine::cpu, 0);
 bool enableMkldnn = true;
 
+unsigned char dummy[PAGE_SIZE] __attribute__((aligned(PAGE_SIZE)));
+#define DUMMY_VAL 0xcc
+
 int global_init()
 {
     google::InitGoogleLogging("mkldnnpy");
@@ -26,12 +29,27 @@ int global_init()
         OpenMpManager::bindOpenMpThreads();
         OpenMpManager::printVerboseInformation();
     }
+
+    for (int i=0; i<PAGE_SIZE; i++) {
+        dummy[i]=DUMMY_VAL;
+    }
+
     return 0;
 }
 
 bool enabled()
 {
     return enableMkldnn;
+}
+
+bool checkDummy()
+{
+    for (int i=0; i<PAGE_SIZE; i++) {
+        if (dummy[i] != DUMMY_VAL) {
+            return false;
+        }
+    }
+    return true;
 }
 
 void setMkldnnEnable(bool isEnabled)

@@ -55,11 +55,7 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     // first run to forward setup and use that data for first run but it makes
     // interface not clean
     x_md_.reset(new memory::desc({x_tz}, memory_data_type<T>(),
-                            (x_d2 % 8) == 0 ?
-                              memory::format::any     // nChw8c/16c
-                            : memory::format::nchw)); // TODO should be 'any' but
-                                                      // does not work on latest
-                                                      // mkldnn
+                              memory::format::any));
 
     user_y_mem_.reset(new memory({{{y_tz}, memory_data_type<T>(),
                             memory::format::nchw}, cpu_engine}, dummy));
@@ -174,11 +170,7 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     user_gy_mem_.reset(new memory({{{y_tz}, memory_data_type<T>(),
                                     memory::format::nchw}, cpu_engine}, dummy));
     gy_md_.reset(new memory::desc({y_tz}, memory_data_type<T>(),
-                                    (x_d2 % 8) == 0 ?
-                                      memory::format::any      // nChw8c/16c
-                                    : memory::format::nchw));
-                                    // TODO temporary walkaround, should be any
-                                    // but mkldnn needs any here
+                                      memory::format::any));
 
     // create a pooling descriptor
     bwd_desc_.reset(new pooling_backward::desc(

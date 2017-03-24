@@ -15,8 +15,9 @@ LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k, doubl
                , lrn_fwd_(NULL), fwd_stream_(NULL)
                , lrn_diff_src_mem_(NULL), lrn_diff_dst_mem_(NULL)
                , lrn_bwd_desc_(NULL), lrn_bwd_pd_(NULL)
-               , lrn_bwd_(NULL), bwd_stream_(NULL)
+               , lrn_bwd_(NULL), bwd_stream_(NULL), workspace(NULL)
 {
+	google::ShutdownGoogleLogging();
 	google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
 	LOG(INFO) << "n = " << n << " k = " << k << " alpha = " << alpha << "beta = " << beta ;
 	p.alpha = alpha;
@@ -79,8 +80,9 @@ int LocalResponseNormalization<T>::forward_setup(
 
 
     LOG(INFO) << "workspace_primitive_desc";
-    auto workspace_primitive_desc = lrn_fwd_pd_->workspace_primitive_desc();
+ 	auto workspace_primitive_desc = lrn_fwd_pd_->workspace_primitive_desc();
 	workspace.reset(new memory(workspace_primitive_desc));
+	LOG(INFO) << "lrn_fwd_ workspace" << workspace;
 
     LOG(INFO) << "lrn_fwd_";
     // lrn_fwd_.reset(new lrn_forward(*lrn_fwd_pd_, *lrn_src_mem, *workspace, *lrn_fwd_dst_mem_));
@@ -160,7 +162,7 @@ int LocalResponseNormalization<T>::backward_setup(
 	// 	lrn_fwd_pd_.get()->src_primitive_desc().desc(), *lrn_diff_dst_desc, 
 	// 	p.local_size, p.alpha, p.beta,p.k));
 	lrn_bwd_desc_.reset(new lrn_backward::desc(p.aalgorithm,
-		*lrn_diff_src_desc, *lrn_diff_dst_desc, 
+		*lrn_bwd_src_desc, *lrn_diff_dst_desc, 
 		p.local_size, p.alpha, p.beta,p.k));
 	lrn_bwd_pd_.reset(new lrn_backward::primitive_desc(*lrn_bwd_desc_, *eng,
 		*lrn_fwd_pd_));
@@ -170,6 +172,8 @@ int LocalResponseNormalization<T>::backward_setup(
 
 	lrn_bwd_.reset(new lrn_backward(*lrn_bwd_pd_, 
 		*lrn_src_mem_, *lrn_diff_dst_mem_, *workspace,*lrn_diff_src_mem_));
+	// lrn_bwd_.reset(new lrn_backward(*lrn_bwd_pd_, 
+	// 	*lrn_src_mem_, *lrn_diff_dst_mem_,*lrn_diff_src_mem_));
 
 
 #if 0
@@ -204,8 +208,9 @@ void LocalResponseNormalization<T>::bwd_reset_mem(T* x,T* gy,T* gx)
 {
     // lrn_fwd_user_src_mem_->set_data_handle(x);
     lrn_bwd_user_src_mem_->set_data_handle(x);
-    lrn_diff_dst_mem_->set_data_handle(gx);
-    lrn_diff_src_mem_->set_data_handle(gy);
+    lrn_diff_src_mem_->set_data_handle(gx);
+    lrn_diff_dst_mem_->set_data_handle(gy);
+    
 }
 
 template<typename T>

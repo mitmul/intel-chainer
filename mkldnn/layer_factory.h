@@ -11,6 +11,7 @@
 // then when forward is needed, call
 // layer = LayerFactory::getInstance().getRELUFwdLayer(<input pointer>)
 
+template <typename T>
 class LayerFactory {
 private:
     LayerFactory();
@@ -22,119 +23,119 @@ public:
     }
 
 private:
-    Layer<float>* getLayer(std::string       key);
-    void          setLayer(std::string       key,
-                           Layer<float>*     layer);
+    Layer<T>* getLayer(std::string      key);
+    void      setLayer(std::string      key,
+                       Layer<T>*        layer);
 
 public:
     // relu stream
-    Layer<float>* getRELULayer(int size);
-    void          setRELULayer(int size,
-                               Layer<float>*   layer);
+    Layer<T>* getRELULayer(int          size);
+    void      setRELULayer(int          size,
+                           Layer<T>*    layer);
     // relu4d stream
-    Layer<float>* getRELU4dLayer(int x_d1,
-                                 int x_d2,
-                                 int x_d3,
-                                 int x_d4);
-    void setRELU4dLayer(int x_d1,
-                        int x_d2,
-                        int x_d3,
-                        int x_d4,
-                        Layer<float>* layer);
+    Layer<T>* getRELU4dLayer(int        x_d1,
+                             int        x_d2,
+                             int        x_d3,
+                             int        x_d4);
+    void      setRELU4dLayer(int        x_d1,
+                             int        x_d2,
+                             int        x_d3,
+                             int        x_d4,
+                             Layer<T>*  layer);
 
     // maxpool stream
-    Layer<float>* getMaxPoolLayer(int             x_d1,
-                                  int             x_d2,
-                                  int             x_d3,
-                                  int             x_d4,
-                                  int             stride_y,
-                                  int             stride_x,
-                                  int             ksize_h,
-                                  int             ksize_w,
-                                  int             pad_l_h,
-                                  int             pad_l_w,
-                                  int             pad_r_h,
-                                  int             pad_r_w);
+    Layer<T>* getMaxPoolLayer(int       x_d1,
+                              int       x_d2,
+                              int       x_d3,
+                              int       x_d4,
+                              int       stride_y,
+                              int       stride_x,
+                              int       ksize_h,
+                              int       ksize_w,
+                              int       pad_l_h,
+                              int       pad_l_w,
+                              int       pad_r_h,
+                              int       pad_r_w);
 
-    void          setMaxPoolLayer(int             x_d1,
-                                  int             x_d2,
-                                  int             x_d3,
-                                  int             x_d4,
-                                  int             stride_y,
-                                  int             stride_x,
-                                  int             ksize_h,
-                                  int             ksize_w,
-                                  int             pad_l_h,
-                                  int             pad_l_w,
-                                  int             pad_r_h,
-                                  int             pad_r_w,
-                                  Layer<float>*   layer);
+    void      setMaxPoolLayer(int       x_d1,
+                              int       x_d2,
+                              int       x_d3,
+                              int       x_d4,
+                              int       stride_y,
+                              int       stride_x,
+                              int       ksize_h,
+                              int       ksize_w,
+                              int       pad_l_h,
+                              int       pad_l_w,
+                              int       pad_r_h,
+                              int       pad_r_w,
+                              Layer<T>* layer);
 
     // avgpool stream
-    Layer<float>* getAvgPoolLayer(int             x_d1,
-                                  int             x_d2,
-                                  int             x_d3,
-                                  int             x_d4,
-                                  int             stride_y,
-                                  int             stride_x,
-                                  int             ksize_h,
-                                  int             ksize_w,
-                                  int             pad_l_h,
-                                  int             pad_l_w,
-                                  int             pad_r_h,
-                                  int             pad_r_w);
+    Layer<T>* getAvgPoolLayer(int       x_d1,
+                              int       x_d2,
+                              int       x_d3,
+                              int       x_d4,
+                              int       stride_y,
+                              int       stride_x,
+                              int       ksize_h,
+                              int       ksize_w,
+                              int       pad_l_h,
+                              int       pad_l_w,
+                              int       pad_r_h,
+                              int       pad_r_w);
 
-    void          setAvgPoolLayer(int             x_d1,
-                                  int             x_d2,
-                                  int             x_d3,
-                                  int             x_d4,
-                                  int             stride_y,
-                                  int             stride_x,
-                                  int             ksize_h,
-                                  int             ksize_w,
-                                  int             pad_l_h,
-                                  int             pad_l_w,
-                                  int             pad_r_h,
-                                  int             pad_r_w,
-                                  Layer<float>*   layer);
+    void      setAvgPoolLayer(int       x_d1,
+                              int       x_d2,
+                              int       x_d3,
+                              int       x_d4,
+                              int       stride_y,
+                              int       stride_x,
+                              int       ksize_h,
+                              int       ksize_w,
+                              int       pad_l_h,
+                              int       pad_l_w,
+                              int       pad_r_h,
+                              int       pad_r_w,
+                              Layer<T>* layer);
 
     // Local Response Normalization stream
     // TODO cross channel support
-    Layer<float>* getLRNLayer(int               x_d1,
-                              int               x_d2,
-                              int               x_d3,
-                              int               x_d4,
-                              int               local_size,
-                              float             alpha,
-                              float             beta);
-    void          setLRNLayer(int               x_d1,
-                              int               x_d2,
-                              int               x_d3,
-                              int               x_d4,
-                              int               local_size,
-                              float             alpha,
-                              float             beta,
-                              Layer<float>*     layer);
+    Layer<T>* getLRNLayer(int           x_d1,
+                          int           x_d2,
+                          int           x_d3,
+                          int           x_d4,
+                          int           local_size,
+                          float         alpha,
+                          float         beta);
+    void      setLRNLayer(int           x_d1,
+                          int           x_d2,
+                          int           x_d3,
+                          int           x_d4,
+                          int           local_size,
+                          float         alpha,
+                          float         beta,
+                          Layer<T>*     layer);
 
     // Softmax Cross Entropy stream
-    Layer<float>* getSoftmax2DLayer(int               d1,
-                                    int               d2,
-                                    int               axis);
-    void          setSoftmax2DLayer(int               d1,
-                                    int               d2,
-                                    int               axis,
-                                    Layer<float>*     layer);
-    Layer<float>* getSoftmax4DLayer(int               d1,
-                                    int               d2,
-                                    int               d3,
-                                    int               d4,
-                                    int               axis);
-    void          setSoftmax4DLayer(int               d1,
-                                    int               d2,
-                                    int               d3,
-                                    int               d4,
-                                    int               axis,
-                                    Layer<float>*     layer);
+    Layer<T>* getSoftmax2DLayer(int               d1,
+                                int               d2,
+                                int               axis);
+    void      setSoftmax2DLayer(int               d1,
+                                int               d2,
+                                int               axis,
+                                Layer<T>*     layer);
+    Layer<T>* getSoftmax4DLayer(int               d1,
+                                int               d2,
+                                int               d3,
+                                int               d4,
+                                int               axis);
+    void      setSoftmax4DLayer(int               d1,
+                                int               d2,
+                                int               d3,
+                                int               d4,
+                                int               axis,
+                                Layer<T>*     layer);
 
     LayerFactory(LayerFactory const&)  = delete;
     void operator=(LayerFactory const&) = delete;
@@ -142,7 +143,7 @@ public:
 private:
     //LayerFactory(LayerFactory const&);
     //void operator=(LayerFactory const&);
-    std::unordered_map<std::string, Layer<float>*> map;
+    std::unordered_map<std::string, Layer<T>*> map;
 };
 
 #endif // _STREAM_FACTORY_

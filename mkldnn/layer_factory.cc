@@ -4,7 +4,7 @@
 #include "layer_factory.h"
 
 // helper functions to convert layer unique data to a string
-#if 1
+#if 0
 static std::string pointer_to_string(void* ptr)
 {
     std::ostringstream os;
@@ -16,24 +16,33 @@ static std::string pointer_to_string(void* ptr)
 static std::string int_to_string(int value)
 {
     std::ostringstream os;
-    os << std::hex << value << "_";
+    os << std::hex << "I" << value << "_";
     return os.str();
 }
 
 static std::string float_to_string(float value)
 {
     std::ostringstream os;
-    os << value << "_";
+    os << "F" << value << "_";
+    return os.str();
+}
+
+static std::string double_to_string(double value)
+{
+    std::ostringstream os;
+    os << "D" << value << "_";
     return os.str();
 }
 // end of helper functions
 
 using namespace mkldnn;
-LayerFactory::LayerFactory()
+template<typename T>
+LayerFactory<T>::LayerFactory()
 {
 }
 
-Layer<float>* LayerFactory::getLayer(std::string key)
+template<typename T>
+Layer<T>* LayerFactory<T>::getLayer(std::string key)
 {
     auto stream_iter = map.find(key);
     if (stream_iter == map.end()) {
@@ -43,7 +52,8 @@ Layer<float>* LayerFactory::getLayer(std::string key)
     }
 }
 
-void LayerFactory::setLayer(std::string key, Layer<float>* layer)
+template<typename T>
+void LayerFactory<T>::setLayer(std::string key, Layer<T>* layer)
 {
     auto stream_iter = map.find(key);
     if (stream_iter == map.end()) {
@@ -55,7 +65,8 @@ void LayerFactory::setLayer(std::string key, Layer<float>* layer)
 
 #define RELU_PREFIX "relu_"
 
-Layer<float>* LayerFactory::getRELULayer(int size)
+template<typename T>
+Layer<T>* LayerFactory<T>::getRELULayer(int size)
 {
     std::string key = RELU_PREFIX;
 
@@ -63,7 +74,8 @@ Layer<float>* LayerFactory::getRELULayer(int size)
     return getLayer(key);
 }
 
-void LayerFactory::setRELULayer(int size, Layer<float>*   layer)
+template<typename T>
+void LayerFactory<T>::setRELULayer(int size, Layer<T>*   layer)
 {
     std::string key = RELU_PREFIX;
 
@@ -73,7 +85,8 @@ void LayerFactory::setRELULayer(int size, Layer<float>*   layer)
 
 #define RELU4D_PREFIX "relu4d_"
 
-Layer<float>* LayerFactory::getRELU4dLayer(
+template<typename T>
+Layer<T>* LayerFactory<T>::getRELU4dLayer(
         int x_d1, int x_d2, int x_d3, int x_d4)
 {
     std::string key = RELU4D_PREFIX;
@@ -86,9 +99,10 @@ Layer<float>* LayerFactory::getRELU4dLayer(
     return getLayer(key);
 }
 
-void LayerFactory::setRELU4dLayer(
+template<typename T>
+void LayerFactory<T>::setRELU4dLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,
-        Layer<float>* layer)
+        Layer<T>* layer)
 {
     std::string key = RELU4D_PREFIX;
 
@@ -101,7 +115,8 @@ void LayerFactory::setRELU4dLayer(
 }
 
 #define MAX_POOLING_PREFIX "maxpool_"
-Layer<float>* LayerFactory::getMaxPoolLayer(
+template<typename T>
+Layer<T>* LayerFactory<T>::getMaxPoolLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -126,13 +141,14 @@ Layer<float>* LayerFactory::getMaxPoolLayer(
     return getLayer(key);
 }
 
-void LayerFactory::setMaxPoolLayer(
+template<typename T>
+void LayerFactory<T>::setMaxPoolLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
         int pad_l_h, int pad_l_w,
         int pad_r_h, int pad_r_w,
-        Layer<float>* layer)
+        Layer<T>* layer)
 {
     std::string key = MAX_POOLING_PREFIX;
 
@@ -153,7 +169,8 @@ void LayerFactory::setMaxPoolLayer(
 }
 
 #define AVG_POOLING_PREFIX "avgpool_"
-Layer<float>* LayerFactory::getAvgPoolLayer(
+template<typename T>
+Layer<T>* LayerFactory<T>::getAvgPoolLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
@@ -178,13 +195,14 @@ Layer<float>* LayerFactory::getAvgPoolLayer(
     return getLayer(key);
 }
 
-void LayerFactory::setAvgPoolLayer(
+template<typename T>
+void LayerFactory<T>::setAvgPoolLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h, int ksize_w,
         int pad_l_h, int pad_l_w,
         int pad_r_h, int pad_r_w,
-        Layer<float>* layer)
+        Layer<T>* layer)
 {
     std::string key = AVG_POOLING_PREFIX;
 
@@ -205,13 +223,14 @@ void LayerFactory::setAvgPoolLayer(
 }
 
 #define LRN_PREFIX "lrn_"
-Layer<float>* LayerFactory::getLRNLayer(int             x_d1,
-                                        int             x_d2,
-                                        int             x_d3,
-                                        int             x_d4,
-                                        int             local_size,
-                                        float           alpha,
-                                        float           beta)
+template<typename T>
+Layer<T>* LayerFactory<T>::getLRNLayer(int             x_d1,
+                                       int             x_d2,
+                                       int             x_d3,
+                                       int             x_d4,
+                                       int             local_size,
+                                       float           alpha,
+                                       float           beta)
 {
     std::string key = LRN_PREFIX;
 
@@ -226,14 +245,15 @@ Layer<float>* LayerFactory::getLRNLayer(int             x_d1,
     return getLayer(key);
 }
 
-void LayerFactory::setLRNLayer(int              x_d1,
-                               int              x_d2,
-                               int              x_d3,
-                               int              x_d4,
-                               int              local_size,
-                               float            alpha,
-                               float            beta,
-                               Layer<float>*    layer)
+template<typename T>
+void LayerFactory<T>::setLRNLayer(int              x_d1,
+                                  int              x_d2,
+                                  int              x_d3,
+                                  int              x_d4,
+                                  int              local_size,
+                                  float            alpha,
+                                  float            beta,
+                                  Layer<T>*    layer)
 {
     std::string key = LRN_PREFIX;
 
@@ -249,9 +269,10 @@ void LayerFactory::setLRNLayer(int              x_d1,
 }
 
 #define SOFTMAX2D_PREFIX "softmax2d_"
-Layer<float>* LayerFactory::getSoftmax2DLayer(int                d1,
-                                              int                d2,
-                                              int                axis)
+template<typename T>
+Layer<T>* LayerFactory<T>::getSoftmax2DLayer(int                d1,
+                                             int                d2,
+                                             int                axis)
 {
     std::string key = SOFTMAX2D_PREFIX;
 
@@ -262,10 +283,11 @@ Layer<float>* LayerFactory::getSoftmax2DLayer(int                d1,
     return getLayer(key);
 }
 
-void LayerFactory::setSoftmax2DLayer(int                d1,
-                                     int                d2,
-                                     int                axis,
-                                     Layer<float>*      layer)
+template<typename T>
+void LayerFactory<T>::setSoftmax2DLayer(int                d1,
+                                        int                d2,
+                                        int                axis,
+                                        Layer<T>*      layer)
 {
     std::string key = SOFTMAX2D_PREFIX;
 
@@ -277,11 +299,12 @@ void LayerFactory::setSoftmax2DLayer(int                d1,
 }
 
 #define SOFTMAX4D_PREFIX "softmax4d_"
-Layer<float>* LayerFactory::getSoftmax4DLayer(int                d1,
-                                              int                d2,
-                                              int                d3,
-                                              int                d4,
-                                              int                axis)
+template<typename T>
+Layer<T>* LayerFactory<T>::getSoftmax4DLayer(int                d1,
+                                             int                d2,
+                                             int                d3,
+                                             int                d4,
+                                             int                axis)
 {
     std::string key = SOFTMAX4D_PREFIX;
 
@@ -294,12 +317,13 @@ Layer<float>* LayerFactory::getSoftmax4DLayer(int                d1,
     return getLayer(key);
 }
 
-void LayerFactory::setSoftmax4DLayer(int                d1,
-                                     int                d2,
-                                     int                d3,
-                                     int                d4,
-                                     int                axis,
-                                     Layer<float>*      layer)
+template<typename T>
+void LayerFactory<T>::setSoftmax4DLayer(int                d1,
+                                        int                d2,
+                                        int                d3,
+                                        int                d4,
+                                        int                axis,
+                                        Layer<T>*      layer)
 {
     std::string key = SOFTMAX4D_PREFIX;
 
@@ -311,3 +335,5 @@ void LayerFactory::setSoftmax4DLayer(int                d1,
 
     setLayer(key, layer);
 }
+
+template class LayerFactory<float>;

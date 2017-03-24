@@ -30,7 +30,7 @@ public:
             int x_d1, int x_d2, int x_d3, int x_d4) {
         Relu4D<T>* relu4d_forward = NULL;
         relu4d_forward = dynamic_cast<Relu4D<T>*>(
-                LayerFactory::getInstance().getRELU4dLayer
+                LayerFactory<T>::getInstance().getRELU4dLayer
                 (x_d1, x_d2, x_d3, x_d4));
         if (relu4d_forward == NULL) {
             relu4d_forward = new Relu4D<T>();
@@ -40,7 +40,7 @@ public:
             relu4d_forward->forward_setup(x, x_d1, x_d2, x_d3, x_d4,
                     y, x_d1, x_d2, x_d3, x_d4);
 #endif
-            LayerFactory::getInstance().setRELU4dLayer(
+            LayerFactory<T>::getInstance().setRELU4dLayer(
                     x_d1, x_d2, x_d3, x_d4, relu4d_forward);
         }
         return relu4d_forward;
@@ -50,7 +50,7 @@ public:
                       int x_d1, int x_d2, int x_d3, int x_d4) {
         Relu4D<T>* relu4d_backward = NULL;
             relu4d_backward = dynamic_cast<Relu4D<T>*>(
-                                LayerFactory::getInstance().getRELU4dLayer
+                                LayerFactory<T>::getInstance().getRELU4dLayer
                                 (x_d1, x_d2, x_d3, x_d4));
         assert (relu4d_backward != NULL);  // we must have already done forward
                                             // before

@@ -21,6 +21,7 @@ extensions = [
                 "mkldnn/relu4d.cc",
                 "mkldnn/relu.cc",
                 "mkldnn/mkldnn_conv.cc",
+                "mkldnn/mkldnn_concat.cc",
                 "mkldnn/common.cc",
                 "mkldnn/cpu_info.cc",
                 "mkldnn/layer_factory.cc",

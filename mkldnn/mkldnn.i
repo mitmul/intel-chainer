@@ -93,6 +93,59 @@
 %include "local_response_normalization.h"
 %include "softmax_cross_entropy.h"
 
+/*
+* Support Concat to get a variable size tuple
+* in: input tuple
+* num_concats: length of tuple
+* concat data:
+*/
+/* Get the ndarray tuple */
+%typemap(in) (int num_concats, char** data, int* n, int* c, int* h, int *w) {
+    int i;
+    if (!PyTuple_Check($input)) {
+        PyErr_SetString(PyExc_ValueError, "Expecting a Tuple");
+        return NULL;
+    }
+
+    $1 = PyTuple_Size($input);
+    /* malloc the concat data struct */
+    $2 = (char**)malloc(($1)*sizeof(char*));
+    $3 = (int*)malloc(($1)*sizeof(int));
+    $4 = (int*)malloc(($1)*sizeof(int));
+    $5 = (int*)malloc(($1)*sizeof(int));
+    $6 = (int*)malloc(($1)*sizeof(int));
+    for (i = 0; i < $1; i++) {
+        PyObject* x = PyTuple_GetItem($input, i);
+        if (!PyArray_Check(x)) {
+            PyErr_SetString(PyExc_ValueError, "Item must be array");
+            return NULL;
+        }
+        void* data= array_data(x);
+        ($2)[i] = (char*)data;
+        int ndims = array_numdims(x);
+        if (ndims != 4) {
+            PyErr_SetString(PyExc_ValueError, "Only support 4 dimensions now");
+            return NULL;
+        }
+        npy_intp *dims = array_dimensions(x);
+        ($3)[i] = dims[0];
+        ($4)[i] = dims[1];
+        ($5)[i] = dims[2];
+        ($6)[i] = dims[3];
+    }
+}
+/* free the list*/
+%typemap(freearg) (int num_concats, char** data, int* n, int* c, int* h, int* w) {
+    free($2);
+    free($3);
+    free($4);
+    free($5);
+    free($6);
+}
+%apply (int num_concats, char** data, int* n, int* c, int* h, int* w) {
+    (int num_concats, char** data, int* n, int* c, int* h, int* w)
+}
+
 %template(Layer_F32) Layer<float>;
 %template(Convolution2D_F32) Convolution2D<float>;
 %template(Pooling_F32) Pooling<float>;

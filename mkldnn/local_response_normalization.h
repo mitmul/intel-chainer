@@ -6,8 +6,11 @@
 #include <mkldnn.hpp>
 #include <vector>
 #include <memory>
+#include "layer.h"
+#include "layer_factory.h"
 
-struct lrn_params {
+struct lrn_params 
+{
   double alpha, beta,k;
   int local_size;
   mkldnn::prop_kind aprop_kind;
@@ -17,35 +20,78 @@ struct lrn_params {
 };
 
 template <typename T>
-class LocalResponseNormalization {
+class LocalResponseNormalization : public Layer<T> 
+{
 public:
 
-    LocalResponseNormalization(int n, double k, double alpha, double beta);
+    LocalResponseNormalization(int n, double k, double alpha, double beta, mkldnn::algorithm alg_kind);
     ~LocalResponseNormalization();
 public:
-    int forward(
-      T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-      T* y, int y_d1, int y_d2, int y_d3, int y_d4);
+
 
     int forward();
 
-    int backward(
-      T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
-      T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
-      T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4);
+
+
+    static void do_forward(
+        T*   x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
+        T*   y,  int y_d1,  int y_d2,  int y_d3,  int y_d4,
+        T*   ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4,
+        int n, double k, double alpha, double beta,
+        mkldnn::algorithm alg_kind = mkldnn::algorithm::lrn_across_channels) 
+    {
+        auto forward_object = get_forward_object(
+            x_d1, x_d2, x_d3, x_d4, n, k, alpha, beta, alg_kind);
+
+        forward_object->forward(x,  x_d1,  x_d2,  x_d3,  x_d4,
+                                y,  y_d1,  y_d2,  y_d3,  y_d4,
+                                ws, ws_d1, ws_d2, ws_d3, ws_d4);
+    }
+    static void do_backward(
+        T*   x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
+        T*   gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
+        T*   gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
+        T*   ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4,
+        int n, double k, double alpha, double beta,
+        mkldnn::algorithm alg_kind = mkldnn::algorithm::lrn_across_channels) 
+    {
+        auto backward_object = get_backward_object(
+            x_d1, x_d2, x_d3, x_d4, n, k, alpha, beta, alg_kind);
+
+        backward_object->backward(x,  x_d1,  x_d2,  x_d3,  x_d4,
+                                  gy, gy_d1, gy_d2, gy_d3, gy_d4,
+                                  gx, gx_d1, gx_d2, gx_d3, gx_d4,
+                                  ws, ws_d1, ws_d2, ws_d3, ws_d4);
+    }
 private:
+    int backward(
+        T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
+        T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
+        T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
+        T* ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4);
     int backward_setup(
-      T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
-      T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
-      T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4);
+        T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
+        T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
+        T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4);
+    void bwd_reset_mem(T* x,T* gy,T* gx,T* ws);
 
-    void bwd_reset_mem(T* x,T* gy,T* gx);
-
+    int forward(
+        T* x, int x_d1, int x_d2, int x_d3, int x_d4,
+        T* y, int y_d1, int y_d2, int y_d3, int y_d4,
+        T* ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4);
     int forward_setup(
-      T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-      T* y, int y_d1, int y_d2, int y_d3, int y_d4);
+        T* x, int x_d1, int x_d2, int x_d3, int x_d4,
+        T* y, int y_d1, int y_d2, int y_d3, int y_d4);
 
-    void fwd_reset_mem(T* x,T* y);
+    void fwd_reset_mem(T* x,T* y,T* ws);
+protected:
+    static LocalResponseNormalization<T>* get_forward_object(
+        int x_d1, int x_d2, int x_d3, int x_d4,
+        int n, double k, double alpha, double beta, mkldnn::algorithm alg_kind);
+
+    static LocalResponseNormalization<T>* get_backward_object(
+        int x_d1, int x_d2, int x_d3, int x_d4,
+        int n, double k, double alpha, double beta, mkldnn::algorithm alg_kind);
 private:
     lrn_params p;
 
@@ -67,24 +113,8 @@ private:
     std::shared_ptr<mkldnn::stream> bwd_stream_;
     std::vector<mkldnn::primitive> bwd_primitives_;
 
-    // std::shared_ptr<mkldnn::memory> src;
-    // std::shared_ptr<mkldnn::memory> dst;
-    // std::shared_ptr<mkldnn::memory> diff_src;
-    // std::shared_ptr<mkldnn::memory> diff_dst;
     std::shared_ptr<mkldnn::memory> workspace;
-    // std::shared_ptr<mkldnn::memory::desc> src_desc;
-    // std::shared_ptr<mkldnn::memory::desc> dst_desc;
-    // std::shared_ptr<mkldnn::memory::desc> diff_src_desc;
-    // std::shared_ptr<mkldnn::memory::desc> diff_dst_desc;
-    // std::shared_ptr<mkldnn::lrn_forward::primitive_desc> lrn_fwd_prim_desc;
-    // std::shared_ptr<mkldnn::lrn_forward::primitive_desc> lrn_bwd_prim_desc;
     std::shared_ptr<mkldnn::engine> eng;
-    // bool is_training;
-    // mkldnn::memory::dims lrn_src_tz;
-    // mkldnn::memory::dims lrn_dst_tz;
-
-    // mkldnn::stream* stream_;
-    // std::vector<mkldnn::primitive> primitives_;
     mkldnn::primitive                         reorder_y_;
 
 };

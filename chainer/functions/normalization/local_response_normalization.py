@@ -42,7 +42,7 @@ class LocalResponseNormalization(function.Function):
         self.k = k
         self.alpha = alpha
         self.beta = beta
-        self.mkldnn_lrn = None
+        self.mkldnn_lrn = False
 
     def check_type_forward(self, in_types):
         type_check.expect(in_types.size() == 1)
@@ -54,19 +54,17 @@ class LocalResponseNormalization(function.Function):
         )
 
     def forward_cpu(self, x):
-        # if mkldnn.enabled():
-        # print "forward_cpu"
         if switch.enable_lrn:
-            if self.mkldnn_lrn is None:
-                # n, c, h, w = x.shape
-                # print x[0].shape
-                self.y = numpy.empty(x[0].shape,dtype=x[0].dtype)
-                self.mkldnn_lrn = mkldnn.LocalResponseNormalization_F32(self.n,self.k,self.n*self.alpha,self.beta)
-                self.mkldnn_lrn.forward(x[0],self.y)
-                return self.y,
-            # else:
-                # return None
+            # print "mkl forward"
+            self.y = numpy.empty(x[0].shape,dtype=x[0].dtype)
+            self.ws = numpy.empty(x[0].shape, dtype=x[0].dtype)
+            in_alpha = self.n*self.alpha
+            mkldnn.LocalResponseNormalization_F32.do_forward(x[0],self.y,self.ws,self.n,self.k,in_alpha,self.beta)
+            # self.mkldnn_lrn.forward(x[0],self.y)
+            self.mkldnn_lrn = True
+            return self.y,
         else:
+            # print "numpy forward"
             half_n = self.n // 2
             x2 = numpy.square(x[0])
             sum_part = x2.copy()
@@ -81,13 +79,17 @@ class LocalResponseNormalization(function.Function):
     def backward_cpu(self, x, gy):
         if switch.enable_lrn:
             if self.mkldnn_lrn:
+                # print "mkl backward"
                 gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
-                self.mkldnn_lrn.backward(x[0],gy[0],gx)
+                in_alpha = self.n*self.alpha
+                mkldnn.LocalResponseNormalization_F32.do_backward(
+                    x[0],gy[0],gx,self.ws,self.n,self.k,in_alpha,self.beta)
+                # self.mkldnn_lrn.backward(x[0],gy[0],gx)
                 return gx,
-            # else:
-            #     return None
+            else:
+                return None
         else:
-        # print "backward_cpu"
+            # print "numpy backward_cpu"
             half_n = self.n // 2
             summand = self.y * gy[0] / self.unit_scale
             sum_part = summand.copy()

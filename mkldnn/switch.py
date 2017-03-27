@@ -6,3 +6,4 @@ enable_relu         = True
 enable_softmax      = False
 enable_linear       = True
 enable_softmax_cross_entropy = False
+enable_concat       = False

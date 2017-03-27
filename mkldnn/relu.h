@@ -33,11 +33,11 @@ public:
     static Relu<T>* get_forward_object(int x_d1) {
         Relu<T>* relu_forward = NULL;
         relu_forward = dynamic_cast<Relu<T>*>(
-                LayerFactory::getInstance().getRELULayer(x_d1));
+                LayerFactory<T>::getInstance().getRELULayer(x_d1));
         if (relu_forward == NULL) {
             relu_forward = new Relu<T>();
             LOG(INFO) << "new relu obj " << relu_forward << " dim " << x_d1;
-            LayerFactory::getInstance().setRELULayer(
+            LayerFactory<T>::getInstance().setRELULayer(
                     x_d1, relu_forward);
         }
         return relu_forward;
@@ -46,7 +46,7 @@ public:
     static Relu<T>* get_backward_object(int x_d1) {
         Relu<T>* relu_backward = NULL;
             relu_backward = dynamic_cast<Relu<T>*>(
-                                LayerFactory::getInstance().getRELULayer(x_d1));
+                                LayerFactory<T>::getInstance().getRELULayer(x_d1));
         assert (relu_backward != NULL);  // we must have already done forward
                                             // before
         return relu_backward;

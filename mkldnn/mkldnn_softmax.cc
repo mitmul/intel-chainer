@@ -43,7 +43,7 @@ Softmax<T>::softmax_create_forward(T* x, int dummy_x,
     if (SOFTMAX_2D == ndim) {
 	// LayerFactory get map
         if (!(inst =
-	    (Softmax_2D<T>*)LayerFactory::getInstance().getSoftmax2DLayer(dims[0], dims[1], axis))) {
+	    (Softmax_2D<T>*)LayerFactory<T>::getInstance().getSoftmax2DLayer(dims[0], dims[1], axis))) {
             // New Softmax inst
             inst = new Softmax_2D<T>(dims, axis);
 
@@ -51,7 +51,7 @@ Softmax<T>::softmax_create_forward(T* x, int dummy_x,
             inst->setup_forward();
 
 	    // LayerFactory set map
-            LayerFactory::getInstance().setSoftmax2DLayer(dims[0], dims[1], axis, inst);
+            LayerFactory<T>::getInstance().setSoftmax2DLayer(dims[0], dims[1], axis, inst);
 	} else {
 	    ;
 	}
@@ -62,7 +62,7 @@ Softmax<T>::softmax_create_forward(T* x, int dummy_x,
     } else if (SOFTMAX_4D == ndim) {
 	// LayerFactory get map
         if (!(inst =
-	    (Softmax_4D<T>*)LayerFactory::getInstance().getSoftmax4DLayer(dims[0], dims[1], dims[2], dims[3], axis))) {
+	    (Softmax_4D<T>*)LayerFactory<T>::getInstance().getSoftmax4DLayer(dims[0], dims[1], dims[2], dims[3], axis))) {
             // New Softmax inst
             inst = new Softmax_4D<T>(dims, axis);
 
@@ -70,7 +70,7 @@ Softmax<T>::softmax_create_forward(T* x, int dummy_x,
             inst->setup_forward();
 
 	    // LayerFactory set map
-            LayerFactory::getInstance().setSoftmax4DLayer(dims[0], dims[1], dims[2], dims[3], axis, inst);
+            LayerFactory<T>::getInstance().setSoftmax4DLayer(dims[0], dims[1], dims[2], dims[3], axis, inst);
         } else {
 	    ;
 	}

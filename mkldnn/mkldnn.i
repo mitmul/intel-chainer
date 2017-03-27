@@ -15,6 +15,7 @@
     #include "mkldnn_softmax.h"
     #include "local_response_normalization.h"
     #include "softmax_cross_entropy.h"
+    #include "mkldnn_concat.h"
 %}
 
 %include "numpy.i"
@@ -92,6 +93,7 @@
 %include "mkldnn_softmax.h"
 %include "local_response_normalization.h"
 %include "softmax_cross_entropy.h"
+%include "mkldnn_concat.h"
 
 /*
 * Support Concat to get a variable size tuple
@@ -158,3 +160,4 @@
 %template(LocalResponseNormalization_F32) LocalResponseNormalization<float>;
 %template(Linear_F32) MKLDNNLinear<float>;
 %template(SoftmaxCrossEntropy_F32) SoftmaxCrossEntropy<float>;
+%template(Concat_F32) Concat<float>;

@@ -101,21 +101,23 @@ public:
 
     // Local Response Normalization stream
     // TODO cross channel support
-    Layer<T>* getLRNLayer(int           x_d1,
-                          int           x_d2,
-                          int           x_d3,
-                          int           x_d4,
-                          int           local_size,
-                          float         alpha,
-                          float         beta);
-    void      setLRNLayer(int           x_d1,
-                          int           x_d2,
-                          int           x_d3,
-                          int           x_d4,
-                          int           local_size,
-                          float         alpha,
-                          float         beta,
-                          Layer<T>*     layer);
+    Layer<T>* getLRNLayer(int               x_d1,
+                              int               x_d2,
+                              int               x_d3,
+                              int               x_d4,
+                              int               local_size,
+                              double             k,
+                              double             alpha,
+                              double             beta);
+    void          setLRNLayer(int               x_d1,
+                              int               x_d2,
+                              int               x_d3,
+                              int               x_d4,
+                              int               local_size,
+                              double             k,
+                              double             alpha,
+                              double             beta,
+                              Layer<T>*     layer);
 
     // Softmax Cross Entropy stream
     Layer<T>* getSoftmax2DLayer(int               d1,

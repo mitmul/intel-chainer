@@ -42,7 +42,7 @@ class LocalResponseNormalization(function.Function):
         self.k = k
         self.alpha = alpha
         self.beta = beta
-        self.mkldnn_lrn = False
+        self.isfloat32 = True
 
     def check_type_forward(self, in_types):
         type_check.expect(in_types.size() == 1)
@@ -54,10 +54,16 @@ class LocalResponseNormalization(function.Function):
         )
 
     def forward_cpu(self, x):
-        if switch.enable_lrn:
-            # print "mkl forward"
+        if x[0].dtype != numpy.float32:
+            self.isfloat32 = False
+        else:
+            self.isfloat32 = True
+
+        if switch.enable_lrn and self.isfloat32:
+            # print "test mkl forword float32"
             self.y = numpy.empty(x[0].shape,dtype=x[0].dtype)
             self.ws = numpy.empty(x[0].shape, dtype=x[0].dtype)
+            # print "x dtype is" + str(x[0].dtype)
             in_alpha = self.n*self.alpha
             mkldnn.LocalResponseNormalization_F32.do_forward(x[0],self.y,self.ws,self.n,self.k,in_alpha,self.beta)
             # self.mkldnn_lrn.forward(x[0],self.y)
@@ -77,17 +83,21 @@ class LocalResponseNormalization(function.Function):
             return self.y,
 
     def backward_cpu(self, x, gy):
-        if switch.enable_lrn:
-            if self.mkldnn_lrn:
-                # print "mkl backward"
-                gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
-                in_alpha = self.n*self.alpha
-                mkldnn.LocalResponseNormalization_F32.do_backward(
-                    x[0],gy[0],gx,self.ws,self.n,self.k,in_alpha,self.beta)
-                # self.mkldnn_lrn.backward(x[0],gy[0],gx)
-                return gx,
-            else:
-                return None
+        if x[0].dtype != numpy.float32:
+            self.isfloat32 = False
+        else:
+            self.isfloat32 = True
+        if switch.enable_lrn and self.isfloat32:
+            # if self.mkldnn_lrn:
+            # print "test mkl backward float32"
+            gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
+            in_alpha = self.n*self.alpha
+            mkldnn.LocalResponseNormalization_F32.do_backward(
+                x[0],gy[0],gx,self.ws,self.n,self.k,in_alpha,self.beta)
+            # self.mkldnn_lrn.backward(x[0],gy[0],gx)
+            return gx,
+            # else:
+            #     return None
         else:
             # print "numpy backward_cpu"
             half_n = self.n // 2

@@ -30,9 +30,9 @@ beta = .75
 # datay.fill(333.33)
 
 data = np.ndarray((2, 4, 5, 5), dtype=np.float32)
-data.fill(33)
+data.fill(213)
 datay = np.ndarray((2, 4, 5, 5), dtype=np.float32)
-datay.fill(33)
+datay.fill(123)
 
 x = np.asarray(data),
 gy = np.asarray(datay),
@@ -52,10 +52,14 @@ mklgx = lrn.backward_cpu(x,gy)
 
 switch.enable_lrn = False
 ny = lrn.forward_cpu(x)
-numpygx=lrn.backward_cpu(x,gy)
+numpygx = lrn.backward_cpu(x,gy)
 
-print "mklgx-numpygx=" + str(numpygx[0]-mklgx[0])
+# print mklgx
+
+# re = numpygx[0]- mklgx[0]
+# print re
+print "mklgx-numpygx=" + str(numpygx[0]- mklgx[0])
 # print "numpy y = " + str(lrn.forward_cpu(x))
 # lrn.forward_cpu(x)
 # print "numpy gx = " + str(lrn.backward_cpu(x,gy))
-print "mkl - numpy = " + str(my[0] - ny[0])
+# print "mkl - numpy = " + str(my[0] - ny[0])

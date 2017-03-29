@@ -6,10 +6,10 @@
 
 using namespace mkldnn;
 
-extern engine cpu_engine;
+// extern engine cpu_engine;
 
 template<typename T>
-LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k, double alpha, double beta)
+LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k, double alpha, double beta,mkldnn::algorithm alg_kind)
 : lrn_fwd_user_src_mem_(NULL), lrn_fwd_dst_mem_(NULL)
                , lrn_fwd_src_md_(NULL), lrn_fwd_desc_(NULL), lrn_fwd_pd_(NULL)
                , lrn_fwd_(NULL), fwd_stream_(NULL)
@@ -17,9 +17,9 @@ LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k, doubl
                , lrn_bwd_desc_(NULL), lrn_bwd_pd_(NULL)
                , lrn_bwd_(NULL), bwd_stream_(NULL), workspace(NULL)
 {
-	google::ShutdownGoogleLogging();
-	google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
-	LOG(INFO) << "n = " << n << " k = " << k << " alpha = " << alpha << "beta = " << beta ;
+	// google::ShutdownGoogleLogging();
+	// google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
+	// LOG(INFO) << "n = " << n << " k = " << k << " alpha = " << alpha << "beta = " << beta ;
 	p.alpha = alpha;
 	p.beta = beta;
 	p.aprop_kind = prop_kind::forward_training;
@@ -28,6 +28,7 @@ LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k, doubl
 	p.data_format = memory::format::nchw;
 	p.diff_data_format = memory::format::any;
 	p.aalgorithm = algorithm::lrn_across_channels;
+	p.aalgorithm = alg_kind;
 
 	eng.reset(new engine(engine::kind::cpu, 0));
 }
@@ -43,11 +44,12 @@ int LocalResponseNormalization<T>::forward_setup(
 	T* x, int x_d1, int x_d2, int x_d3, int x_d4,
 	T* y, int y_d1, int y_d2, int y_d3, int y_d4)
 {
-	LOG(INFO) << "forward_setup";
-	LOG(INFO) << "lrn_src_tz "<< x_d1 << x_d2<< x_d3 << x_d4 ;
-	LOG(INFO) << "lrn_dst_tz "<< y_d1 << y_d2<< y_d3 << y_d4 ;
+	// LOG(INFO) << "forward_setup";
+	// LOG(INFO) << "lrn_src_tz "<< x_d1 << x_d2<< x_d3 << x_d4 ;
+	// LOG(INFO) << "lrn_dst_tz "<< y_d1 << y_d2<< y_d3 << y_d4 ;
 	memory::dims lrn_src_tz = {x_d1, x_d2, x_d3, x_d4};
     memory::dims lrn_dst_tz = {y_d1, y_d2, y_d3, y_d4};
+    // memory::dims lrn_ws_tz = {ws_d1, ws_d2, ws_d3, ws_d4};
 
 	/* create memory for user data */
 	lrn_fwd_user_src_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),
@@ -62,8 +64,8 @@ int LocalResponseNormalization<T>::forward_setup(
 	/* if need reorder*/
     auto lrn_src_mem = lrn_fwd_user_src_mem_;
 
-    /* create lrn primitive and add it to net_ */
-    LOG(INFO) << "lrn_fwd_desc_";
+    /* create lrn primitive*/
+    // LOG(INFO) << "lrn_fwd_desc_";
     lrn_fwd_desc_.reset(new lrn_forward::desc(p.aprop_kind, p.aalgorithm, *lrn_fwd_src_md_,
 	    p.local_size, p.alpha, p.beta, p.k));
     lrn_fwd_pd_.reset(new lrn_forward::primitive_desc(*lrn_fwd_desc_, *eng));
@@ -79,12 +81,12 @@ int LocalResponseNormalization<T>::forward_setup(
     // }
 
 
-    LOG(INFO) << "workspace_primitive_desc";
+    // LOG(INFO) << "workspace_primitive_desc";
  	auto workspace_primitive_desc = lrn_fwd_pd_->workspace_primitive_desc();
 	workspace.reset(new memory(workspace_primitive_desc));
-	LOG(INFO) << "lrn_fwd_ workspace" << workspace;
 
-    LOG(INFO) << "lrn_fwd_";
+
+    // LOG(INFO) << "lrn_fwd_";
     // lrn_fwd_.reset(new lrn_forward(*lrn_fwd_pd_, *lrn_src_mem, *workspace, *lrn_fwd_dst_mem_));
     lrn_fwd_.reset(new lrn_forward(*lrn_fwd_pd_, *lrn_src_mem, *workspace, *lrn_y_mem_));
 
@@ -97,28 +99,31 @@ int LocalResponseNormalization<T>::forward_setup(
 }
 
 template<typename T>
-void LocalResponseNormalization<T>::fwd_reset_mem(T* x,T* y)
+void LocalResponseNormalization<T>::fwd_reset_mem(T* x,T* y,T* ws)
 {
     lrn_fwd_user_src_mem_->set_data_handle(x);
     lrn_fwd_dst_mem_->set_data_handle(y);
     lrn_y_mem_->set_data_handle(y);
+    workspace -> set_data_handle(ws);
 }
 
 template<typename T>
 int LocalResponseNormalization<T>::forward(
 	T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-	T* y, int y_d1, int y_d2, int y_d3, int y_d4)
+	T* y, int y_d1, int y_d2, int y_d3, int y_d4,
+	T* ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4)
 {
     if (!fwd_stream_) 
     {
     	LOG(INFO) << "!fwd_stream_";
-        forward_setup(x, x_d1, x_d2, x_d3, x_d4, y, y_d1, y_d2, y_d3, y_d4);
-        fwd_reset_mem(x, y);
+        forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
+        			  y, y_d1, y_d2, y_d3, y_d4);
+        fwd_reset_mem(x, y, ws);
         fwd_stream_->submit(fwd_primitives_).wait();
     } 
     else
     {
-        fwd_reset_mem(x, y);
+        fwd_reset_mem(x, y,ws);
         fwd_stream_->rerun().wait();
     }
     return 0;
@@ -175,28 +180,6 @@ int LocalResponseNormalization<T>::backward_setup(
 	// lrn_bwd_.reset(new lrn_backward(*lrn_bwd_pd_, 
 	// 	*lrn_src_mem_, *lrn_diff_dst_mem_,*lrn_diff_src_mem_));
 
-
-#if 0
-    /* Backward lrn */
-    auto lrn_diff_dst_md = lrn_dst_memory.get_primitive_desc().desc();
-
-    /* create backward lrn primitive descriptor */
-    auto lrn_bwd_desc = lrn_backward::desc(
-            lrn_across_channels, lrn_pd.src_primitive_desc().desc(),
-            lrn_diff_dst_md, local_size, alpha, beta, k);
-    auto lrn_bwd_pd
-            = lrn_backward::primitive_desc(lrn_bwd_desc, cpu_engine, lrn_pd);
-
-    /* create memory for lrn diff src */
-    auto lrn_diff_src_memory = memory(lrn_bwd_pd.diff_src_primitive_desc());
-
-    /* finally create a lrn backward primitive */
-    // backward lrn needs src: relu dst in this topology
-    auto lrn_bwd
-            = lrn_backward(lrn_bwd_pd, relu_dst_memory, pool_diff_src_memory,
-                           lrn_workspace_memory, lrn_diff_src_memory);
-#endif
-
 	bwd_primitives_.push_back(*lrn_bwd_);
     bwd_stream_.reset(new stream(stream::kind::eager));
 
@@ -204,12 +187,13 @@ int LocalResponseNormalization<T>::backward_setup(
 }
 
 template<typename T>
-void LocalResponseNormalization<T>::bwd_reset_mem(T* x,T* gy,T* gx)
+void LocalResponseNormalization<T>::bwd_reset_mem(T* x,T* gy,T* gx,T* ws)
 {
     // lrn_fwd_user_src_mem_->set_data_handle(x);
     lrn_bwd_user_src_mem_->set_data_handle(x);
     lrn_diff_src_mem_->set_data_handle(gx);
     lrn_diff_dst_mem_->set_data_handle(gy);
+    workspace -> set_data_handle(ws);
     
 }
 
@@ -217,18 +201,22 @@ template<typename T>
 int LocalResponseNormalization<T>::backward(
 	T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
 	T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
-	T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4)
+	T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
+	T* ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4)
 {
     // LOG(INFO) << "backward: " << x << " : " << x_size << " : " << gy << " : " << gy_size << " : " << gx << " : " << gx_size;
-    if (!bwd_stream_) {
+    if (!bwd_stream_) 
+    {
         backward_setup(	
         	x, x_d1, x_d2, x_d3, x_d4,
 			gy, gy_d1, gy_d2, gy_d3, gy_d4,
 			gx, gx_d1,gx_d2, gx_d3, gx_d4);
-        bwd_reset_mem(x, gy, gx);
+        bwd_reset_mem(x, gy, gx,ws);
         bwd_stream_->submit(bwd_primitives_).wait();
-    } else {
-        bwd_reset_mem(x, gy, gx);
+    } 
+    else 
+    {
+        bwd_reset_mem(x, gy, gx,ws);
         bwd_stream_->rerun().wait();
     }
     return 0;
@@ -238,79 +226,36 @@ template<typename T>
 int LocalResponseNormalization<T>::forward()
 {
 
-	// // bool reorder_x_p = false;
- //    // bool reorder_y_p = false;
-
-	// auto lrn_desc = lrn_forward::desc(p.aprop_kind, p.aalgorithm, *src_desc,
-	//         p.local_size, p.alpha, p.beta,p.k);
-	// lrn_fwd_prim_desc.reset(new lrn_forward::primitive_desc(lrn_desc, *eng));
-
- //    // if (memory::primitive_desc(lrn_fwd_prim_desc->dst_primitive_desc())
- //    //     != dst_desc->get_primitive_desc()) {
- //    //     dst.reset(new memory(lrn_fwd_prim_desc.get()->dst_primitive_desc()));
- //    //     reorder_y_ = reorder(*y_mem_, *user_y_mem_);
- //    //     reorder_y_p = true;
- //    // }
-
-	// std::vector<primitive> pipeline;
-	// auto s = stream(stream::kind::lazy);
-	// if (is_training) {
-	//     auto workspace_primitive_desc =
-	//     lrn_fwd_prim_desc->workspace_primitive_desc();
-	//     workspace.reset(new memory(workspace_primitive_desc));
-	//     auto l = lrn_forward(*lrn_fwd_prim_desc, *src, *workspace, *dst);
-	//     pipeline.push_back(l);
-	//     s.submit(pipeline).wait();
-	// } else {
-	//     auto l = lrn_forward(*lrn_fwd_prim_desc, *src, *dst);
-	//     pipeline.push_back(l);
-	//     s.submit(pipeline).wait();
-	// }
-	// // stream_->submit(primitives_);
 	return 0;
 }
-template class LocalResponseNormalization<float>;
-template class LocalResponseNormalization<double>;
-
-#if 0
 template<typename T>
-int LocalResponseNormalization<T>::backward(
-	T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
-    T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
-    T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4){
-
-	LOG(INFO) << " backward";
-
-	src_desc.reset(new memory::desc({{x_d1, x_d2, x_d3, x_d4}},
-	    memory_data_type<T>(), memory::format::nchw));
-	diff_src_desc.reset(new memory::desc({{gy_d1, gy_d2, gy_d3, gy_d4}},
-	    memory_data_type<T>(), memory::format::nchw));
-	diff_dst_desc.reset(new memory::desc({{gx_d1, gx_d2, gx_d3, gx_d4}},
-	    memory_data_type<T>(), memory::format::nchw));
-
-	src.reset(new memory ({{{{x_d1, x_d2, x_d3, x_d4}},memory_data_type<T>(),p.diff_data_format}, *eng}, x));
-	diff_src.reset(new memory({{{{gy_d1, gy_d2, gy_d3, gy_d4}}, memory_data_type<T>(),p.diff_data_format}, *eng}, gy));
-	diff_dst.reset(new memory({{{{gx_d1, gx_d2, gx_d3, gx_d4}},memory_data_type<T>(),p.diff_data_format}, *eng}, gx));
-	// src_desc->set_data_handler(x);
-	// diff_src_desc->set_data_handler(gx);
-	// diff_dst_desc->set_data_handler(gy);
-//to do
-	auto lrn_bwd_desc = lrn_backward::desc(p.aalgorithm,
-		*src_desc, *diff_src_desc,p.local_size, p.alpha, p.beta);
- 	
-	// diff_src.reset(new memory({*diff_src_desc, *eng}));
-	// diff_dst.reset(new memory({*diff_dst_desc, *eng}));
-	auto lrn_bwd_prim_desc = lrn_backward::primitive_desc(lrn_bwd_desc, *eng,
-		*lrn_fwd_prim_desc);
-	//to do reorder 
-	// Execute
-	std::vector<primitive> pipeline;
-	auto s = stream(stream::kind::lazy);
-	auto l = lrn_backward(lrn_bwd_prim_desc, *src, *diff_dst, *workspace,
-		*diff_src);
-	pipeline.push_back(l);
-	s.submit(pipeline).wait();
-
-	return 0;
+LocalResponseNormalization<T>* LocalResponseNormalization<T>::get_forward_object(
+	int x_d1, int x_d2, int x_d3, int x_d4,
+    int n, double k, double alpha, double beta, mkldnn::algorithm alg_kind)
+{
+	auto lrn_forward = dynamic_cast<LocalResponseNormalization<T>*>(
+	    LayerFactory<T>::getInstance().getLRNLayer(x_d1,x_d2,x_d3,x_d4,n,k,alpha,beta));
+	if (lrn_forward == NULL) 
+	{
+		lrn_forward = new LocalResponseNormalization<T>(n,k,alpha,beta,alg_kind);
+		// LOG(INFO) << "new lrn obj " << lrn << " dim " << x_d1;
+		LayerFactory<T>::getInstance().setLRNLayer(x_d1,x_d2,x_d3,x_d4,n,k,alpha,beta,lrn_forward);
+	}
+	return lrn_forward;
 }
-#endif
+template<typename T>
+LocalResponseNormalization<T>* LocalResponseNormalization<T>::get_backward_object(
+    int x_d1, int x_d2, int x_d3, int x_d4,
+    int n, double k, double alpha, double beta, mkldnn::algorithm alg_kind)
+{
+    auto lrn_backward = dynamic_cast<LocalResponseNormalization<T>*>(
+        LayerFactory<T>::getInstance().getLRNLayer(x_d1,x_d2,x_d3,x_d4,n,k,alpha,beta));
+    assert (lrn_backward != NULL);  // we must have already done forward before
+    return lrn_backward;
+}
+
+
+template class LocalResponseNormalization<float>;
+// template class LocalResponseNormalization<double>;
+
+

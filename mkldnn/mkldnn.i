@@ -59,6 +59,8 @@
     {( float* gx, int gx_d1)}
 %apply ( int* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
     {( int* ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4 )}
+%apply ( float* IN_ARRAY4, int DIM1, int DIM2, int DIM3, int DIM4 )
+    {( float* ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4 )}
     /* linear_2D interface*/
 %apply ( float* IN_ARRAY2, int DIM1, int DIM2 )
     {( float* x, int x_d1, int x_d2 )}

@@ -225,12 +225,13 @@ void LayerFactory<T>::setAvgPoolLayer(
 #define LRN_PREFIX "lrn_"
 template<typename T>
 Layer<T>* LayerFactory<T>::getLRNLayer(int             x_d1,
-                                       int             x_d2,
-                                       int             x_d3,
-                                       int             x_d4,
-                                       int             local_size,
-                                       float           alpha,
-                                       float           beta)
+                                        int             x_d2,
+                                        int             x_d3,
+                                        int             x_d4,
+                                        int             local_size,
+                                        double           k,
+                                        double           alpha,
+                                        double           beta)
 {
     std::string key = LRN_PREFIX;
 
@@ -239,21 +240,23 @@ Layer<T>* LayerFactory<T>::getLRNLayer(int             x_d1,
     key += int_to_string(x_d3);
     key += int_to_string(x_d4);
     key += int_to_string(local_size);
-    key += float_to_string(alpha);
-    key += float_to_string(beta);
+    key += double_to_string(k);
+    key += double_to_string(alpha);
+    key += double_to_string(beta);
 
     return getLayer(key);
 }
 
 template<typename T>
 void LayerFactory<T>::setLRNLayer(int              x_d1,
-                                  int              x_d2,
-                                  int              x_d3,
-                                  int              x_d4,
-                                  int              local_size,
-                                  float            alpha,
-                                  float            beta,
-                                  Layer<T>*    layer)
+                               int              x_d2,
+                               int              x_d3,
+                               int              x_d4,
+                               int              local_size,
+                               double            k,
+                               double            alpha,
+                               double            beta,
+                               Layer<T>*    layer)
 {
     std::string key = LRN_PREFIX;
 
@@ -262,8 +265,9 @@ void LayerFactory<T>::setLRNLayer(int              x_d1,
     key += int_to_string(x_d3);
     key += int_to_string(x_d4);
     key += int_to_string(local_size);
-    key += float_to_string(alpha);
-    key += float_to_string(beta);
+    key += double_to_string(k);
+    key += double_to_string(alpha);
+    key += double_to_string(beta);
 
     setLayer(key, layer);
 }

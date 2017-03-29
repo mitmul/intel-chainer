@@ -109,14 +109,6 @@ class Convolution2D(link.Link):
         if self.has_uninitialized_params:
             with cuda.get_device(self._device_id):
                 self._initialize_params(x.shape[1])
-
-        # For mkldnn backend
-        if mkldnn.enabled() and switch.enable_conv is True:
-            if self.mkldnn_conv is None:
-                if self.W.dtype == np.float32:
-                    self.mkldnn_conv = mkldnn.Convolution2D_F32()
-                elif self.W.dtype == np.float64:
-                    self.mkldnn_conv = mkldnn.Convolution2D_F64()
         
         return convolution_2d.convolution_2d(
             x, self.W, self.b, self.stride, self.pad, self.use_cudnn,

@@ -7,6 +7,8 @@ from chainer.utils import type_check
 from mkldnn import mkldnn
 from mkldnn import switch
 
+import numpy as np
+
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
     libcudnn = cuda.cudnn.cudnn
@@ -40,9 +42,6 @@ class Convolution2DFunction(function.Function):
         self.cover_all = cover_all
         self.deterministic = deterministic
     
-        if mkldnn.enabled() and switch.enable_conv is True and conv_link is None:
-            assert "conv_link can not be None in mkldnn enable model"
-
         self.conv_link = conv_link
 
     def check_type_forward(self, in_types):
@@ -73,7 +72,18 @@ class Convolution2DFunction(function.Function):
         out_c, input_c, kh, kw = W.shape
         n, c, h, w = x.shape
 
-        if mkldnn.enabled() and switch.enable_conv is True:
+        """
+        For mkldnn backend, only support float32 for x and W
+        """
+        if mkldnn.enabled() and switch.enable_conv is True and W.dtype == np.float32 and x.dtype == np.float32:
+            """
+            delay to create primitive here, because we can not get both W and x dtype in link init
+            TODO: in future, native object create will be hidden in layer factory
+            """
+            if self.conv_link.mkldnn_conv is None:
+                self.conv_link.mkldnn_conv = mkldnn.Convolution2D_F32()
+                assert self.conv_link.mkldnn_conv != None
+
             out_h = conv.get_conv_outsize(h, kh, self.sy, self.ph,
                                       cover_all=self.cover_all)
             assert out_h > 0, 'Height in the output should be positive.'
@@ -179,7 +189,17 @@ class Convolution2DFunction(function.Function):
         out_c, input_c, kh, kw = W.shape
         gn, gout_c, gout_h, gout_w = gy.shape
 
-        if mkldnn.enabled() and switch.enable_conv is True:
+        """
+        For MKLDNN backward, only support float32
+        """
+        if mkldnn.enabled() and switch.enable_conv is True and W.dtype == np.float32 and x.dtype == np.float32:
+            """
+            delay to create primitive here, because we can not get both W and x dtype in link init
+            TODO: in future, native object create will be hidden in layer factory
+            """
+            if self.conv_link.mkldnn_conv is None:
+                self.conv_link.mkldnn_conv = mkldnn.Convolution2D_F32()
+                assert self.conv_link.mkldnn_conv != None
             if self.conv_link.gW is None:
                 self.conv_link.gW = numpy.empty(shape=(out_c, input_c, kh, kw), dtype=W.dtype)
             

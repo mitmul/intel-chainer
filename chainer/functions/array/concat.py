@@ -41,7 +41,8 @@ class Concat(function.Function):
                 type_check.expect(in_types[0].shape[d] == in_types[i].shape[d])
 
     def forward(self, xs):
-        if mkldnn.enabled() and switch.enable_concat is True:
+        if switch.enable_concatF((xs,)):
+        # if mkldnn.enabled() and switch.enable_concat is True:
             out_c = 0
             xs_new = ()
             
@@ -51,11 +52,11 @@ class Concat(function.Function):
                 xs_new += (tmp,)
                 out_c += xi.shape[1]
 
-            if self.mkldnn_concat is None:
-                if xs[0].dtype == numpy.float32:
-                    self.mkldnn_concat = mkldnn.Concat_F32()
-                if xs[0].dtype == numpy.float64:
-                    self.mkldnn_concat = mkldnn.Concat_F64()
+            # if self.mkldnn_concat is None:
+                # if xs[0].dtype == numpy.float32:
+            self.mkldnn_concat = mkldnn.Concat_F32()
+                # if xs[0].dtype == numpy.float64:
+                    # self.mkldnn_concat = mkldnn.Concat_F64()
 
             """
             only support channel dim concat
@@ -73,13 +74,13 @@ class Concat(function.Function):
     def backward(self, xs, gy):
         if len(xs) == 1:
             return gy
-
-        if mkldnn.enabled() and switch.enable_concat is True:
-            if self.mkldnn_concat is None:
-                if xs[0].dtype == numpy.float32:
-                    self.mkldnn_concat = mkldnn.Concat_F32()
-                if xs[0].dtype == numpy.float64:
-                    self.mkldnn_concat = mkldnn.Concat_F64()
+        if switch.enable_concatF((xs,gy)):
+        # if mkldnn.enabled() and switch.enable_concat is True:
+            # if self.mkldnn_concat is None:
+            #     if xs[0].dtype == numpy.float32:
+            self.mkldnn_concat = mkldnn.Concat_F32()
+                # if xs[0].dtype == numpy.float64:
+                #     self.mkldnn_concat = mkldnn.Concat_F64()
             
             ## x should have same shape as xs
             xs_new = ()

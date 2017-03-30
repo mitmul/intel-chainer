@@ -54,12 +54,8 @@ class LocalResponseNormalization(function.Function):
         )
 
     def forward_cpu(self, x):
-        if x[0].dtype != numpy.float32:
-            self.isfloat32 = False
-        else:
-            self.isfloat32 = True
-
-        if switch.enable_lrn and self.isfloat32:
+        # if switch.enable_lrn and self.isfloat32:
+        if switch.enable_lrnF((x,)):
             # print "test mkl forword float32"
             self.y = numpy.empty(x[0].shape,dtype=x[0].dtype)
             self.ws = numpy.empty(x[0].shape, dtype=x[0].dtype)
@@ -67,7 +63,7 @@ class LocalResponseNormalization(function.Function):
             in_alpha = self.n*self.alpha
             mkldnn.LocalResponseNormalization_F32.do_forward(x[0],self.y,self.ws,self.n,self.k,in_alpha,self.beta)
             # self.mkldnn_lrn.forward(x[0],self.y)
-            self.mkldnn_lrn = True
+            # self.mkldnn_lrn = True
             return self.y,
         else:
             # print "numpy forward"
@@ -83,11 +79,7 @@ class LocalResponseNormalization(function.Function):
             return self.y,
 
     def backward_cpu(self, x, gy):
-        if x[0].dtype != numpy.float32:
-            self.isfloat32 = False
-        else:
-            self.isfloat32 = True
-        if switch.enable_lrn and self.isfloat32:
+        if switch.enable_lrnF((x,gy)):
             # if self.mkldnn_lrn:
             # print "test mkl backward float32"
             gx = numpy.empty(x[0].shape, dtype=x[0].dtype)

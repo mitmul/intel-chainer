@@ -75,7 +75,9 @@ class Convolution2DFunction(function.Function):
         """
         For mkldnn backend, only support float32 for x and W
         """
-        if mkldnn.enabled() and switch.enable_conv is True and W.dtype == np.float32 and x.dtype == np.float32:
+        if switch.enable_convF(inputs):
+            # print "pass enable_convF"
+        # if mkldnn.enabled() and switch.enable_conv is True and W.dtype == np.float32 and x.dtype == np.float32:
             """
             delay to create primitive here, because we can not get both W and x dtype in link init
             TODO: in future, native object create will be hidden in layer factory
@@ -192,7 +194,8 @@ class Convolution2DFunction(function.Function):
         """
         For MKLDNN backward, only support float32
         """
-        if mkldnn.enabled() and switch.enable_conv is True and W.dtype == np.float32 and x.dtype == np.float32:
+        if switch.enable_convF(inputs):
+        # if mkldnn.enabled() and switch.enable_conv is True and W.dtype == np.float32 and x.dtype == np.float32:
             """
             delay to create primitive here, because we can not get both W and x dtype in link init
             TODO: in future, native object create will be hidden in layer factory

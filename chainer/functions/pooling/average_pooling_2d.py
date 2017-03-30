@@ -17,7 +17,8 @@ class AveragePooling2D(pooling_2d.Pooling2D):
     # TODO(beam2d): Support cover_all mode.
 
     def forward_cpu(self, x):
-        if switch.enable_avg_pooling:
+        if switch.enable_avg_poolingF((x,)):
+        # if switch.enable_avg_pooling:
             n, c, h, w = x[0].shape
             y_h = conv.get_conv_outsize(
                 h, self.kh, self.sy, self.ph, self.cover_all)
@@ -77,7 +78,8 @@ class AveragePooling2D(pooling_2d.Pooling2D):
         return y,
 
     def backward_cpu(self, x, gy):
-        if switch.enable_avg_pooling:
+        if switch.enable_avg_poolingF((x,gy)):
+        # if switch.enable_avg_pooling:
             n, c, h, w = x[0].shape
             gx = numpy.empty((n, c, h, w), dtype=x[0].dtype)
 

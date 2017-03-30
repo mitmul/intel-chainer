@@ -16,7 +16,8 @@ class MaxPooling2D(pooling_2d.Pooling2D):
     """Max pooling over a set of 2d planes."""
 
     def forward_cpu(self, x):
-        if switch.enable_max_pooling:
+        # if switch.enable_max_pooling:
+        if switch.enable_max_poolingF((x,)):
             n, c, h, w = x[0].shape
             y_h = conv.get_conv_outsize(
                 h, self.kh, self.sy, self.ph, self.cover_all)
@@ -96,7 +97,8 @@ class MaxPooling2D(pooling_2d.Pooling2D):
         return y,
 
     def backward_cpu(self, x, gy):
-        if switch.enable_max_pooling:
+        # if switch.enable_max_pooling:
+        if switch.enable_max_poolingF((x,gy)):
             n, c, h, w = x[0].shape
             gx = numpy.empty((n, c, h, w), dtype=x[0].dtype)
 

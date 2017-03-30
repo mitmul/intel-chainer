@@ -29,7 +29,8 @@ class ReLU(function.Function):
         )
 
     def forward_cpu(self, x):
-        if switch.enable_relu:
+        # if switch.enable_relu:
+        if switch.enable_reluF((x,)):
             y = numpy.empty(x[0].shape, dtype=numpy.float32)
             if x[0].ndim == 4:
                 mkl.Relu4D_F32.do_forward(x[0], y)
@@ -54,7 +55,8 @@ class ReLU(function.Function):
         return y,
 
     def backward_cpu(self, x, gy):
-        if switch.enable_relu:
+        # if switch.enable_relu:
+        if switch.enable_reluF((x,gy)):
             gx = numpy.empty(x[0].shape, dtype=numpy.float32)
             if x[0].ndim == 4:
                 #self.mkldnn_relu_4d.backward(x[0], gy[0], gx)

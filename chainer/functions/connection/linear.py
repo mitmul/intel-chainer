@@ -42,7 +42,8 @@ class LinearFunction(function.Function):
         x = _as_mat(inputs[0])
         W = inputs[1]
         b = inputs[2] if len(inputs) == 3 else None
-        if switch.enable_linear:
+        # if switch.enable_linear:
+        if switch.enable_linearF(inputs):
             if self.linear_link.y is None:
                 self.linear_link.y = numpy.empty(shape=(x.shape[0], W.shape[0]), dtype=W.dtype);
             if b is not None:
@@ -60,7 +61,7 @@ class LinearFunction(function.Function):
         W = inputs[1]
         b = inputs[2] if len(inputs) == 3 else None
         gy = grad_outputs[0]
-        if switch.enable_linear:
+        if switch.enable_linearF(inputs):
             if self.linear_link.gW is None:
                 self.linear_link.gW = numpy.empty(shape=W.shape, dtype=W.dtype)
             if self.linear_link.gx is None:

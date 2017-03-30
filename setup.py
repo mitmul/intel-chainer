@@ -87,6 +87,7 @@ setup(
               'chainer.training.triggers',
               'chainer.utils',
               'mkldnn',
+              'mkldpy',
               ],
     ext_modules = extensions,
     zip_safe=False,

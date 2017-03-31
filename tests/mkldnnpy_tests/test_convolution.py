@@ -10,7 +10,7 @@ y = np.empty(shape=(128,64,32,32),dtype=np.float32)
 
 conv = mkldnn.Convolution2D_F32()
 
-ret = conv.forward(x,W,b,y,1,1,1,1)
+ret = conv.forward(x,W,b,y,1,1,1,1,1,1)
 
 print(ret)
 

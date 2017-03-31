@@ -340,4 +340,72 @@ void LayerFactory<T>::setSoftmax4DLayer(int                d1,
     setLayer(key, layer);
 }
 
+#define CONVOLUTION2D_PREFIX "conv2d_"
+template<typename T>
+Layer<T>* LayerFactory<T>::getConv2dLayer(
+        int x_d1, int x_d2, int x_d3, int x_d4,
+        int W_d1, int W_d2, int W_d3, int W_d4,
+        int b_d1,
+        int ksize_h, int ksize_w,
+        int stride_y, int stride_x,
+        int pad_l_h, int pad_l_w,
+        int pad_r_h, int pad_r_w)
+{
+    std::string key = CONVOLUTION2D_PREFIX;
+
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(x_d3);
+    key += int_to_string(x_d4);
+    key += int_to_string(W_d1);
+    key += int_to_string(W_d2);
+    key += int_to_string(W_d3);
+    key += int_to_string(W_d4);
+    key += int_to_string(b_d1);
+    key += int_to_string(ksize_h);
+    key += int_to_string(ksize_w);
+    key += int_to_string(stride_y);
+    key += int_to_string(stride_x);
+    key += int_to_string(pad_l_h);
+    key += int_to_string(pad_l_w);
+    key += int_to_string(pad_r_h);
+    key += int_to_string(pad_r_w);
+
+    return getLayer(key);
+}
+
+template<typename T>
+void LayerFactory<T>::setConv2dLayer(
+        int x_d1, int x_d2, int x_d3, int x_d4,
+        int W_d1, int W_d2, int W_d3, int W_d4,
+        int b_d1,
+        int ksize_h, int ksize_w,
+        int stride_y, int stride_x,
+        int pad_l_h, int pad_l_w,
+        int pad_r_h, int pad_r_w,
+        Layer<T>* layer)
+{
+    std::string key = CONVOLUTION2D_PREFIX;
+
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(x_d3);
+    key += int_to_string(x_d4);
+    key += int_to_string(W_d1);
+    key += int_to_string(W_d2);
+    key += int_to_string(W_d3);
+    key += int_to_string(W_d4);
+    key += int_to_string(b_d1);
+    key += int_to_string(ksize_h);
+    key += int_to_string(ksize_w);
+    key += int_to_string(stride_y);
+    key += int_to_string(stride_x);
+    key += int_to_string(pad_l_h);
+    key += int_to_string(pad_l_w);
+    key += int_to_string(pad_r_h);
+    key += int_to_string(pad_r_w);
+
+    return setLayer(key, layer);
+}
+
 template class LayerFactory<float>;

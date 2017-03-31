@@ -135,7 +135,8 @@ static void do_backward(
                     int ksize_h, int ksize_w,
                     int stride_y, int stride_x,
                     int pad_l_h, int pad_l_w,
-                    int pad_r_h, int pad_r_w)
+                    int pad_r_h, int pad_r_w,
+		    bool first_layer)
 {
     Convolution2D<T> *bwd_object = get_backward_object(
                                     x, x_d1, x_d2, x_d3, x_d4,
@@ -152,7 +153,8 @@ static void do_backward(
                     gy, gy_d1, gy_d2, gy_d3, gy_d4,
                     gW, gW_d1, gW_d2, gW_d3, gW_d4,
                     gx, gx_d1, gx_d2, gx_d3, gx_d4,
-                    gb, gb_d1);
+                    gb, gb_d1,
+		    first_layer);
 }
 
 static void do_backward(
@@ -164,7 +166,8 @@ static void do_backward(
                     int ksize_h, int ksize_w,
                     int stride_y, int stride_x,
                     int pad_l_h, int pad_l_w,
-                    int pad_r_h, int pad_r_w)
+                    int pad_r_h, int pad_r_w,
+		    bool first_layer)
 {
     do_backward(
             x, x_d1, x_d2, x_d3, x_d4,
@@ -177,7 +180,8 @@ static void do_backward(
             ksize_h, ksize_w,
             stride_y, stride_x,
             pad_l_h, pad_l_w,
-            pad_r_h, pad_r_w);
+            pad_r_h, pad_r_w,
+	    first_layer);
 }
 
 public:
@@ -249,13 +253,15 @@ public:
             T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
             T* gW, int gW_d1, int gW_d2, int gW_d3, int gW_d4,
             T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
-            T* gb, int gb_d1);
+            T* gb, int gb_d1,
+	    bool first_layer);
 
     int backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
             T* W, int W_d1, int W_d2, int W_d3, int W_d4,
             T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
             T* gW, int gW_d1, int gW_d2, int gW_d3, int gW_d4,
-            T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4);
+            T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
+	    bool first_layer);
 private:
     // convolution primitive
     std::shared_ptr<mkldnn::primitive> conv_fwd_;

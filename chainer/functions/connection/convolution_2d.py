@@ -196,11 +196,11 @@ class Convolution2DFunction(function.Function):
             gx = numpy.empty(shape=(n, c, h, w), dtype=W.dtype)
             
             if b is None:
-                mkldnn.Convolution2D_F32.do_backward(x, W, gy, gW, gx, kh, kw, self.sy, self.sx, self.ph, self.pw, self.ph, self.pw)
+                mkldnn.Convolution2D_F32.do_backward(x, W, gy, gW, gx, kh, kw, self.sy, self.sx, self.ph, self.pw, self.ph, self.pw, self.mkldnn_opt)
                 return gx, gW
             else:
                 gb = numpy.empty(shape=b.shape, dtype=W.dtype)
-                mkldnn.Convolution2D_F32.do_backward(x, W, b, gy, gW, gx, gb, kh, kw, self.sy, self.sx, self.ph, self.pw, self.ph, self.pw)
+                mkldnn.Convolution2D_F32.do_backward(x, W, b, gy, gW, gx, gb, kh, kw, self.sy, self.sx, self.ph, self.pw, self.ph, self.pw, self.mkldnn_opt)
                 return gx, gW, gb
         else:
             gW = numpy.tensordot(

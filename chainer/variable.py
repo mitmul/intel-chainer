@@ -396,6 +396,9 @@ Actual: {0}'''.format(type(data))
             cuda.get_device(*(in_data + out_grad)).use()
             for hook in six.itervalues(hooks):
                 hook.backward_preprocess(func, in_data, out_grad)
+	    _x = func.inputs[0]
+	    if _x.creator == None:
+	        func.mkldnn_opt = True
             gxs = func.backward(in_data, out_grad)
             assert len(gxs) == len(in_data)
             for hook in six.itervalues(hooks):

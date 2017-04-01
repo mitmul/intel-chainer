@@ -408,4 +408,37 @@ void LayerFactory<T>::setConv2dLayer(
     return setLayer(key, layer);
 }
 
+#define LINEAR_PREFIX "linear_"
+template<typename T>
+Layer<T>* LayerFactory<T>::getLinearLayer(
+            int x_d1, int x_d2,
+            int W_d1, int W_d2,
+            int b_d1)
+{
+    std::string key = LINEAR_PREFIX;
+
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(W_d1);
+    key += int_to_string(W_d2);
+    key += int_to_string(b_d1);
+    return getLayer(key);
+}
+
+template<typename T>
+void LayerFactory<T>::setLinearLayer(
+        int x_d1, int x_d2,
+        int W_d1, int W_d2,
+        int b_d1,
+        Layer<T>* layer)
+{
+    std::string key = LINEAR_PREFIX;
+    key += int_to_string(x_d1);
+    key += int_to_string(x_d2);
+    key += int_to_string(W_d1);
+    key += int_to_string(W_d2);
+    key += int_to_string(b_d1);
+    return setLayer(key, layer);
+}
+
 template class LayerFactory<float>;

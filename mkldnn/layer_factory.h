@@ -177,6 +177,19 @@ public:
                               int           pad_r_w,
                               Layer<T>*     layer);
 
+    //Linear stream
+    Layer<T>* getLinearLayer(int            x_d1,
+                             int            x_d2,
+                             int            W_d1,
+                             int            W_d2,
+                             int            b_d1);
+    void      setLinearLayer(int            x_d1,
+                             int            x_d2,
+                             int            W_d1,
+                             int            W_d2,
+                             int            b_d1,
+                             Layer<T>*      layer);
+
     LayerFactory(LayerFactory const&)  = delete;
     void operator=(LayerFactory const&) = delete;
 

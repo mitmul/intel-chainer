@@ -9,15 +9,13 @@ using namespace mkldnn;
 
 engine cpu_engine(engine::cpu, 0);
 bool enableMkldnn = true;
-
 unsigned char dummy[PAGE_SIZE] __attribute__((aligned(PAGE_SIZE)));
 #define DUMMY_VAL 0xcc
 
 int global_init()
 {
+    google::SetStderrLogging(1);
     google::InitGoogleLogging("mkldnnpy");
- //   google::SetCommandLineOption("minloglevel", "0"); // GLOG_minloglevel
- //   google::SetCommandLineOption("logtostderr", "1"); // GLOG_logtostderr
 
     LOG(INFO) << "Global Init";
 
@@ -55,4 +53,9 @@ bool checkDummy()
 void setMkldnnEnable(bool isEnabled)
 {
     enableMkldnn = isEnabled;
+}
+
+void enableGoogleLogging()
+{
+   google::SetStderrLogging(0);
 }

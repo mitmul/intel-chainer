@@ -7,5 +7,6 @@
 int global_init();
 bool enabled();
 void setMkldnnEnable(bool isEnabled);
+void enableGoogleLogging();
 extern unsigned char dummy[PAGE_SIZE];
 #endif // _COMMON_H_

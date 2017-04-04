@@ -29,9 +29,9 @@ beta = .75
 # datay = np.ndarray((10, 3, 2240, 2240), dtype=np.float32)
 # datay.fill(333.33)
 
-data = np.ndarray((2, 4, 5, 5), dtype=np.float32)
+data = np.ndarray((2, 8, 5, 5), dtype=np.float32)
 data.fill(213)
-datay = np.ndarray((2, 4, 5, 5), dtype=np.float32)
+datay = np.ndarray((2, 8, 5, 5), dtype=np.float32)
 datay.fill(123)
 
 x = np.asarray(data),
@@ -41,7 +41,7 @@ gy = np.asarray(datay),
 # gx = np.empty((5, 2, 1, 1),dtype=np.float32)
 # print x
 lrn = F.LocalResponseNormalization(n,k,alpha,.75)
-
+mkl.enableGoogleLogging()
 switch.enable_lrn = True
 my = lrn.forward_cpu(x)
 # lrn.forward_cpu(x)
@@ -54,6 +54,8 @@ switch.enable_lrn = False
 ny = lrn.forward_cpu(x)
 numpygx = lrn.backward_cpu(x,gy)
 
+
+print "my - ny" + str(my[0] - ny[0])
 # print mklgx
 
 # re = numpygx[0]- mklgx[0]

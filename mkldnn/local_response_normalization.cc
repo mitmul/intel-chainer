@@ -21,7 +21,7 @@ LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k, doubl
 {
 	// google::ShutdownGoogleLogging();
 	// google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
-    google::LogToStderr();      
+    // google::LogToStderr();      
 	// LOG(INFO) << "n = " << n << " k = " << k << " alpha = " << alpha << "beta = " << beta ;
 	p.alpha = alpha;
 	p.beta = beta;

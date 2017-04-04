@@ -42,39 +42,37 @@ class LinearFunction(function.Function):
         x = _as_mat(inputs[0])
         W = inputs[1]
         b = inputs[2] if len(inputs) == 3 else None
-        # if switch.enable_linear:
         if switch.enable_linearF(inputs):
-            if self.linear_link.y is None:
-                self.linear_link.y = numpy.empty(shape=(x.shape[0], W.shape[0]), dtype=W.dtype);
+            y = numpy.empty(shape=(x.shape[0], W.shape[0]), dtype=W.dtype);
             if b is not None:
-                self.linear_link.mkldnn_linear.forward(x, W, b, self.linear_link.y);
+                mkldnn.Linear_F32.do_forward(x, W, b, y)
             else:
-                self.linear_link.mkldnn_linear.forward(x, W, self.linear_link.y);
-            return self.linear_link.y,
+                mkldnn.Linear_F32.do_forward(x, W, y);
+            return y,
         else:
             y = x.dot(W.T).astype(x.dtype, copy=False)
             if b is not None:
                 y += b
             return y,
+
     def backward(self, inputs, grad_outputs):
         x = _as_mat(inputs[0])
         W = inputs[1]
         b = inputs[2] if len(inputs) == 3 else None
         gy = grad_outputs[0]
+        """
+        For MKLDNN backward, only support float32
+        """
         if switch.enable_linearF(inputs):
-            if self.linear_link.gW is None:
-                self.linear_link.gW = numpy.empty(shape=W.shape, dtype=W.dtype)
-            if self.linear_link.gx is None:
-                self.linear_link.gx = numpy.empty(shape=x.shape, dtype=W.dtype)
+            gW = numpy.empty(shape=W.shape, dtype=W.dtype)
+            gx = numpy.empty(shape=x.shape, dtype=W.dtype)
             if b is not None:
-                if self.linear_link.gb is None:
-                    self.linear_link.gb = numpy.empty(shape=b.shape, dtype=W.dtype)
-
-                self.linear_link.mkldnn_linear.backward(x, W, b, gy, self.linear_link.gW, self.linear_link.gx, self.linear_link.gb)
-                return self.linear_link.gx.reshape(inputs[0].shape), self.linear_link.gW, self.linear_link.gb
+                gb = numpy.empty(shape=b.shape, dtype=W.dtype)
+                mkldnn.Linear_F32.do_backward(x, W, b, gy, gW, gx, gb)
+                return gx.reshape(inputs[0].shape), gW, gb
             else:
-                self.linear_link.mkldnn_linear.backward(x, W, gy, self.linear_link.gW, self.linear_link.gx)
-                return self.linear_link.gx.reshape(inputs[0].shape), self.linear_link.gW
+                mkldnn.Linear_F32.do_backward(x, W, gy, gW, gx)
+                return gx.reshape(inputs[0].shape), gW
         else:
             gx = gy.dot(W).astype(x.dtype, copy=False).reshape(inputs[0].shape)
             gW = gy.T.dot(x).astype(W.dtype, copy=False)
@@ -83,7 +81,6 @@ class LinearFunction(function.Function):
                 return gx, gW, gb
             else:
                 return gx, gW
-
 
 def linear(x, W, b=None, linear_link=None):
     """Linear function, or affine transformation.

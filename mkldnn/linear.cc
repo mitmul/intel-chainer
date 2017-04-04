@@ -347,13 +347,16 @@ int MKLDNNLinear<T>::forward(T* x, int x_d1, int x_d2,
                              T* y, int y_d1, int y_d2)
 {
     //LOG(INFO) << "Linear forward";
+    //LOG(INFO) << "x = (" << x_d1 << "," << x_d2 << ")";
+    //LOG(INFO) << "W = (" << W_d1 << "," << W_d2 << ")";
+    //LOG(INFO) << "b = (" << b_d1 << ")";
+    //LOG(INFO) << "y = (" << y_d1 << "," << y_d2 << ")";
     if (linear_fwd_pd_ == NULL) {
         setup_forward(x, x_d1, x_d2,
                       W, W_d1, W_d2,
                       b, b_d1,
                       y, y_d1, y_d2);
     }
-
     user_src_memory_->set_data_handle(x);
     user_weights_memory_->set_data_handle(W);
     user_bias_memory_->set_data_handle(b);
@@ -374,7 +377,11 @@ int MKLDNNLinear<T>::forward(T* x, int x_d1, int x_d2,
                              T* W, int W_d1, int W_d2,
                              T* y, int y_d1, int y_d2)
 {
-    LOG(INFO) << "Linear forward";
+    //LOG(INFO) << "Linear forward";
+    //LOG(INFO) << "x = (" << x_d1 << "," << x_d2 << ")";
+    //LOG(INFO) << "W = (" << W_d1 << "," << W_d2 << ")";
+    //LOG(INFO) << "y = (" << y_d1 << "," << y_d2 << ")";
+
     if (linear_fwd_pd_ == NULL) {
         setup_forward(x, x_d1, x_d2,
                       W, W_d1, W_d2,
@@ -386,7 +393,7 @@ int MKLDNNLinear<T>::forward(T* x, int x_d1, int x_d2,
     user_dst_memory_->set_data_handle(y);
  
     if (this->forward_first_use_) {
-        LOG(INFO) << "linear forward first use";
+        //LOG(INFO) << "linear forward first use";
         this->forward_stream_->submit(this->forward_primitives_).wait();
         this->forward_first_use_ = false;
     } else {

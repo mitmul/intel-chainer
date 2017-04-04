@@ -28,7 +28,8 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
         T* b, int b_d1,
         T* y, int y_d1, int y_d2, int y_d3, int y_d4,
         int s1, int s2,
-        int p1, int p2)
+        int pl1, int pl2,
+        int pr1, int pr2)
 {
     LOG(INFO) << "Convolution forward_setup";
 
@@ -42,7 +43,8 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
     dst_tz_ = {y_d1, y_d2, y_d3, y_d4};
     strides_ = {s1, s2};
     bias_tz_ = {b_d1};
-    padding_ = {p1, p2};
+    padding_l_ = {pl1, pl2};
+    padding_r_ = {pr1, pr2};
 
     /* create memory for user data */
     user_src_memory_.reset(new memory({{{src_tz_}, memory_data_type<T>(),
@@ -66,18 +68,18 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
     if (b != NULL)
         bias_md_.reset(new memory::desc({bias_tz_}, memory_data_type<T>(),
                                    memory::format::any));
-    
     /* create a convolution */
-    if (b != NULL)
+    if (b != NULL) {
         fwd_desc_.reset(new convolution_forward::desc(prop_kind::forward,
                                                  convolution_direct, *src_md_, *weights_md_, *bias_md_,
-                                                 *dst_md_, strides_, padding_, padding_,
+                                                 *dst_md_, strides_, padding_l_, padding_r_,
                                                  padding_kind::zero));
-    else
+    } else {
         fwd_desc_.reset(new convolution_forward::desc(prop_kind::forward,
                                                  convolution_direct, *src_md_, *weights_md_,
-                                                 *dst_md_, strides_, padding_, padding_,
+                                                 *dst_md_, strides_, padding_l_, padding_r_,
                                                  padding_kind::zero));
+    }
 
     fwd_prim_desc_.reset(new convolution_forward::primitive_desc(*fwd_desc_, cpu_engine));
 
@@ -138,7 +140,8 @@ int Convolution2D<T>::forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
         T* b, int b_d1,
         T* y, int y_d1, int y_d2, int y_d3, int y_d4,
         int s1, int s2,
-        int p1, int p2)
+        int pl1, int pl2,
+        int pr1, int pr2)
 {
 //    LOG(INFO) << "Convolution forward";
     if (conv_fwd_ == NULL) {
@@ -147,7 +150,8 @@ int Convolution2D<T>::forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
                 b, b_d1,
                 y, y_d1, y_d2, y_d3, y_d4,
                 s1, s2,
-                p1, p2);
+                pl1, pl2,
+                pr1, pr2);
     }
     //LOG(INFO) << "conv_fwd_:" << conv_fwd_;
     //LOG(INFO) << "x=" << x << "; x_size=" << x_d1*x_d2*x_d3*x_d4*4;
@@ -155,7 +159,6 @@ int Convolution2D<T>::forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
     user_src_memory_->set_data_handle(x);
     user_weights_memory_->set_data_handle(W);
     if ( b != NULL ){
-        LOG(INFO) << "b=" << b;
         user_bias_memory_->set_data_handle(b);
     }
     user_dst_memory_->set_data_handle(y);
@@ -174,7 +177,8 @@ int Convolution2D<T>::forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
         T* W, int W_d1, int W_d2, int W_d3, int W_d4,
         T* y, int y_d1, int y_d2, int y_d3, int y_d4,
         int s1, int s2,
-        int p1, int p2)
+        int pl1, int pl2,
+        int pr1, int pr2)
 {
 //    LOG(INFO) << "Convolution forward without bias";
 //    LOG(INFO) << conv_fwd_;
@@ -184,7 +188,8 @@ int Convolution2D<T>::forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
             NULL, -1,
             y, y_d1, y_d2, y_d3, y_d4,
             s1, s2,
-            p1, p2);
+            pl1, pl2,
+            pr1, pr2);
     return 0;
 }
 
@@ -228,7 +233,7 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
          * */
         bwd_weights_desc_.reset(new convolution_backward_weights::desc(
                     convolution_direct, *src_md_, *weights_md_,
-                    *bias_md_, *dst_md_, strides_, padding_, padding_, padding_kind::zero));
+                    *bias_md_, *dst_md_, strides_, padding_l_, padding_r_, padding_kind::zero));
     } else {
         /* 
          * weight backward conv prim desc (gW = gy * X)
@@ -238,7 +243,7 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
          * */
         bwd_weights_desc_.reset(new convolution_backward_weights::desc(
                     convolution_direct, *src_md_, *weights_md_,
-                    *dst_md_, strides_, padding_, padding_, padding_kind::zero));
+                    *dst_md_, strides_, padding_l_, padding_r_, padding_kind::zero));
     }
     
     /* 
@@ -250,7 +255,7 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
      * */
     bwd_data_desc_.reset(new convolution_backward_data::desc(
                 convolution_direct, *src_md_, *weights_md_,
-                *dst_md_, strides_, padding_, padding_, padding_kind::zero));
+                *dst_md_, strides_, padding_l_, padding_r_, padding_kind::zero));
 
     /* create backward conv prim desc*/
     bwd_weights_prim_desc_.reset(new convolution_backward_weights::primitive_desc(
@@ -388,7 +393,8 @@ int Convolution2D<T>::backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
         T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
         T* gW, int gW_d1, int gW_d2, int gW_d3, int gW_d4,
         T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
-        T* gb, int gb_d1)
+        T* gb, int gb_d1,
+	bool first_layer)
 {
 //    LOG(INFO) << "Convolution backward with bias";
     if (conv_bwd_weights_ == NULL) {
@@ -413,11 +419,13 @@ int Convolution2D<T>::backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
 
     if (bwd_first_run_) {
         bwd_weights_stream_->submit(bwd_weights_primitives_).wait();
-        bwd_data_stream_->submit(bwd_data_primitives_).wait();
+	if (!first_layer)//first layer will no need to do backward data
+           bwd_data_stream_->submit(bwd_data_primitives_).wait();
         bwd_first_run_ = false;
     } else {
         bwd_weights_stream_->rerun().wait();
-        bwd_data_stream_->rerun().wait();
+	if (!first_layer)
+           bwd_data_stream_->rerun().wait();
     }
     return 0;
 }
@@ -427,7 +435,8 @@ int Convolution2D<T>::backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
         T* W, int W_d1, int W_d2, int W_d3, int W_d4,
         T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
         T* gW, int gW_d1, int gW_d2, int gW_d3, int gW_d4,
-        T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4)
+        T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
+	bool first_layer)
 {
 //    LOG(INFO) << "Convolution backward without bias";
     backward(x, x_d1, x_d2, x_d3, x_d4,
@@ -436,9 +445,9 @@ int Convolution2D<T>::backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
             gy, gy_d1, gy_d2, gy_d3, gy_d4,
             gW, gW_d1, gW_d2, gW_d3, gW_d4,
             gx, gx_d1, gx_d2, gx_d3, gx_d4,
-            NULL, -1);
+            NULL, -1,
+	    first_layer);
     return 0;
 }
 
 template class Convolution2D<float>;
-template class Convolution2D<double>;

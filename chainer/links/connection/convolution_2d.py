@@ -83,13 +83,6 @@ class Convolution2D(link.Link):
                 initial_bias = bias
             bias_initilizer = initializers._get_initializer(initial_bias)
             self.add_param('b', out_channels, initializer=bias_initilizer)
-        
-        # For mkldnn backend
-        self.mkldnn_conv = None
-        self.y = None
-        self.gW = None
-        self.gx = None
-        self.gb = None
 
     def _initialize_params(self, in_channels):
         kh, kw = _pair(self.ksize)
@@ -112,7 +105,7 @@ class Convolution2D(link.Link):
         
         return convolution_2d.convolution_2d(
             x, self.W, self.b, self.stride, self.pad, self.use_cudnn,
-            deterministic=self.deterministic, conv_link=self)
+            deterministic=self.deterministic)
 
 
 def _pair(x):

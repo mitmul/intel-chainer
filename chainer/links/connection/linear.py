@@ -2,8 +2,6 @@ from chainer import cuda
 from chainer.functions.connection import linear
 from chainer import initializers
 from chainer import link
-from mkldnn import mkldnn as mkl
-from mkldnn import switch
 class Linear(link.Link):
 
     """Linear layer (a.k.a. fully-connected layer).
@@ -63,11 +61,7 @@ class Linear(link.Link):
                 initial_bias = bias
             bias_initializer = initializers._get_initializer(initial_bias)
             self.add_param('b', out_size, initializer=bias_initializer)
-        self.mkldnn_linear = None
-        self.y = None
-        self.gW = None
-        self.gx = None
-        self.gb = None
+    
     def _initialize_params(self, in_size):
         self.add_param('W', (self.out_size, in_size),
                        initializer=self._W_initializer)
@@ -85,7 +79,4 @@ class Linear(link.Link):
         if self.has_uninitialized_params:
             with cuda.get_device(self._device_id):
                 self._initialize_params(x.size // x.shape[0])
-        if switch.enable_linear:
-            if self.mkldnn_linear is None:
-                self.mkldnn_linear = mkl.Linear_F32()
         return linear.linear(x, self.W, self.b, linear_link = self)

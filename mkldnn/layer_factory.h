@@ -139,6 +139,57 @@ public:
                                 int               axis,
                                 Layer<T>*     layer);
 
+    // Convolution2d stream
+    Layer<T>* getConv2dLayer( int           x_d1,
+                              int           x_d2,
+                              int           x_d3,
+                              int           x_d4,
+                              int           W_d1,
+                              int           W_d2,
+                              int           W_d3,
+                              int           W_d4,
+                              int           b_d1,
+                              int           ksize_h,
+                              int           ksize_w,
+                              int           stride_y,
+                              int           stride_x,
+                              int           pad_l_h,
+                              int           pad_l_w,
+                              int           pad_r_h,
+                              int           pad_r_w);
+
+    void       setConv2dLayer(int           x_d1,
+                              int           x_d2,
+                              int           x_d3,
+                              int           x_d4,
+                              int           W_d1,
+                              int           W_d2,
+                              int           W_d3,
+                              int           W_d4,
+                              int           b_d1,
+                              int           ksize_h,
+                              int           ksize_w,
+                              int           stride_y,
+                              int           stride_x,
+                              int           pad_l_h,
+                              int           pad_l_w,
+                              int           pad_r_h,
+                              int           pad_r_w,
+                              Layer<T>*     layer);
+
+    //Linear stream
+    Layer<T>* getLinearLayer(int            x_d1,
+                             int            x_d2,
+                             int            W_d1,
+                             int            W_d2,
+                             int            b_d1);
+    void      setLinearLayer(int            x_d1,
+                             int            x_d2,
+                             int            W_d1,
+                             int            W_d2,
+                             int            b_d1,
+                             Layer<T>*      layer);
+
     LayerFactory(LayerFactory const&)  = delete;
     void operator=(LayerFactory const&) = delete;
 

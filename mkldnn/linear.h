@@ -5,11 +5,117 @@
 #include <vector>
 #include <memory>
 #include "layer.h"
+#include "layer_factory.h"
+#include <glog/logging.h>
 template <typename T>
 class MKLDNNLinear:public Layer<T> {
+private:
+    static MKLDNNLinear<T>* get_forward_object(
+                                            T* x, int x_d1, int x_d2,
+                                            T* W, int W_d1, int W_d2,
+                                            T* b, int b_d1)
+    {
+        MKLDNNLinear<T>* linear_forward = NULL;
+        linear_forward = dynamic_cast<MKLDNNLinear<T>*>(
+                            LayerFactory<T>::getInstance().getLinearLayer(
+                                x_d1, x_d2,
+                                W_d1, W_d2,
+                                b_d1));
+        if (linear_forward == NULL) {
+            linear_forward = new MKLDNNLinear();
+            LayerFactory<T>::getInstance().setLinearLayer(
+                                x_d1, x_d2,
+                                W_d1, W_d2,
+                                b_d1,
+                                linear_forward);
+        }
+        return linear_forward;
+    }   
+
+    static MKLDNNLinear<T>* get_backward_object(
+                                            T* x, int x_d1, int x_d2,
+                                            T* W, int W_d1, int W_d2,
+                                            T* b, int b_d1)
+    {
+        MKLDNNLinear<T>* linear_backward;
+        linear_backward = dynamic_cast<MKLDNNLinear<T>*>(
+                            LayerFactory<T>::getInstance().getLinearLayer(
+                                x_d1, x_d2,
+                                W_d1, W_d2,
+                                b_d1));
+        assert(linear_backward != NULL);//We must have already done backward before
+        return linear_backward;
+    }
+
 public:
+    static void do_forward( T* x, int x_d1, int x_d2,
+                            T* W, int W_d1, int W_d2,
+                            T* b, int b_d1,
+                            T* y, int y_d1, int y_d2)
+    {
+        MKLDNNLinear<T> *fwd_object = get_forward_object(
+                                            x, x_d1, x_d2,
+                                            W, W_d1, W_d2,
+                                            b, b_d1);
+        fwd_object->forward(x, x_d1, x_d2,
+                            W, W_d1, W_d2,
+                            b, b_d1,
+                            y, y_d1, y_d2);
+    }
+
+    static void do_forward(T* x, int x_d1, int x_d2,
+                           T* W, int W_d1, int W_d2,
+                           T* y, int y_d1, int y_d2)
+    {
+        MKLDNNLinear<T>* fwd_object = get_forward_object(x, x_d1, x_d2,
+                                                         W, W_d1, W_d2,
+                                                         NULL, -1);
+        fwd_object->forward(x, x_d1, x_d2,
+                            W, W_d1, W_d2,
+                            y, y_d1, y_d2);
+    }
+    
+    static void do_backward(T* x, int x_d1, int x_d2,
+                            T* W, int W_d1, int W_d2,
+                            T* b, int b_d1,
+                            T* gy, int gy_d1, int gy_d2,
+                            T* gW, int gW_d1, int gW_d2,
+                            T* gx, int gx_d1, int gx_d2,
+                            T* gb, int gb_d1)
+    {
+        MKLDNNLinear<T> *bwd_object = get_backward_object(x, x_d1, x_d2,
+                                                          W, W_d1, W_d2,
+                                                          b, b_d1);
+        bwd_object->backward(x, x_d1, x_d2,
+                             W, W_d1, W_d2,
+                             b, b_d1,
+                             gy, gy_d1, gy_d2,
+                             gW, gW_d1, gW_d2,
+                             gx, gx_d1, gx_d2,
+                             gb, gb_d1);
+    } 
+ 
+    static void do_backward(T* x, int x_d1, int x_d2,
+                            T* W, int W_d1, int W_d2,
+                            T* gy, int gy_d1, int gy_d2,
+                            T* gW, int gW_d1, int gW_d2,
+                            T* gx, int gx_d1, int gx_d2)
+    {
+        MKLDNNLinear<T> *bwd_object = get_backward_object(x, x_d1, x_d2,
+                                                          W, W_d1, W_d2,
+                                                          NULL, -1);
+        bwd_object->backward(x, x_d1, x_d2,
+                             W, W_d1, W_d2,
+                             gy, gy_d1, gy_d2,
+                             gW, gW_d1, gW_d2,
+                             gx, gx_d1, gx_d2);
+    } 
+ 
+
     MKLDNNLinear();
+
     ~MKLDNNLinear();
+
     int setup_forward(T* x, int x_d1, int x_d2,
                        T* W, int W_d1, int W_d2,
                        T* b, int b_d1,

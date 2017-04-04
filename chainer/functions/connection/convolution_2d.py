@@ -75,17 +75,11 @@ class Convolution2DFunction(function.Function):
         """
         For mkldnn backend, only support float32 for x and W
         """
-        if switch.enable_convF(inputs):
-            # print "pass enable_convF"
-        # if mkldnn.enabled() and switch.enable_conv is True and W.dtype == np.float32 and x.dtype == np.float32:
+        if switch.enable_convF(inputs) and self.cover_all is False:
             """
             delay to create primitive here, because we can not get both W and x dtype in link init
             TODO: in future, native object create will be hidden in layer factory
             """
-            if self.conv_link.mkldnn_conv is None:
-                self.conv_link.mkldnn_conv = mkldnn.Convolution2D_F32()
-                assert self.conv_link.mkldnn_conv != None
-
             out_h = conv.get_conv_outsize(h, kh, self.sy, self.ph,
                                       cover_all=self.cover_all)
             assert out_h > 0, 'Height in the output should be positive.'
@@ -93,14 +87,13 @@ class Convolution2DFunction(function.Function):
                                       cover_all=self.cover_all)
             assert out_w > 0, 'Width in the output should be positive.'
             
-            if self.conv_link.y is None:
-                self.conv_link.y = numpy.empty(shape=(n, out_c, out_h, out_w), dtype=x.dtype)
+            y = numpy.empty(shape=(n, out_c, out_h, out_w), dtype=x.dtype)
             
             if b is not None:
-                self.conv_link.mkldnn_conv.forward(x, W, b, self.conv_link.y, self.sx, self.sy, self.ph, self.pw)
+                mkldnn.Convolution2D_F32.do_forward(x, W, b, y, kh, kw, self.sx, self.sy, self.ph, self.pw, self.ph, self.pw)
             else:
-                self.conv_link.mkldnn_conv.forward(x, W, self.conv_link.y, self.sx, self.sy, self.ph, self.pw)
-            return self.conv_link.y,
+                mkldnn.Convolution2D_F32.do_forward(x, W, y, kh, kw, self.sx, self.sy, self.ph, self.pw, self.ph, self.pw)
+            return y,
             
         else:
             self.col = conv.im2col_cpu(
@@ -194,29 +187,21 @@ class Convolution2DFunction(function.Function):
         """
         For MKLDNN backward, only support float32
         """
-        if switch.enable_convF(inputs):
-        # if mkldnn.enabled() and switch.enable_conv is True and W.dtype == np.float32 and x.dtype == np.float32:
+        if switch.enable_convF(inputs) and self.cover_all is False:
             """
             delay to create primitive here, because we can not get both W and x dtype in link init
             TODO: in future, native object create will be hidden in layer factory
             """
-            if self.conv_link.mkldnn_conv is None:
-                self.conv_link.mkldnn_conv = mkldnn.Convolution2D_F32()
-                assert self.conv_link.mkldnn_conv != None
-            if self.conv_link.gW is None:
-                self.conv_link.gW = numpy.empty(shape=(out_c, input_c, kh, kw), dtype=W.dtype)
-            
-            if self.conv_link.gx is None:
-                self.conv_link.gx = numpy.empty(shape=(n, c, h, w), dtype=W.dtype) 
+            gW = numpy.empty(shape=(out_c, input_c, kh, kw), dtype=W.dtype)
+            gx = numpy.empty(shape=(n, c, h, w), dtype=W.dtype)
             
             if b is None:
-                self.conv_link.mkldnn_conv.backward(x, W, gy, self.conv_link.gW, self.conv_link.gx)
-                return self.conv_link.gx, self.conv_link.gW
+                mkldnn.Convolution2D_F32.do_backward(x, W, gy, gW, gx, kh, kw, self.sy, self.sx, self.ph, self.pw, self.ph, self.pw, self.mkldnn_opt)
+                return gx, gW
             else:
-                if self.conv_link.gb is None:
-                    self.conv_link.gb = numpy.empty(shape=b.shape, dtype=W.dtype)
-                self.conv_link.mkldnn_conv.backward(x, W, b, gy, self.conv_link.gW, self.conv_link.gx, self.conv_link.gb)
-                return self.conv_link.gx, self.conv_link.gW, self.conv_link.gb
+                gb = numpy.empty(shape=b.shape, dtype=W.dtype)
+                mkldnn.Convolution2D_F32.do_backward(x, W, b, gy, gW, gx, gb, kh, kw, self.sy, self.sx, self.ph, self.pw, self.ph, self.pw, self.mkldnn_opt)
+                return gx, gW, gb
         else:
             gW = numpy.tensordot(
                     gy, self.col, ((0, 2, 3), (0, 4, 5))).astype(W.dtype, copy=False)

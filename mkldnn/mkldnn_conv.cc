@@ -278,14 +278,14 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
         bwd_reorder_src_ = true;
     }
 
-    /* user_bwd_diff_dst_memory_ ==> gy */
-    bwd_diff_dst_memory_ = user_bwd_diff_dst_memory_;
+    /* user_bwd_diff_dst_weights_memory_ ==> gy for gW*/
+    bwd_diff_dst_weights_memory_ = user_bwd_diff_dst_memory_;
     if (memory::primitive_desc(bwd_weights_prim_desc_.get()->diff_dst_primitive_desc())
             != user_bwd_diff_dst_memory_.get()->get_primitive_desc()) {
       //  LOG(INFO) << "bwd reorder gy";
-        bwd_diff_dst_memory_.reset(new memory(bwd_weights_prim_desc_.get()->diff_dst_primitive_desc()));
-        conv_bwd_reorder_dst_ = reorder(*user_bwd_diff_dst_memory_, *bwd_diff_dst_memory_);
-        bwd_reorder_diff_dst_ = true;
+        bwd_diff_dst_weights_memory_.reset(new memory(bwd_weights_prim_desc_.get()->diff_dst_primitive_desc()));
+        conv_bwd_reorder_dst_weights_ = reorder(*user_bwd_diff_dst_memory_, *bwd_diff_dst_weights_memory_);
+        bwd_reorder_diff_dst_weights_ = true;
     }
 
     /* user_bwd_diff_weights_memory_ ==> gW */
@@ -308,6 +308,16 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
         bwd_reorder_weights_ = true;
     }
 
+    /* user_bwd_diff_dst_data_memory_ ==> gy for gx */
+    bwd_diff_dst_data_memory_ = user_bwd_diff_dst_memory_;
+    if (memory::primitive_desc(bwd_data_prim_desc_.get()->diff_dst_primitive_desc())
+            != user_bwd_diff_dst_memory_.get()->get_primitive_desc()) {
+      //  LOG(INFO) << "bwd reorder gy";
+        bwd_diff_dst_data_memory_.reset(new memory(bwd_data_prim_desc_.get()->diff_dst_primitive_desc()));
+        conv_bwd_reorder_dst_data_ = reorder(*user_bwd_diff_dst_memory_, *bwd_diff_dst_data_memory_);
+        bwd_reorder_diff_dst_data_ = true;
+    }
+    
     /* user_bwd_diff_src_memory_ ==> gX */
     bwd_diff_src_memory_ = user_bwd_diff_src_memory_;
     if (memory::primitive_desc(bwd_data_prim_desc_.get()->diff_src_primitive_desc())
@@ -329,7 +339,7 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
          * */
         conv_bwd_weights_.reset( new convolution_backward_weights(
                     *bwd_weights_prim_desc_, *bwd_src_memory_,
-                    *bwd_diff_dst_memory_, *bwd_diff_weights_memory_, *user_bwd_diff_bias_memory_));
+                    *bwd_diff_dst_weights_memory_, *bwd_diff_weights_memory_, *user_bwd_diff_bias_memory_));
     } else {
         /* 
          * create convolution backward primitive (gW = gy * x)
@@ -339,14 +349,14 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
          * */
         conv_bwd_weights_.reset( new convolution_backward_weights(
                     *bwd_weights_prim_desc_, *bwd_src_memory_,
-                    *bwd_diff_dst_memory_, *bwd_diff_weights_memory_));
+                    *bwd_diff_dst_weights_memory_, *bwd_diff_weights_memory_));
     }
 
     /* 
      * create data conv bwd prim (gX = gy * W)
      * */
     conv_bwd_data_.reset(new convolution_backward_data(
-                *bwd_data_prim_desc_, *bwd_diff_dst_memory_, *bwd_weights_memory_, *bwd_diff_src_memory_));
+                *bwd_data_prim_desc_, *bwd_diff_dst_data_memory_, *bwd_weights_memory_, *bwd_diff_src_memory_));
 
     /*
      * create weight conv bwd stream (gW = gy * X)
@@ -357,8 +367,8 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
     if (bwd_reorder_src_) {
         bwd_weights_primitives_.push_back(conv_bwd_reorder_src_);
     }
-    if (bwd_reorder_diff_dst_) {
-        bwd_weights_primitives_.push_back(conv_bwd_reorder_dst_);
+    if (bwd_reorder_diff_dst_weights_) {
+        bwd_weights_primitives_.push_back(conv_bwd_reorder_dst_weights_);
     }
     bwd_weights_primitives_.push_back(*conv_bwd_weights_);
     if (bwd_reorder_diff_weights_) {
@@ -374,8 +384,8 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
     if (bwd_reorder_weights_) {
         bwd_data_primitives_.push_back(conv_bwd_reorder_weights_);
     }
-    if (bwd_reorder_diff_dst_) {
-        bwd_data_primitives_.push_back(conv_bwd_reorder_dst_);
+    if (bwd_reorder_diff_dst_data_) {
+        bwd_data_primitives_.push_back(conv_bwd_reorder_dst_data_);
     }
     bwd_data_primitives_.push_back(*conv_bwd_data_);
     if (bwd_reorder_diff_src_) {

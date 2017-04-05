@@ -275,7 +275,8 @@ private:
     //backward
     mkldnn::primitive conv_bwd_reorder_src_; // reorder x
     mkldnn::primitive conv_bwd_reorder_diff_weights_; //reorder gW
-    mkldnn::primitive conv_bwd_reorder_dst_; //reorder gY
+    mkldnn::primitive conv_bwd_reorder_dst_weights_; //reorder gY for gW
+    mkldnn::primitive conv_bwd_reorder_dst_data_; //reorder gY for gX
     mkldnn::primitive conv_bwd_reorder_weights_; //reorder W
     mkldnn::primitive conv_bwd_reorder_diff_src_; //reorder gX
 
@@ -284,7 +285,8 @@ private:
     bool fwd_reorder_conv_dst_ = false;
 
     bool bwd_reorder_src_ = false;
-    bool bwd_reorder_diff_dst_ = false;
+    bool bwd_reorder_diff_dst_weights_ = false; // reorder gy for gW
+    bool bwd_reorder_diff_dst_data_ = false; // reorder gy for gX
     bool bwd_reorder_diff_weights_ = false;
     bool bwd_reorder_weights_ = false;
     bool bwd_reorder_diff_src_ = false;
@@ -346,7 +348,8 @@ private:
     std::shared_ptr<mkldnn::memory> bwd_diff_weights_memory_; //gW
     std::shared_ptr<mkldnn::memory> bwd_diff_src_memory_; //gX
     std::shared_ptr<mkldnn::memory> bwd_diff_bias_memory_; //gb
-    std::shared_ptr<mkldnn::memory> bwd_diff_dst_memory_; // gy
+    std::shared_ptr<mkldnn::memory> bwd_diff_dst_weights_memory_; // gy for gW
+    std::shared_ptr<mkldnn::memory> bwd_diff_dst_data_memory_; // gy for gx
     
     //memory desc
     //forward & backward can share same mem desc

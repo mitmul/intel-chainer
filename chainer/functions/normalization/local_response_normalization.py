@@ -61,7 +61,7 @@ class LocalResponseNormalization(function.Function):
             self.ws = numpy.empty(x[0].shape, dtype=x[0].dtype)
             # print "x dtype is" + str(x[0].dtype)
             in_alpha = self.n*self.alpha
-            mkldnn.LocalResponseNormalization_F32.do_forward(x[0],self.y,self.ws,self.n,self.k,in_alpha,self.beta)
+            mkldnn.LocalResponseNormalization_F32.do_forward(x[0],self.y,self.n,self.k,in_alpha,self.beta)
             # self.mkldnn_lrn.forward(x[0],self.y)
             # self.mkldnn_lrn = True
             return self.y,
@@ -85,7 +85,7 @@ class LocalResponseNormalization(function.Function):
             gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
             in_alpha = self.n*self.alpha
             mkldnn.LocalResponseNormalization_F32.do_backward(
-                x[0],gy[0],gx,self.ws,self.n,self.k,in_alpha,self.beta)
+                x[0],gy[0],gx,self.n,self.k,in_alpha,self.beta)
             # self.mkldnn_lrn.backward(x[0],gy[0],gx)
             return gx,
             # else:

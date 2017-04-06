@@ -17,7 +17,8 @@ class MaxPooling2D(pooling_2d.Pooling2D):
 
     def forward_cpu(self, x):
         # if switch.enable_max_pooling:
-        if switch.enable_max_poolingF((x,)):
+        # we can only handle none cover_all situation
+        if switch.enable_max_poolingF((x,)) and self.cover_all == False:
             n, c, h, w = x[0].shape
             y_h = conv.get_conv_outsize(
                 h, self.kh, self.sy, self.ph, self.cover_all)
@@ -98,7 +99,7 @@ class MaxPooling2D(pooling_2d.Pooling2D):
 
     def backward_cpu(self, x, gy):
         # if switch.enable_max_pooling:
-        if switch.enable_max_poolingF((x,gy)):
+        if switch.enable_max_poolingF((x,gy)) and self.cover_all == False:
             n, c, h, w = x[0].shape
             gx = numpy.empty((n, c, h, w), dtype=x[0].dtype)
 

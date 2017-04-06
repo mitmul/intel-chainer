@@ -18,19 +18,21 @@ class MaxPooling2D(pooling_2d.Pooling2D):
     def forward_cpu(self, x):
         # if switch.enable_max_pooling:
         # we can only handle none cover_all situation
-        if switch.enable_max_poolingF((x,)) and self.cover_all == False:
+        if switch.enable_max_poolingF((x,)):
             n, c, h, w = x[0].shape
             y_h = conv.get_conv_outsize(
                 h, self.kh, self.sy, self.ph, self.cover_all)
             y_w = conv.get_conv_outsize(
                 w, self.kw, self.sx, self.pw, self.cover_all)
+            self.pd = self.sy*(y_h-1)+self.kh - h - self.ph
+            self.pr = self.sx*(y_w-1)+self.kw - w - self.pw
             y = numpy.empty((n, c, y_h, y_w), dtype=x[0].dtype)
             self.indexes = numpy.empty((n, c, y_h, y_w), dtype=numpy.int32)
 
             mkl.MaxPooling_F32.do_forward(
                                     x[0], y, self.indexes,
                                     self.sy, self.sx,
-                                    self.ph, self.pw,
+                                    self.ph, self.pd, self.pw, self.pr,
                                     self.kh, self.kw);
             return y,
         else:
@@ -99,20 +101,20 @@ class MaxPooling2D(pooling_2d.Pooling2D):
 
     def backward_cpu(self, x, gy):
         # if switch.enable_max_pooling:
-        if switch.enable_max_poolingF((x,gy)) and self.cover_all == False:
+        if switch.enable_max_poolingF((x,gy)):
             n, c, h, w = x[0].shape
             gx = numpy.empty((n, c, h, w), dtype=x[0].dtype)
 
             #backward_obj = mkl.MaxPooling_F32.get_backward_object(
             #        x[0],
             #        self.sy, self.sx,
-            #        self.ph, self.pw,
+            #        self.ph, self.pd, self.pw, self.pr,
             #        self.kh, self.kw)
             #backward_obj.backward(gy[0], x[0], gx)
             mkl.MaxPooling_F32.do_backward(
                                     gy[0], x[0], gx, self.indexes,
                                     self.sy, self.sx,
-                                    self.ph, self.pw,
+                                    self.ph, self.pd, self.pw, self.pr,
                                     self.kh, self.kw)
             return gx,
         else:

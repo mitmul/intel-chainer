@@ -39,15 +39,15 @@ ws  = np.empty((n, c, y_h, y_w), dtype=np.int32)
 ws2  = np.empty((n, c, y_h, y_w), dtype=np.int32)
 
 mkldnn.MaxPooling_F32_do_forward(x, y, ws, stride, stride,
-                    padding, padding, ker, ker);
+                    padding, padding, padding, padding, ker, ker);
 print "y="
 print y
 
 mkldnn.MaxPooling_F32_do_forward(x2, y2, ws2, stride, stride,
-                    padding, padding, ker, ker);
+                    padding, padding, padding, padding, ker, ker);
 print "y2="
 print y2
 mkldnn.MaxPooling_F32_do_backward(gy, x, gx, ws, stride, stride,
-                    padding, padding, ker, ker);
+                    padding, padding, padding, padding, ker, ker);
 print "gx="
 print gx

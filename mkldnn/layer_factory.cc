@@ -119,9 +119,9 @@ template<typename T>
 Layer<T>* LayerFactory<T>::getMaxPoolLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
-        int ksize_h, int ksize_w,
-        int pad_l_h, int pad_l_w,
-        int pad_r_h, int pad_r_w)
+        int ksize_h,  int ksize_w,
+        int pad_u,    int pad_d,
+        int pad_l,    int pad_r)
 {
     std::string key = MAX_POOLING_PREFIX;
 
@@ -133,10 +133,10 @@ Layer<T>* LayerFactory<T>::getMaxPoolLayer(
     key += int_to_string(stride_x);
     key += int_to_string(ksize_h);
     key += int_to_string(ksize_w);
-    key += int_to_string(pad_l_h);
-    key += int_to_string(pad_l_w);
-    key += int_to_string(pad_r_h);
-    key += int_to_string(pad_r_w);
+    key += int_to_string(pad_u);
+    key += int_to_string(pad_d);
+    key += int_to_string(pad_l);
+    key += int_to_string(pad_r);
 
     return getLayer(key);
 }
@@ -145,9 +145,9 @@ template<typename T>
 void LayerFactory<T>::setMaxPoolLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
-        int ksize_h, int ksize_w,
-        int pad_l_h, int pad_l_w,
-        int pad_r_h, int pad_r_w,
+        int ksize_h,  int ksize_w,
+        int pad_u,    int pad_d,
+        int pad_l,    int pad_r,
         Layer<T>* layer)
 {
     std::string key = MAX_POOLING_PREFIX;
@@ -160,10 +160,10 @@ void LayerFactory<T>::setMaxPoolLayer(
     key += int_to_string(stride_x);
     key += int_to_string(ksize_h);
     key += int_to_string(ksize_w);
-    key += int_to_string(pad_l_h);
-    key += int_to_string(pad_l_w);
-    key += int_to_string(pad_r_h);
-    key += int_to_string(pad_r_w);
+    key += int_to_string(pad_u);
+    key += int_to_string(pad_d);
+    key += int_to_string(pad_l);
+    key += int_to_string(pad_r);
 
     setLayer(key, layer);
 }
@@ -173,9 +173,9 @@ template<typename T>
 Layer<T>* LayerFactory<T>::getAvgPoolLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
-        int ksize_h, int ksize_w,
-        int pad_l_h, int pad_l_w,
-        int pad_r_h, int pad_r_w)
+        int ksize_h,  int ksize_w,
+        int pad_u,    int pad_d,
+        int pad_l,    int pad_r)
 {
     std::string key = AVG_POOLING_PREFIX;
 
@@ -187,10 +187,10 @@ Layer<T>* LayerFactory<T>::getAvgPoolLayer(
     key += int_to_string(stride_x);
     key += int_to_string(ksize_h);
     key += int_to_string(ksize_w);
-    key += int_to_string(pad_l_h);
-    key += int_to_string(pad_l_w);
-    key += int_to_string(pad_r_h);
-    key += int_to_string(pad_r_w);
+    key += int_to_string(pad_u);
+    key += int_to_string(pad_d);
+    key += int_to_string(pad_l);
+    key += int_to_string(pad_r);
 
     return getLayer(key);
 }
@@ -199,9 +199,9 @@ template<typename T>
 void LayerFactory<T>::setAvgPoolLayer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
-        int ksize_h, int ksize_w,
-        int pad_l_h, int pad_l_w,
-        int pad_r_h, int pad_r_w,
+        int ksize_h,  int ksize_w,
+        int pad_u,    int pad_d,
+        int pad_l,    int pad_r,
         Layer<T>* layer)
 {
     std::string key = AVG_POOLING_PREFIX;
@@ -214,10 +214,10 @@ void LayerFactory<T>::setAvgPoolLayer(
     key += int_to_string(stride_x);
     key += int_to_string(ksize_h);
     key += int_to_string(ksize_w);
-    key += int_to_string(pad_l_h);
-    key += int_to_string(pad_l_w);
-    key += int_to_string(pad_r_h);
-    key += int_to_string(pad_r_w);
+    key += int_to_string(pad_u);
+    key += int_to_string(pad_d);
+    key += int_to_string(pad_l);
+    key += int_to_string(pad_r);
 
     setLayer(key, layer);
 }

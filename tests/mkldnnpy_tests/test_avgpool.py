@@ -34,10 +34,10 @@ y   = np.empty((n, c, y_h, y_w), dtype=x.dtype)
 gx  = np.empty((n, c, h, w), dtype=x.dtype)
 
 mkldnn.AvgPooling_F32_do_forward(x, y, stride, stride,
-                    padding, padding, ker, ker);
+                    padding, padding, padding, padding, ker, ker);
 print "y="
 print y
 mkldnn.AvgPooling_F32_do_backward(gy, x, gx, stride, stride,
-                    padding, padding, ker, ker);
+                    padding, padding, padding, padding, ker, ker);
 print "gx="
 print gx

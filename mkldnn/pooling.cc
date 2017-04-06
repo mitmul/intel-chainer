@@ -12,7 +12,7 @@ extern engine cpu_engine;
 template<typename T>
 int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                               int s_y, int s_x,
-                              int p_h, int p_w,
+                              int p_u, int p_d, int p_l, int p_r,
                               int ker_h, int ker_w,
                               mkldnn::algorithm alg_kind)
 {
@@ -20,8 +20,8 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     // prepare y according to x, s, p, ker
     y_d1 = x_d1;
     y_d2 = x_d2;
-    y_d3 = (x_d3-ker_h+p_h*2)/s_y+1;
-    y_d4 = (x_d4-ker_w+p_w*2)/s_x+1;
+    y_d3 = (x_d3-ker_h+p_u+p_d)/s_y+1;
+    y_d4 = (x_d4-ker_w+p_l+p_r)/s_x+1;
 
     LOG(INFO) << "Pooling forward_setup";
 
@@ -30,7 +30,8 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     LOG(INFO) << "    ydim=(" << y_d1 << "," << y_d2 << ","
                               << y_d3 << "," << y_d4 << ")";
     LOG(INFO) << "    strides =(" << s_y << "," << s_x << ")";
-    LOG(INFO) << "    padding =(" << p_h << "," << p_w << ")";
+    LOG(INFO) << "    padding =(" << p_u << "," << p_d << ","
+                                  << p_l << "," << p_r << ")";
     LOG(INFO) << "    kernel =(" << ker_h << "," << ker_w << ")";
     LOG(INFO) << "    alg_kind =" << (alg_kind == pooling_max ? "max" :
                                      (alg_kind == pooling_avg ? "avg" :
@@ -41,11 +42,12 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                    << "pooling_avg";
     }
 
-    memory::dims x_tz    = {x_d1, x_d2, x_d3, x_d4};
-    memory::dims y_tz    = {y_d1, y_d2, y_d3, y_d4};
-    memory::dims strides = {s_y, s_x};
-    memory::dims padding = {p_h, p_w};
-    memory::dims kernel  = {ker_h, ker_w};
+    memory::dims x_tz      = {x_d1, x_d2, x_d3, x_d4};
+    memory::dims y_tz      = {y_d1, y_d2, y_d3, y_d4};
+    memory::dims strides   = {s_y, s_x};
+    memory::dims padding_l = {p_u, p_l};
+    memory::dims padding_r = {p_d, p_r};
+    memory::dims kernel    = {ker_h, ker_w};
 
     /* create memory for user data */
     user_x_mem_.reset(new memory({{{x_tz}, memory_data_type<T>(),
@@ -66,7 +68,7 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     // create a pooling descriptor
     fwd_desc_.reset(new pooling_forward::desc(prop_kind::forward_training, alg_kind,
                                          *x_md_, *y_md_,
-                                         strides, kernel, padding, padding,
+                                         strides, kernel, padding_l, padding_r,
                                          padding_kind::zero));
 
     fwd_prim_desc_.reset(new pooling_forward::primitive_desc(
@@ -112,8 +114,10 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
 
     s_y_      = s_y;
     s_x_      = s_x;
-    p_h_      = p_h;
-    p_w_      = p_w;
+    p_u_      = p_u;
+    p_d_      = p_d;
+    p_l_      = p_l;
+    p_r_      = p_r;
     ker_h_    = ker_h;
     ker_w_    = ker_w;
 
@@ -126,7 +130,7 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
 template<typename T>
 int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                               int s_y, int s_x,
-                              int p_h, int p_w,
+                              int p_u, int p_d, int p_l, int p_r,
                               int ker_h, int ker_w,
                               mkldnn::algorithm alg_kind)
 {
@@ -134,8 +138,8 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     // prepare y according to x, s, p, ker
     y_d1 = x_d1;
     y_d2 = x_d2;
-    y_d3 = (x_d3-ker_h+p_h*2)/s_y+1;
-    y_d4 = (x_d4-ker_w+p_w*2)/s_x+1;
+    y_d3 = (x_d3-ker_h+p_u+p_d)/s_y+1;
+    y_d4 = (x_d4-ker_w+p_l+p_r)/s_x+1;
 
     LOG(INFO) << "Pooling backward_setup";
 
@@ -144,7 +148,8 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     LOG(INFO) << "    ydim=(" << y_d1 << "," << y_d2 << ","
                               << y_d3 << "," << y_d4 << ")";
     LOG(INFO) << "    strides =(" << s_y << "," << s_x << ")";
-    LOG(INFO) << "    padding =(" << p_h << "," << p_w << ")";
+    LOG(INFO) << "    padding =(" << p_u << "," << p_d << ","
+                                  << p_l << "," << p_r << ")";
     LOG(INFO) << "    kernel =(" << ker_h << "," << ker_w << ")";
     LOG(INFO) << "    alg_kind =" << (alg_kind == pooling_max ? "max" :
                                      (alg_kind == pooling_avg ? "avg" :
@@ -155,11 +160,12 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                    << "pooling_avg";
     }
 
-    memory::dims x_tz    = {x_d1, x_d2, x_d3, x_d4};
-    memory::dims y_tz    = {y_d1, y_d2, y_d3, y_d4};
-    memory::dims strides = {s_y, s_x};
-    memory::dims padding = {p_h, p_w};
-    memory::dims kernel  = {ker_h, ker_w};
+    memory::dims x_tz      = {x_d1, x_d2, x_d3, x_d4};
+    memory::dims y_tz      = {y_d1, y_d2, y_d3, y_d4};
+    memory::dims strides   = {s_y, s_x};
+    memory::dims padding_l = {p_u, p_l};
+    memory::dims padding_r = {p_d, p_r};
+    memory::dims kernel    = {ker_h, ker_w};
 
     /* create memory for user data */
     user_gx_mem_.reset(new memory({{{x_tz}, memory_data_type<T>(),
@@ -176,7 +182,7 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     bwd_desc_.reset(new pooling_backward::desc(
                                         alg_kind,
                                         *gx_md_, *gy_md_,
-                                        strides, kernel, padding, padding,
+                                        strides, kernel, padding_l, padding_r,
                                         padding_kind::zero));
 
     bwd_prim_desc_.reset(new pooling_backward::primitive_desc(
@@ -223,8 +229,10 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
 
     s_y_      = s_y;
     s_x_      = s_x;
-    p_h_      = p_h;
-    p_w_      = p_w;
+    p_u_      = p_u;
+    p_d_      = p_d;
+    p_l_      = p_l;
+    p_r_      = p_r;
     ker_h_    = ker_h;
     ker_w_    = ker_w;
 

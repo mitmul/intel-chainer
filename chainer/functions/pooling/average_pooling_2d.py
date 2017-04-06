@@ -24,6 +24,9 @@ class AveragePooling2D(pooling_2d.Pooling2D):
                 h, self.kh, self.sy, self.ph, self.cover_all)
             y_w = conv.get_conv_outsize(
                 w, self.kw, self.sx, self.pw, self.cover_all)
+            # here we calculate asymmetry padding
+            self.pd = self.sy*(y_h-1)+self.kh - h - self.ph
+            self.pr = self.sx*(y_w-1)+self.kw - w - self.pw
             y = numpy.empty((n, c, y_h, y_w), dtype=x[0].dtype)
 
             #forward_obj = mkl.AvgPooling_F32.get_forward_object(
@@ -32,7 +35,7 @@ class AveragePooling2D(pooling_2d.Pooling2D):
             mkl.AvgPooling_F32.do_forward(
                                     x[0], y,
                                     self.sy, self.sx,
-                                    self.ph, self.pw,
+                                    self.ph, self.pd, self.pw, self.pr,
                                     self.kh, self.kw);
             return y,
         else:
@@ -86,13 +89,13 @@ class AveragePooling2D(pooling_2d.Pooling2D):
             #backward_obj = mkl.AvgPooling_F32.get_backward_object(
             #        x[0],
             #        self.sy, self.sx,
-            #        self.ph, self.pw,
+            #        self.ph, self.pd, self.pw, self.pr,
             #        self.kh, self.kw)
             #backward_obj.backward(gy[0], x[0], gx)
             mkl.AvgPooling_F32.do_backward(
                                     gy[0], x[0], gx,
                                     self.sy, self.sx,
-                                    self.ph, self.pw,
+                                    self.ph, self.pd, self.pw, self.pr,
                                     self.kh, self.kw)
             return gx,
         else:

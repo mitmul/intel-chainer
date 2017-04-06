@@ -78,7 +78,7 @@ class Concat(function.Function):
         # if mkldnn.enabled() and switch.enable_concat is True:
             # if self.mkldnn_concat is None:
             #     if xs[0].dtype == numpy.float32:
-            self.mkldnn_concat = mkldnn.Concat_F32()
+            #   self.mkldnn_concat = mkldnn.Concat_F32()
                 # if xs[0].dtype == numpy.float64:
                 #     self.mkldnn_concat = mkldnn.Concat_F64()
             

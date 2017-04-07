@@ -15,3 +15,6 @@ static mkldnn::memory::data_type memory_data_type() {
     LOG(ERROR) << "Not support type";
     return mkldnn::memory::data_type::data_undef;
 }
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

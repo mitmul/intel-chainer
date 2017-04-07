@@ -10,3 +10,6 @@ void setMkldnnEnable(bool isEnabled);
 void enableGoogleLogging();
 extern unsigned char dummy[PAGE_SIZE];
 #endif // _COMMON_H_
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

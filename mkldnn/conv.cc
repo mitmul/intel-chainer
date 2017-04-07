@@ -2,7 +2,7 @@
 #include <iostream>
 #include "common.h"
 #include "mkldnn.hpp"
-#include "mkldnn_conv.h"
+#include "conv.h"
 #include "utils.h"
 
 using namespace mkldnn;
@@ -461,3 +461,6 @@ int Convolution2D<T>::backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
 }
 
 template class Convolution2D<float>;
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

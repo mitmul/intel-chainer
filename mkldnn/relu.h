@@ -9,10 +9,6 @@ template <typename T>
 class Relu : public Layer<T>{
 public:
     Relu();
-    int test_buf(
-                     T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-                     T* y, int y_size
-                    );
     int forward_setup(T* x, int x_size,
                       T* y, int y_size);
     void fwd_reset_mem(T* x,
@@ -88,3 +84,6 @@ private:
     std::shared_ptr<mkldnn::stream> bwd_stream_;
     std::vector<mkldnn::primitive> bwd_primitives_;
 };
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

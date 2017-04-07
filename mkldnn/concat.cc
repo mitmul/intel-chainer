@@ -1,7 +1,7 @@
 #include <glog/logging.h>
 #include <iostream>
 #include "mkldnn.hpp"
-#include "mkldnn_concat.h"
+#include "concat.h"
 #include "utils.h"
 
 using namespace mkldnn;
@@ -203,3 +203,6 @@ void Concat<T>::backward(int num_concats, char** data, int* n, int* c, int* h, i
 
 template class Concat<float>;
 template class Concat<double>;
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

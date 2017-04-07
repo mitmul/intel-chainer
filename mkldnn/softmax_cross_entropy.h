@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include "mkldnn_softmax.h"
+#include "softmax.h"
 #include "layer.h"
 
 template <typename T>
@@ -53,3 +53,6 @@ public:
 };
 
 #endif // _SOFTMAX_CROSS_ENTROPY_H_
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

@@ -1,7 +1,7 @@
 #include <glog/logging.h>
 #include <vector>
 #include "softmax_cross_entropy.h"
-#include "mkldnn_softmax.h"
+#include "softmax.h"
 
 template<typename T> SoftmaxCrossEntropy<T>*
 SoftmaxCrossEntropy<T>::softmax_cross_entropy_create_forward(int* dims, int ndim)
@@ -90,3 +90,6 @@ int SoftmaxCrossEntropy_4D<T>::backward(T* gx, int dummy_gx,
 template class SoftmaxCrossEntropy<float>;
 template class SoftmaxCrossEntropy_2D<float>;
 template class SoftmaxCrossEntropy_4D<float>;
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

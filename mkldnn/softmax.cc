@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include "mkldnn.hpp"
-#include "mkldnn_softmax.h"
+#include "softmax.h"
 #include "utils.h"
 
 using namespace mkldnn;
@@ -213,3 +213,6 @@ int Softmax_4D<T>::backward()
 template class Softmax<float>;
 template class Softmax_2D<float>;
 template class Softmax_4D<float>;
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

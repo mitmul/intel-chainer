@@ -76,7 +76,8 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
 
 
     // create a pooling descriptor
-    fwd_desc_.reset(new pooling_forward::desc(prop_kind::forward_training, alg_kind,
+    fwd_desc_.reset(new pooling_forward::desc(prop_kind::forward_training,
+                                         alg_kind,
                                          *x_md_, *y_md_,
                                          strides, kernel, padding_l, padding_r,
                                          padding_kind::zero));

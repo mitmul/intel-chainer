@@ -32,7 +32,7 @@ extensions = [
                 "mkldnn/avg_pooling.cc",
                 "mkldnn/softmax.cc",
                 "mkldnn/softmax_cross_entropy.cc",
-                "mkldnn/utils.c",
+                "mkldnn/utils.cc",
                 "mkldnn/mkldnn.i"
                 ],
         swig_opts=["-c++"],

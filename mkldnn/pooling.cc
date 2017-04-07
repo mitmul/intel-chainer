@@ -18,9 +18,9 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
 {
     memory::format format;
     // we check AVX512 first then AVX2
-    if (cpu_support_avx512_p()) {
+    if (cpu_support_avx512_p() && (x_d2%16)==0) {
         format = memory::format::nChw16c;
-    } else if (cpu_support_avx2_p()) {
+    } else if (cpu_support_avx2_p() && (x_d2%8)==0) {
         format = memory::format::nChw8c;
     } else {
         format = memory::format::nchw;
@@ -146,9 +146,9 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
 {
     memory::format format;
     // we check AVX512 first then AVX2
-    if (cpu_support_avx512_p()) {
+    if (cpu_support_avx512_p() && (x_d2%16)==0) {
         format = memory::format::nChw16c;
-    } else if (cpu_support_avx2_p()) {
+    } else if (cpu_support_avx2_p() && (x_d2%8)==0) {
         format = memory::format::nChw8c;
     } else {
         format = memory::format::nchw;

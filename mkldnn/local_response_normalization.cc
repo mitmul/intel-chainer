@@ -47,6 +47,15 @@ int LocalResponseNormalization<T>::forward_setup(
 	T* x, int x_d1, int x_d2, int x_d3, int x_d4,
 	T* y, int y_d1, int y_d2, int y_d3, int y_d4)
 {
+    memory::format format;
+    // we check AVX512 first then AVX2
+    if (cpu_support_avx512_p() && (x_d2%16)==0) {
+        format = memory::format::nChw16c;
+    } else if (cpu_support_avx2_p() && (x_d2%8)==0) {
+        format = memory::format::nChw8c;
+    } else {
+        format = memory::format::nchw;
+    }
 	// LOG(INFO) << "forward_setup";
 	// LOG(INFO) << "lrn_src_tz "<< x_d1 << x_d2<< x_d3 << x_d4 ;
 	// LOG(INFO) << "lrn_dst_tz "<< y_d1 << y_d2<< y_d3 << y_d4 ;
@@ -56,7 +65,7 @@ int LocalResponseNormalization<T>::forward_setup(
 	/* create memory for user data */
 	LOG(INFO) << "create memory for user data";
     user_x_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),p.data_format}, *eng}, x));
-    x_md_.reset(new memory::desc({lrn_src_tz}, memory_data_type<T>(),p.diff_data_format));
+    x_md_.reset(new memory::desc({lrn_src_tz}, memory_data_type<T>(),format));
 
 
     user_y_mem_.reset(new memory({{{lrn_dst_tz}, memory_data_type<T>(),p.data_format}, *eng}, y));
@@ -75,9 +84,10 @@ int LocalResponseNormalization<T>::forward_setup(
     bool reorder_y_p = false;
 
 
-    if (memory::primitive_desc(lrn_fwd_pd_.get()->src_primitive_desc())
-        != user_x_mem_->get_primitive_desc()) {
-        x_mem_.reset(new memory(lrn_fwd_pd_.get()->src_primitive_desc()));
+    if (format != memory::format::nchw) {
+        x_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),
+                        format}, *eng}));
+
         reorder_x_ = reorder(*user_x_mem_, *x_mem_);
         reorder_x_p = true;
     }
@@ -141,6 +151,16 @@ int LocalResponseNormalization<T>::backward_setup(
 	T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
 	T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4)
 {
+    memory::format format;
+    // we check AVX512 first then AVX2
+    if (cpu_support_avx512_p() && (x_d2%16)==0) {
+        format = memory::format::nChw16c;
+    } else if (cpu_support_avx2_p() && (x_d2%8)==0) {
+        format = memory::format::nChw8c;
+    } else {
+        format = memory::format::nchw;
+    }
+
 	/* Backward lrn */
     memory::dims lrn_src_tz = {x_d1, x_d2, x_d3, x_d4};
     memory::dims lrn_diff_src_tz = {gx_d1, gx_d2, gx_d3, gx_d4};
@@ -158,7 +178,7 @@ int LocalResponseNormalization<T>::backward_setup(
 	lrn_diff_src_desc.reset(new memory::desc({lrn_diff_src_tz},
 	    memory_data_type<T>(), p.diff_data_format));
 	lrn_diff_dst_desc.reset(new memory::desc({lrn_diff_dst_tz},
-	    memory_data_type<T>(), p.diff_data_format));
+	    memory_data_type<T>(), format));
 
     // auto lrn_src_mem_ = lrn_bwd_user_src_mem_;
 
@@ -175,10 +195,9 @@ int LocalResponseNormalization<T>::backward_setup(
     bool reorder_x_p = false;
     bool reorder_y_p = false;
 
-    if (memory::primitive_desc(lrn_bwd_pd_.get()->diff_dst_primitive_desc())
-        != lrn_diff_dst_mem_->get_primitive_desc()) 
+    if (format != memory::format::nchw)
     {
-        gy_mem_.reset(new memory(lrn_bwd_pd_.get()->diff_dst_primitive_desc()));
+        gy_mem_.reset(new memory({{{lrn_diff_dst_tz}, memory_data_type<T>(), format}, *eng}));
         reorder_gy_ = reorder(*lrn_diff_dst_mem_, *gy_mem_);
         reorder_y_p = true;
     }

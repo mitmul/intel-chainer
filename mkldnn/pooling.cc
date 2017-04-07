@@ -16,6 +16,16 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                               int ker_h, int ker_w,
                               mkldnn::algorithm alg_kind)
 {
+    memory::format format;
+    // we check AVX512 first then AVX2
+    if (cpu_support_avx512_p()) {
+        format = memory::format::nChw16c;
+    } else if (cpu_support_avx2_p()) {
+        format = memory::format::nChw8c;
+    } else {
+        format = memory::format::nchw;
+    }
+
     int y_d1, y_d2, y_d3, y_d4;
     // prepare y according to x, s, p, ker
     y_d1 = x_d1;
@@ -57,7 +67,7 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     // first run to forward setup and use that data for first run but it makes
     // interface not clean
     x_md_.reset(new memory::desc({x_tz}, memory_data_type<T>(),
-                              memory::format::any));
+                              format));
 
     user_y_mem_.reset(new memory({{{y_tz}, memory_data_type<T>(),
                             memory::format::nchw}, cpu_engine}, dummy));
@@ -82,9 +92,9 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     bool reorder_x_p = false;
     bool reorder_y_p = false;
 
-    if (memory::primitive_desc(fwd_prim_desc_.get()->src_primitive_desc())
-        != user_x_mem_->get_primitive_desc()) {
-        x_mem_.reset(new memory(fwd_prim_desc_.get()->src_primitive_desc()));
+    if (format != memory::format::nchw) {
+        x_mem_.reset(new memory({{{x_tz}, memory_data_type<T>(),
+                            format}, cpu_engine}));
         reorder_x_ = reorder(*user_x_mem_, *x_mem_);
         reorder_x_p = true;
     }
@@ -134,6 +144,16 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                               int ker_h, int ker_w,
                               mkldnn::algorithm alg_kind)
 {
+    memory::format format;
+    // we check AVX512 first then AVX2
+    if (cpu_support_avx512_p()) {
+        format = memory::format::nChw16c;
+    } else if (cpu_support_avx2_p()) {
+        format = memory::format::nChw8c;
+    } else {
+        format = memory::format::nchw;
+    }
+
     int y_d1, y_d2, y_d3, y_d4;
     // prepare y according to x, s, p, ker
     y_d1 = x_d1;
@@ -176,7 +196,7 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     user_gy_mem_.reset(new memory({{{y_tz}, memory_data_type<T>(),
                                     memory::format::nchw}, cpu_engine}, dummy));
     gy_md_.reset(new memory::desc({y_tz}, memory_data_type<T>(),
-                                      memory::format::any));
+                                      format));
 
     // create a pooling descriptor
     bwd_desc_.reset(new pooling_backward::desc(
@@ -197,9 +217,9 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     bool reorder_x_p = false;
     bool reorder_y_p = false;
 
-    if (memory::primitive_desc(bwd_prim_desc_->diff_dst_primitive_desc())
-        != user_gy_mem_->get_primitive_desc()) {
-        gy_mem_.reset(new memory(bwd_prim_desc_.get()->diff_dst_primitive_desc()));
+    if (format != memory::format::nchw) {
+        gy_mem_.reset(new memory({{{y_tz}, memory_data_type<T>(),
+                                    format}, cpu_engine}));
         reorder_gy_ = reorder(*user_gy_mem_, *gy_mem_);
         reorder_y_p = true;
     }

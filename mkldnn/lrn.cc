@@ -2,7 +2,7 @@
 #include <iostream>
 #include "common.h"
 #include "mkldnn.hpp"
-#include "local_response_normalization.h"
+#include "lrn.h"
 #include "utils.h"
 
 using namespace mkldnn;

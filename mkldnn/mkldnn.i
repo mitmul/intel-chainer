@@ -13,7 +13,7 @@
     #include "relu4d.h"
     #include "relu.h"
     #include "softmax.h"
-    #include "local_response_normalization.h"
+    #include "lrn.h"
     #include "softmax_cross_entropy.h"
     #include "concat.h"
 %}
@@ -93,7 +93,7 @@
 %include "relu4d.h"
 %include "relu.h"
 %include "softmax.h"
-%include "local_response_normalization.h"
+%include "lrn.h"
 %include "softmax_cross_entropy.h"
 %include "concat.h"
 

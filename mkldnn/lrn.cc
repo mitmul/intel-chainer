@@ -23,17 +23,17 @@ LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k, doubl
 	// google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
     // google::LogToStderr();      
 	// LOG(INFO) << "n = " << n << " k = " << k << " alpha = " << alpha << "beta = " << beta ;
-	p.alpha = alpha;
-	p.beta = beta;
-	p.aprop_kind = prop_kind::forward_training;
-	p.local_size = n;
-	p.k = k;
-	p.data_format = memory::format::nchw;
-	p.diff_data_format = memory::format::any;
-	p.aalgorithm = algorithm::lrn_across_channels;
-	p.aalgorithm = alg_kind;
+	p_.alpha = alpha;
+	p_.beta = beta;
+	p_.aprop_kind = prop_kind::forward_training;
+	p_.local_size = n;
+	p_.k = k;
+	p_.data_format = memory::format::nchw;
+	p_.diff_data_format = memory::format::any;
+	p_.aalgorithm = algorithm::lrn_across_channels;
+	p_.aalgorithm = alg_kind;
 
-	eng.reset(new engine(engine::kind::cpu, 0));
+	eng_.reset(new engine(engine::kind::cpu, 0));
 }
 
 template<typename T>
@@ -64,18 +64,18 @@ int LocalResponseNormalization<T>::forward_setup(
 
 	/* create memory for user data */
 	LOG(INFO) << "create memory for user data";
-    user_x_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),p.data_format}, *eng}, x));
+    user_x_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),p_.data_format}, *eng_}, x));
     x_md_.reset(new memory::desc({lrn_src_tz}, memory_data_type<T>(),format));
 
 
-    user_y_mem_.reset(new memory({{{lrn_dst_tz}, memory_data_type<T>(),p.data_format}, *eng}, y));
-    y_md_.reset(new memory::desc({lrn_dst_tz}, memory_data_type<T>(),p.diff_data_format));
+    user_y_mem_.reset(new memory({{{lrn_dst_tz}, memory_data_type<T>(),p_.data_format}, *eng_}, y));
+    y_md_.reset(new memory::desc({lrn_dst_tz}, memory_data_type<T>(),p_.diff_data_format));
 
 
     LOG(INFO) << "lrn_fwd_desc_";
-    lrn_fwd_desc_.reset(new lrn_forward::desc(p.aprop_kind, p.aalgorithm, *x_md_,
-	    p.local_size, p.alpha, p.beta, p.k));
-    lrn_fwd_pd_.reset(new lrn_forward::primitive_desc(*lrn_fwd_desc_, *eng));
+    lrn_fwd_desc_.reset(new lrn_forward::desc(p_.aprop_kind, p_.aalgorithm, *x_md_,
+	    p_.local_size, p_.alpha, p_.beta, p_.k));
+    lrn_fwd_pd_.reset(new lrn_forward::primitive_desc(*lrn_fwd_desc_, *eng_));
 
   	x_mem_ = user_x_mem_;
     y_mem_ = user_y_mem_;
@@ -86,7 +86,7 @@ int LocalResponseNormalization<T>::forward_setup(
 
     if (format != memory::format::nchw) {
         x_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),
-                        format}, *eng}));
+                        format}, *eng_}));
 
         reorder_x_ = reorder(*user_x_mem_, *x_mem_);
         reorder_x_p = true;
@@ -167,25 +167,25 @@ int LocalResponseNormalization<T>::backward_setup(
     memory::dims lrn_diff_dst_tz = {gy_d1, gy_d2, gy_d3, gy_d4};
 
     lrn_bwd_user_src_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),
-		p.data_format}, *eng}, x));
+		p_.data_format}, *eng_}, x));
 	lrn_diff_src_mem_.reset(new memory({{{lrn_diff_src_tz}, memory_data_type<T>(),
-		p.data_format}, *eng}, gx));
+		p_.data_format}, *eng_}, gx));
 	lrn_diff_dst_mem_.reset(new memory({{{lrn_diff_dst_tz}, memory_data_type<T>(),
-		p.data_format}, *eng}, gy));
+		p_.data_format}, *eng_}, gy));
 
-	lrn_bwd_src_desc.reset(new memory::desc({lrn_src_tz},
-	    memory_data_type<T>(), p.diff_data_format));
-	lrn_diff_src_desc.reset(new memory::desc({lrn_diff_src_tz},
-	    memory_data_type<T>(), p.diff_data_format));
-	lrn_diff_dst_desc.reset(new memory::desc({lrn_diff_dst_tz},
+	lrn_bwd_src_desc_.reset(new memory::desc({lrn_src_tz},
+	    memory_data_type<T>(), p_.diff_data_format));
+	lrn_diff_src_desc_.reset(new memory::desc({lrn_diff_src_tz},
+	    memory_data_type<T>(), p_.diff_data_format));
+	lrn_diff_dst_desc_.reset(new memory::desc({lrn_diff_dst_tz},
 	    memory_data_type<T>(), format));
 
     // auto lrn_src_mem_ = lrn_bwd_user_src_mem_;
 
-	lrn_bwd_desc_.reset(new lrn_backward::desc(p.aalgorithm,
-		*lrn_bwd_src_desc, *lrn_diff_dst_desc, 
-		p.local_size, p.alpha, p.beta,p.k));
-	lrn_bwd_pd_.reset(new lrn_backward::primitive_desc(*lrn_bwd_desc_, *eng,
+	lrn_bwd_desc_.reset(new lrn_backward::desc(p_.aalgorithm,
+		*lrn_bwd_src_desc_, *lrn_diff_dst_desc_, 
+		p_.local_size, p_.alpha, p_.beta,p_.k));
+	lrn_bwd_pd_.reset(new lrn_backward::primitive_desc(*lrn_bwd_desc_, *eng_,
 		*lrn_fwd_pd_));
 
     gx_mem_   = lrn_diff_src_mem_;
@@ -197,7 +197,7 @@ int LocalResponseNormalization<T>::backward_setup(
 
     if (format != memory::format::nchw)
     {
-        gy_mem_.reset(new memory({{{lrn_diff_dst_tz}, memory_data_type<T>(), format}, *eng}));
+        gy_mem_.reset(new memory({{{lrn_diff_dst_tz}, memory_data_type<T>(), format}, *eng_}));
         reorder_gy_ = reorder(*lrn_diff_dst_mem_, *gy_mem_);
         reorder_y_p = true;
     }

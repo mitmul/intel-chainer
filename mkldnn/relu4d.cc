@@ -93,12 +93,6 @@ int Relu4D<T>::backward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
     memory::dims relu_diff_dst_tz = {gy_d1, gy_d2, gy_d3, gy_d4};
     memory::dims relu_diff_src_tz = {gx_d1, gx_d2, gx_d3, gx_d4};
 
-#if 0
-    memory::dims relu_src_tz = {x_size};
-    memory::dims relu_diff_src_tz = {gx_size};
-    memory::dims relu_diff_dst_tz = {gy_size};
-#endif
-
     relu_diff_src_mem_.reset(new memory({{{relu_diff_src_tz}, memory::data_type::f32,
         memory::format::nchw}, cpu_engine}, gx));
     relu_diff_dst_mem_.reset(new memory({{{relu_diff_dst_tz}, memory::data_type::f32,

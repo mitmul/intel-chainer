@@ -101,5 +101,4 @@ private:
 
     std::shared_ptr<mkldnn::stream> bwd_stream_;
     std::vector<mkldnn::primitive> bwd_primitives_;
-    //bool backward_first_setup_;
 };

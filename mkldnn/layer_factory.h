@@ -200,3 +200,6 @@ private:
 };
 
 #endif // _STREAM_FACTORY_
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

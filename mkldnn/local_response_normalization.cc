@@ -276,3 +276,4 @@ template class LocalResponseNormalization<float>;
 // template class LocalResponseNormalization<double>;
 
 
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

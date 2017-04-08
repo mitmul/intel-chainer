@@ -1,7 +1,7 @@
 #include <glog/logging.h>
 #include <iostream>
 #include "mkldnn.hpp"
-#include "mkldnn_concat.h"
+#include "concat.h"
 #include "utils.h"
 
 using namespace mkldnn;

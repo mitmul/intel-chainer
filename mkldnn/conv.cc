@@ -2,7 +2,7 @@
 #include <iostream>
 #include "common.h"
 #include "mkldnn.hpp"
-#include "mkldnn_conv.h"
+#include "conv.h"
 #include "utils.h"
 
 using namespace mkldnn;

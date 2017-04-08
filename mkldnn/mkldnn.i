@@ -9,13 +9,13 @@
     #include "pooling.h"
     #include "max_pooling.h"
     #include "avg_pooling.h"
-    #include "mkldnn_conv.h"
+    #include "conv.h"
     #include "relu4d.h"
     #include "relu.h"
-    #include "mkldnn_softmax.h"
+    #include "softmax.h"
     #include "local_response_normalization.h"
     #include "softmax_cross_entropy.h"
-    #include "mkldnn_concat.h"
+    #include "concat.h"
 %}
 
 %include "numpy.i"
@@ -89,13 +89,13 @@
 %include "pooling.h"
 %include "max_pooling.h"
 %include "avg_pooling.h"
-%include "mkldnn_conv.h"
+%include "conv.h"
 %include "relu4d.h"
 %include "relu.h"
-%include "mkldnn_softmax.h"
+%include "softmax.h"
 %include "local_response_normalization.h"
 %include "softmax_cross_entropy.h"
-%include "mkldnn_concat.h"
+%include "concat.h"
 
 /*
 * Support Concat to get a variable size tuple

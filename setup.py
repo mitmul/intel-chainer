@@ -20,8 +20,8 @@ extensions = [
         sources=[
                 "mkldnn/relu4d.cc",
                 "mkldnn/relu.cc",
-                "mkldnn/mkldnn_conv.cc",
-                "mkldnn/mkldnn_concat.cc",
+                "mkldnn/conv.cc",
+                "mkldnn/concat.cc",
                 "mkldnn/common.cc",
                 "mkldnn/cpu_info.cc",
                 "mkldnn/layer_factory.cc",
@@ -30,7 +30,7 @@ extensions = [
                 "mkldnn/pooling.cc",
                 "mkldnn/max_pooling.cc",
                 "mkldnn/avg_pooling.cc",
-                "mkldnn/mkldnn_softmax.cc",
+                "mkldnn/softmax.cc",
                 "mkldnn/softmax_cross_entropy.cc",
                 "mkldnn/mkldnn.i"
                 ],

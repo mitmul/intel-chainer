@@ -2,7 +2,7 @@
 #include <iostream>
 #include <vector>
 #include "mkldnn.hpp"
-#include "mkldnn_softmax.h"
+#include "softmax.h"
 #include "utils.h"
 
 using namespace mkldnn;

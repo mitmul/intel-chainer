@@ -5,7 +5,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include "mkldnn_softmax.h"
+#include "softmax.h"
 #include "layer.h"
 
 template <typename T>

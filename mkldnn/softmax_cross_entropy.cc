@@ -1,7 +1,7 @@
 #include <glog/logging.h>
 #include <vector>
 #include "softmax_cross_entropy.h"
-#include "mkldnn_softmax.h"
+#include "softmax.h"
 
 template<typename T> SoftmaxCrossEntropy<T>*
 SoftmaxCrossEntropy<T>::softmax_cross_entropy_create_forward(int* dims, int ndim)

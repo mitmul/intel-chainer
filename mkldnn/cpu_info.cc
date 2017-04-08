@@ -436,3 +436,6 @@ unsigned OpenMpManager::getProcessorSpeedMHz() {
   OpenMpManager &openMpManager = getInstance();
   return openMpManager.collection.getProcessorSpeedMHz();
 }
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

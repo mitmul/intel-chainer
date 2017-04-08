@@ -143,3 +143,6 @@ int Relu<T>::backward(T* x, int x_size,
 }
 
 template class Relu<float>;
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

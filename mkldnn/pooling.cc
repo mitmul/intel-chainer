@@ -303,3 +303,6 @@ int Pooling<T>::backward(T*   gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
 }
 
 template class Pooling<float>;
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

@@ -146,3 +146,6 @@ int Relu4D<T>::backward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
 }
 
 template class Relu4D<float>;
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

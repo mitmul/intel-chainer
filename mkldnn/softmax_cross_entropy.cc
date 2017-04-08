@@ -90,3 +90,6 @@ int SoftmaxCrossEntropy_4D<T>::backward(T* gx, int dummy_gx,
 template class SoftmaxCrossEntropy<float>;
 template class SoftmaxCrossEntropy_2D<float>;
 template class SoftmaxCrossEntropy_4D<float>;
+
+
+// vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

@@ -10,14 +10,15 @@ using namespace mkldnn;
 // extern engine cpu_engine;
 
 template<typename T>
-LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k, double alpha, double beta,mkldnn::algorithm alg_kind)
-: user_x_mem_(NULL), user_y_mem_(NULL), x_md_(NULL), y_md_(NULL)
-			   , bw_x_mem_(NULL), gx_mem_(NULL), gy_mem_(NULL), workspace_memory_(NULL)
-               , lrn_fwd_desc_(NULL), lrn_fwd_pd_(NULL)
-               , lrn_fwd_(NULL), fwd_stream_(NULL)
-               , lrn_diff_src_mem_(NULL), lrn_diff_dst_mem_(NULL)
-               , lrn_bwd_desc_(NULL), lrn_bwd_pd_(NULL)
-               , lrn_bwd_(NULL), bwd_stream_(NULL)
+LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k,
+                double alpha, double beta,mkldnn::algorithm alg_kind)
+                : user_x_mem_(NULL), user_y_mem_(NULL), x_md_(NULL), y_md_(NULL)
+			    , bw_x_mem_(NULL), gx_mem_(NULL), gy_mem_(NULL), workspace_memory_(NULL)
+                , lrn_fwd_desc_(NULL), lrn_fwd_pd_(NULL)
+                , lrn_fwd_(NULL), fwd_stream_(NULL)
+                , lrn_diff_src_mem_(NULL), lrn_diff_dst_mem_(NULL)
+                , lrn_bwd_desc_(NULL), lrn_bwd_pd_(NULL)
+                , lrn_bwd_(NULL), bwd_stream_(NULL)
 {
 	// google::ShutdownGoogleLogging();
 	// google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
@@ -129,16 +130,13 @@ int LocalResponseNormalization<T>::forward(
 	T* x, int x_d1, int x_d2, int x_d3, int x_d4,
 	T* y, int y_d1, int y_d2, int y_d3, int y_d4)
 {
-    if (!fwd_stream_) 
-    {
+    if (!fwd_stream_) {
     	// LOG(INFO) << "!fwd_stream_";
         forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
         			  y, y_d1, y_d2, y_d3, y_d4);
         fwd_reset_mem(x, y);
         fwd_stream_->submit(fwd_primitives_).wait();
-    } 
-    else
-    {
+    } else {
         fwd_reset_mem(x, y);
         fwd_stream_->rerun().wait();
     }
@@ -195,16 +193,14 @@ int LocalResponseNormalization<T>::backward_setup(
     bool reorder_x_p = false;
     bool reorder_y_p = false;
 
-    if (format != memory::format::nchw)
-    {
+    if (format != memory::format::nchw) {
         gy_mem_.reset(new memory({{{lrn_diff_dst_tz}, memory_data_type<T>(), format}, *eng_}));
         reorder_gy_ = reorder(*lrn_diff_dst_mem_, *gy_mem_);
         reorder_y_p = true;
     }
 
     if (memory::primitive_desc(lrn_bwd_pd_.get()->diff_src_primitive_desc())
-        != lrn_diff_src_mem_->get_primitive_desc()) 
-    {
+        != lrn_diff_src_mem_->get_primitive_desc()) {
         gx_mem_.reset(new memory(lrn_bwd_pd_.get()->diff_src_primitive_desc()));
         reorder_gx_ = reorder(*gx_mem_, *lrn_diff_src_mem_);
         reorder_x_p = true;
@@ -241,8 +237,7 @@ int LocalResponseNormalization<T>::backward(
 	T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4)
 {
     // LOG(INFO) << "backward: " << x << " : " << x_size << " : " << gy << " : " << gy_size << " : " << gx << " : " << gx_size;
-    if (!bwd_stream_) 
-    {
+    if (!bwd_stream_) {
         backward_setup(	
         	x, x_d1, x_d2, x_d3, x_d4,
 			gy, gy_d1, gy_d2, gy_d3, gy_d4,
@@ -250,8 +245,7 @@ int LocalResponseNormalization<T>::backward(
         bwd_reset_mem(x, gy, gx);
         bwd_stream_->submit(bwd_primitives_).wait();
     } 
-    else 
-    {
+    else {
         bwd_reset_mem(x, gy, gx);
         bwd_stream_->rerun().wait();
     }
@@ -271,8 +265,7 @@ LocalResponseNormalization<T>* LocalResponseNormalization<T>::get_forward_object
 {
 	auto lrn_forward = dynamic_cast<LocalResponseNormalization<T>*>(
 	    LayerFactory<T>::getInstance().getLRNLayer(x_d1,x_d2,x_d3,x_d4,n,k,alpha,beta));
-	if (lrn_forward == NULL) 
-	{
+	if (lrn_forward == NULL) {
 		lrn_forward = new LocalResponseNormalization<T>(n,k,alpha,beta,alg_kind);
 		// LOG(INFO) << "new lrn obj " << lrn << " dim " << x_d1;
 		LayerFactory<T>::getInstance().setLRNLayer(x_d1,x_d2,x_d3,x_d4,n,k,alpha,beta,lrn_forward);

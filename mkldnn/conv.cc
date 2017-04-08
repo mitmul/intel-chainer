@@ -56,7 +56,7 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
                                       memory::format::nchw}, cpu_engine}, dummy));
     if (b != NULL)
         user_bias_memory_.reset(new memory({{{bias_tz_},
-                                      memory_data_type<T>(), memory::format::x}, cpu_engine}, dummy));
+                                            memory_data_type<T>(), memory::format::x}, cpu_engine}, dummy));
     
     /* create memory descriptors for convolution data w/ no specified format */
     src_md_.reset(new memory::desc({src_tz_}, memory_data_type<T>(),
@@ -404,7 +404,7 @@ int Convolution2D<T>::backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
         T* gW, int gW_d1, int gW_d2, int gW_d3, int gW_d4,
         T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
         T* gb, int gb_d1,
-	bool first_layer)
+    bool first_layer)
 {
 //    LOG(INFO) << "Convolution backward with bias";
     if (conv_bwd_weights_ == NULL) {
@@ -429,12 +429,12 @@ int Convolution2D<T>::backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
 
     if (bwd_first_run_) {
         bwd_weights_stream_->submit(bwd_weights_primitives_).wait();
-	if (!first_layer)//first layer will no need to do backward data
+    if (!first_layer)//first layer will no need to do backward data
            bwd_data_stream_->submit(bwd_data_primitives_).wait();
         bwd_first_run_ = false;
     } else {
         bwd_weights_stream_->rerun().wait();
-	if (!first_layer)
+    if (!first_layer)
            bwd_data_stream_->rerun().wait();
     }
     return 0;
@@ -446,7 +446,7 @@ int Convolution2D<T>::backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
         T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
         T* gW, int gW_d1, int gW_d2, int gW_d3, int gW_d4,
         T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
-	bool first_layer)
+    bool first_layer)
 {
 //    LOG(INFO) << "Convolution backward without bias";
     backward(x, x_d1, x_d2, x_d3, x_d4,
@@ -456,7 +456,7 @@ int Convolution2D<T>::backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
             gW, gW_d1, gW_d2, gW_d3, gW_d4,
             gx, gx_d1, gx_d2, gx_d3, gx_d4,
             NULL, -1,
-	    first_layer);
+        first_layer);
     return 0;
 }
 

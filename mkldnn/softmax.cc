@@ -41,43 +41,43 @@ Softmax<T>::softmax_create_forward(T* x, int dummy_x,
 #define SOFTMAX_2D 2
 #define SOFTMAX_4D 4
     if (SOFTMAX_2D == ndim) {
-	// LayerFactory get map
+        // LayerFactory get map
         if (!(inst =
-	    (Softmax_2D<T>*)LayerFactory<T>::getInstance().getSoftmax2DLayer(dims[0], dims[1], axis))) {
+            (Softmax_2D<T>*)LayerFactory<T>::getInstance().getSoftmax2DLayer(dims[0], dims[1], axis))) {
             // New Softmax inst
             inst = new Softmax_2D<T>(dims, axis);
 
             // Setup forward
             inst->setup_forward();
 
-	    // LayerFactory set map
+            // LayerFactory set map
             LayerFactory<T>::getInstance().setSoftmax2DLayer(dims[0], dims[1], axis, inst);
-	} else {
-	    ;
-	}
+        } else {
+            ;
+        }
 
         // Update current user memory
         // FIXME: Do not drop memory util finishing forward() in Python layer
-	inst->update_user_mem(x, y);
+        inst->update_user_mem(x, y);
     } else if (SOFTMAX_4D == ndim) {
-	// LayerFactory get map
+        // LayerFactory get map
         if (!(inst =
-	    (Softmax_4D<T>*)LayerFactory<T>::getInstance().getSoftmax4DLayer(dims[0], dims[1], dims[2], dims[3], axis))) {
+            (Softmax_4D<T>*)LayerFactory<T>::getInstance().getSoftmax4DLayer(dims[0], dims[1], dims[2], dims[3], axis))) {
             // New Softmax inst
             inst = new Softmax_4D<T>(dims, axis);
 
             // Setup forward
             inst->setup_forward();
 
-	    // LayerFactory set map
+            // LayerFactory set map
             LayerFactory<T>::getInstance().setSoftmax4DLayer(dims[0], dims[1], dims[2], dims[3], axis, inst);
         } else {
-	    ;
-	}
+            ;
+        }
 
         // Update current user memory
         // FIXME: Do not drop memory util finishing forward() in Python layer
-	inst->update_user_mem(x, y);
+        inst->update_user_mem(x, y);
     } else {
         ; //Not supported;
     }
@@ -164,7 +164,7 @@ int Softmax_2D<T>::forward()
     // Launch stream
     if (this->is_first_fwd()) {
         fwd_stream_->submit(fwd_primitives_).wait();
-	this->mark_first_fwd();
+    this->mark_first_fwd();
     } else {
         fwd_stream_->rerun().wait();
     }

@@ -78,7 +78,7 @@ int LocalResponseNormalization<T>::forward_setup(
         p_.local_size, p_.alpha, p_.beta, p_.k));
     lrn_fwd_pd_.reset(new lrn_forward::primitive_desc(*lrn_fwd_desc_, *eng_));
 
-      x_mem_ = user_x_mem_;
+    x_mem_ = user_x_mem_;
     y_mem_ = user_y_mem_;
     // y_mem_.reset(new memory(lrn_fwd_pd_.get()->dst_primitive_desc()));
     bool reorder_x_p = false;

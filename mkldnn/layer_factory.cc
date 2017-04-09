@@ -44,8 +44,8 @@ LayerFactory<T>::LayerFactory()
 template<typename T>
 Layer<T>* LayerFactory<T>::getLayer(std::string key)
 {
-    auto stream_iter = map.find(key);
-    if (stream_iter == map.end()) {
+    auto stream_iter = map_.find(key);
+    if (stream_iter == map_.end()) {
         return NULL;
     } else {
         return stream_iter->second;
@@ -55,9 +55,9 @@ Layer<T>* LayerFactory<T>::getLayer(std::string key)
 template<typename T>
 void LayerFactory<T>::setLayer(std::string key, Layer<T>* layer)
 {
-    auto stream_iter = map.find(key);
-    if (stream_iter == map.end()) {
-        map[key]=layer;
+    auto stream_iter = map_.find(key);
+    if (stream_iter == map_.end()) {
+        map_[key]=layer;
     } else {
         throw new std::invalid_argument("cannot set same key to a new stream");
     }

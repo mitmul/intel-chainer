@@ -18,8 +18,8 @@ private:
 
 public:
     static LayerFactory& getInstance() {
-        static LayerFactory instance;
-        return instance;
+        static LayerFactory instance_;
+        return instance_;
     }
 
 private:
@@ -196,7 +196,7 @@ public:
 private:
     //LayerFactory(LayerFactory const&);
     //void operator=(LayerFactory const&);
-    std::unordered_map<std::string, Layer<T>*> map;
+    std::unordered_map<std::string, Layer<T>*> map_;
 };
 
 #endif // _STREAM_FACTORY_

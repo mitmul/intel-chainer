@@ -9,7 +9,7 @@ from mkldnn import switch
 switch.enable_softmax_cross_entropy = True
 
 # Accuracy Test
-mkldnn.setMkldnnEnable(True)
+mkldnn.set_mkldnn_enable(True)
 
 print "With mkldnn"
 x = np.arange(1.0, 13.0, 2.0, dtype=np.float32).reshape(2,3)
@@ -28,7 +28,7 @@ print loss
 print "gx	******************* "
 print gx
 
-mkldnn.setMkldnnEnable(False)
+mkldnn.set_mkldnn_enable(False)
 
 print " "
 print "Without mkldnn"
@@ -49,7 +49,7 @@ print "gx	******************* "
 print gx
 
 # Performance Test
-mkldnn.setMkldnnEnable(True)
+mkldnn.set_mkldnn_enable(True)
 total = 0
 count = 0
 n_dry = 3
@@ -73,7 +73,7 @@ for i in range(niter):
 print("Average with mkldnn : ", total/count, "ms")
 print("Total with mkldnn : ", total, "ms")
 
-mkldnn.setMkldnnEnable(False)
+mkldnn.set_mkldnn_enable(False)
 total = 0
 count = 0
 n_dry = 3

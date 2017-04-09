@@ -1,7 +1,7 @@
 from mkldnn import mkldnn as mkl
 import numpy as np
 import chainer.functions as F
-from mkldnn import switch 
+from mkldnn import switch
 # mkl.enableMkldnn = false
 # print mkl.enabled()
 # x = np.ones((128,3,32,32), dtype=np.float32)
@@ -12,7 +12,7 @@ from mkldnn import switch
 # print y
 # print data.shape
 # f_lrn = F.local_response_normalization(data,1,3)
-# mkl.setMkldnnEnable(False)
+# mkl.set_mkldnn_enable(False)
 # print mkl.enabled()
 # lrn = mkl.LocalResponseNormalization_F32(5,2,1e-4,.75)
 # lrn.forward(data,y)
@@ -41,7 +41,7 @@ gy = np.asarray(datay),
 # gx = np.empty((5, 2, 1, 1),dtype=np.float32)
 # print x
 lrn = F.LocalResponseNormalization(n,k,alpha,.75)
-mkl.enableGoogleLogging()
+mkl.enable_google_logging()
 switch.enable_lrn = True
 my = lrn.forward_cpu(x)
 # lrn.forward_cpu(x)

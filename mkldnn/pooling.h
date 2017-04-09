@@ -194,10 +194,10 @@ private:
     std::shared_ptr<mkldnn::memory::desc>                     gx_md_;
     std::shared_ptr<mkldnn::memory::desc>                     gy_md_;
     std::shared_ptr<mkldnn::pooling_forward::desc>            fwd_desc_;
-    std::shared_ptr<mkldnn::pooling_forward::primitive_desc>  fwd_prim_desc_;
+    std::shared_ptr<mkldnn::pooling_forward::primitive_desc>  fwd_pd_;
     std::shared_ptr<mkldnn::pooling_forward>                  fwd_;
     std::shared_ptr<mkldnn::pooling_backward::desc>           bwd_desc_;
-    std::shared_ptr<mkldnn::pooling_backward::primitive_desc> bwd_prim_desc_;
+    std::shared_ptr<mkldnn::pooling_backward::primitive_desc> bwd_pd_;
     std::shared_ptr<mkldnn::pooling_backward>                 bwd_;
 
     // reordered related

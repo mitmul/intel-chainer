@@ -53,7 +53,7 @@ private:
        mkldnn::primitive concat_reorder_dst_; //reorder y
        std::vector<mkldnn::primitive::at> fwd_input_primitives_at_; //fwd input primitives     
        std::vector<std::shared_ptr<mkldnn::memory>> fwd_input_primitives_; // fwd input memory
-       std::vector<mkldnn::memory::primitive_desc> srcs_prim_desc_; //src primitve desc vector
+       std::vector<mkldnn::memory::primitive_desc> srcs_pd_; //src primitve desc vector
 
 
 
@@ -64,7 +64,7 @@ private:
        std::vector<mkldnn::reorder> reorders_;
        std::vector<mkldnn::primitive> bwd_primitives_; //bwd primitive vector
        std::shared_ptr<mkldnn::stream> bwd_stream_;
-       std::vector<mkldnn::memory::primitive_desc> diff_srcs_prim_desc_; //diff src primitve desc vector
+       std::vector<mkldnn::memory::primitive_desc> diff_srcs_pd_; //diff src primitve desc vector
       
         
 };

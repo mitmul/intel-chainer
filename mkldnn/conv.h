@@ -297,12 +297,12 @@ private:
     //desc & prmitive desc
     //forward
     std::shared_ptr<mkldnn::convolution_forward::desc> fwd_desc_;
-    std::shared_ptr<mkldnn::convolution_forward::primitive_desc> fwd_prim_desc_;
+    std::shared_ptr<mkldnn::convolution_forward::primitive_desc> fwd_pd_;
     //backward
     std::shared_ptr<mkldnn::convolution_backward_weights::desc> bwd_weights_desc_;
-    std::shared_ptr<mkldnn::convolution_backward_weights::primitive_desc> bwd_weights_prim_desc_;
+    std::shared_ptr<mkldnn::convolution_backward_weights::primitive_desc> bwd_weights_pd_;
     std::shared_ptr<mkldnn::convolution_backward_data::desc> bwd_data_desc_;
-    std::shared_ptr<mkldnn::convolution_backward_data::primitive_desc> bwd_data_prim_desc_;
+    std::shared_ptr<mkldnn::convolution_backward_data::primitive_desc> bwd_data_pd_;
     
     //stream
     std::shared_ptr<mkldnn::stream> fwd_stream_;

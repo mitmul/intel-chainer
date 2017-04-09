@@ -82,7 +82,7 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                                          strides, kernel, padding_l, padding_r,
                                          padding_kind::zero));
 
-    fwd_prim_desc_.reset(new pooling_forward::primitive_desc(
+    fwd_pd_.reset(new pooling_forward::primitive_desc(
                                 *fwd_desc_, cpu_engine));
 
 
@@ -100,16 +100,16 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
         reorder_x_p = true;
     }
 
-    if (memory::primitive_desc(fwd_prim_desc_->dst_primitive_desc())
+    if (memory::primitive_desc(fwd_pd_->dst_primitive_desc())
         != user_y_mem_->get_primitive_desc()) {
-        y_mem_.reset(new memory(fwd_prim_desc_.get()->dst_primitive_desc()));
+        y_mem_.reset(new memory(fwd_pd_.get()->dst_primitive_desc()));
         reorder_y_ = reorder(*y_mem_, *user_y_mem_);
         reorder_y_p = true;
     }
 
     workspace_memory_.reset(new memory(y_mem_->get_primitive_desc()));
     fwd_.reset(new pooling_forward(
-            *fwd_prim_desc_, *x_mem_, *y_mem_, *workspace_memory_));
+            *fwd_pd_, *x_mem_, *y_mem_, *workspace_memory_));
 
     LOG(INFO) << "    reorder_src: " << reorder_x_p;
     LOG(INFO) << "    reorder_dst: " << reorder_y_p;
@@ -206,8 +206,8 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                                         strides, kernel, padding_l, padding_r,
                                         padding_kind::zero));
 
-    bwd_prim_desc_.reset(new pooling_backward::primitive_desc(
-                                *bwd_desc_, cpu_engine, *fwd_prim_desc_));
+    bwd_pd_.reset(new pooling_backward::primitive_desc(
+                                *bwd_desc_, cpu_engine, *fwd_pd_));
     // TODO: we don't know its safe until we know what mkldnn do with fwd_desc_
 
 
@@ -225,16 +225,16 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
         reorder_y_p = true;
     }
 
-    if (memory::primitive_desc(bwd_prim_desc_.get()->diff_src_primitive_desc())
+    if (memory::primitive_desc(bwd_pd_.get()->diff_src_primitive_desc())
         != user_gx_mem_->get_primitive_desc()) {
         gx_mem_.reset(new memory(
-                            bwd_prim_desc_.get()->diff_src_primitive_desc()));
+                            bwd_pd_.get()->diff_src_primitive_desc()));
         reorder_gx_ = reorder(*gx_mem_, *user_gx_mem_);
         reorder_x_p = true;
     }
 
     bwd_.reset(new pooling_backward(
-            *bwd_prim_desc_, *gy_mem_, *workspace_memory_, *gx_mem_));
+            *bwd_pd_, *gy_mem_, *workspace_memory_, *gx_mem_));
 
     LOG(INFO) << "    reorder_dst_diff: " << reorder_y_p;
     LOG(INFO) << "    reorder_src_diff: " << reorder_x_p;

@@ -34,7 +34,7 @@ void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_in
 
         shared_ptr<memory::primitive_desc> input_mem_desc;
         input_mem_desc.reset(new memory::primitive_desc({input_tz, memory_data_type<T>(), src_mfmt}, cpu_engine));
-        srcs_prim_desc_.push_back(*input_mem_desc);
+        srcs_pd_.push_back(*input_mem_desc);
         
         std::shared_ptr<memory> input_mem;
         input_mem.reset(new memory({{{input_tz},memory_data_type<T>(), src_mfmt}, cpu_engine}));
@@ -50,7 +50,7 @@ void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_in
 
     // create concat primitive desc and primitive
     fwd_concat_pd_.reset(
-            new concat::primitive_desc(*user_dst_md_, axis_, srcs_prim_desc_));
+            new concat::primitive_desc(*user_dst_md_, axis_, srcs_pd_));
 
     /*
      * yli135:
@@ -142,7 +142,7 @@ void Concat<T>::backward_setup(int num_concats, Concat<T>::concat_data* concat_o
 
         shared_ptr<memory::primitive_desc> diff_input_mem_desc;
         diff_input_mem_desc.reset(new memory::primitive_desc({diff_input_tz, memory_data_type<T>(), diff_src_mfmt}, cpu_engine));
-        diff_srcs_prim_desc_.push_back(*diff_input_mem_desc);
+        diff_srcs_pd_.push_back(*diff_input_mem_desc);
         
         std::shared_ptr<memory> diff_input_mem;
         diff_input_mem.reset(new memory({{{diff_input_tz},memory_data_type<T>(), diff_src_mfmt}, cpu_engine}));

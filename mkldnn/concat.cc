@@ -45,7 +45,7 @@ void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_in
 
     //set the user des memory primitive/desc
     user_dst_md_.reset(new memory::desc(output_tz_, memory_data_type<T>(), memory::format::any));
-    user_dst_memory_.reset(new memory(
+    user_dst_mem_.reset(new memory(
                 {{{output_tz_}, memory_data_type<T>(), memory::format::nchw}, cpu_engine}));
 
     // create concat primitive desc and primitive
@@ -56,19 +56,19 @@ void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_in
      * yli135:
      * Fome mkldnn.hpp, only can get dst_primitive_des
      */
-    dst_memory_ = user_dst_memory_;
+    dst_mem_ = user_dst_mem_;
     bool fwd_reorder_concat_dst = false;
     if (memory::primitive_desc(fwd_concat_pd_.get()->dst_primitive_desc())
-            != user_dst_memory_.get()->get_primitive_desc()) {
+            != user_dst_mem_.get()->get_primitive_desc()) {
         LOG(INFO) << "concat fwd reorder dst memory";
-        dst_memory_.reset(
+        dst_mem_.reset(
                 new memory(fwd_concat_pd_.get()->dst_primitive_desc()));
-        concat_reorder_dst_ = reorder(*dst_memory_, *user_dst_memory_);
+        concat_reorder_dst_ = reorder(*dst_mem_, *user_dst_mem_);
         fwd_reorder_concat_dst = true;
     }
 
     fwd_concat_prim_.reset(
-            new concat(*fwd_concat_pd_, fwd_input_primitives_at_, *dst_memory_));
+            new concat(*fwd_concat_pd_, fwd_input_primitives_at_, *dst_mem_));
     
     /* push primitives into primitive vector */
     fwd_primitives_.push_back(*fwd_concat_prim_);
@@ -107,7 +107,7 @@ void Concat<T>::forward(int num_concats, char** data, int* n, int* c, int* h, in
     }
     
     /* set memory handle for dst memory */
-    user_dst_memory_->set_data_handle(y);
+    user_dst_mem_->set_data_handle(y);
 
     if (fwd_first_run_) {
         fwd_stream_->submit(fwd_primitives_).wait();

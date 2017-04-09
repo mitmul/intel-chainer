@@ -13,7 +13,7 @@ template<typename T>
 LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k,
                 double alpha, double beta,mkldnn::algorithm alg_kind)
                 : user_x_mem_(NULL), user_y_mem_(NULL), x_md_(NULL), y_md_(NULL)
-                , bw_x_mem_(NULL), gx_mem_(NULL), gy_mem_(NULL), workspace_memory_(NULL)
+                , bw_x_mem_(NULL), gx_mem_(NULL), gy_mem_(NULL), workspace_mem_(NULL)
                 , lrn_fwd_desc_(NULL), lrn_fwd_pd_(NULL)
                 , lrn_fwd_(NULL), fwd_stream_(NULL)
                 , lrn_diff_src_mem_(NULL), lrn_diff_dst_mem_(NULL)
@@ -101,10 +101,10 @@ int LocalResponseNormalization<T>::forward_setup(
     }
 
     // LOG(INFO) << "workspace_primitive_desc";
-    workspace_memory_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc()));
+    workspace_mem_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc()));
     
     // LOG(INFO) << "lrn_fwd_";
-    lrn_fwd_.reset(new lrn_forward(*lrn_fwd_pd_, *x_mem_, *workspace_memory_, *y_mem_));
+    lrn_fwd_.reset(new lrn_forward(*lrn_fwd_pd_, *x_mem_, *workspace_mem_, *y_mem_));
 
     LOG(INFO) << "    reorder_src: " << reorder_x_p;
     LOG(INFO) << "    reorder_dst: " << reorder_y_p;
@@ -210,7 +210,7 @@ int LocalResponseNormalization<T>::backward_setup(
     LOG(INFO) << "    reorder_src_diff: " << reorder_x_p;
 
     lrn_bwd_.reset(new lrn_backward(*lrn_bwd_pd_, 
-        *bw_x_mem_, *gy_mem_, *workspace_memory_,*gx_mem_));
+        *bw_x_mem_, *gy_mem_, *workspace_mem_,*gx_mem_));
 
     if (reorder_y_p) bwd_primitives_.push_back(reorder_gy_);
     bwd_primitives_.push_back(*lrn_bwd_);

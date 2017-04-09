@@ -121,22 +121,22 @@ int Softmax_2D<T>::setup_forward()
     //
     // (No Reorder in Softmax)
     //
-    // primitive *src_mem = user_src_memory, *src_reorder = NULL;
+    // primitive *src_mem = user_src_mem, *src_reorder = NULL;
     // if (memory::primitive_desc(fwd_pd->src_primitive_desc()) !=
-    //     user_src_memory->get_primitive_desc()){
+    //     user_src_mem->get_primitive_desc()){
     //     src_mem = new memory(fwd_pd->src_primitive_desc());
-    //     src_reorder = new reorder(*user_src_memory, *src_mem);
+    //     src_reorder = new reorder(*user_src_mem, *src_mem);
     // }
 
     // (5) Create dst primitive and dst_reorder primitive
     //
     // (No Reorder in Softmax)
     //
-    // primitive *dst_mem = user_dst_memory, *dst_reorder = NULL;
+    // primitive *dst_mem = user_dst_mem, *dst_reorder = NULL;
     // if (memory::primitive_desc(fwd_pd->dst_primitive_desc()) !=
-    //     user_dst_memory->get_primitive_desc()) {
+    //     user_dst_mem->get_primitive_desc()) {
     //     dst_mem = new memory(fwd_pd->dst_primitive_desc());
-    //     dst_reorder = new reorder(*dst_mem, *user_dst_memory);
+    //     dst_reorder = new reorder(*dst_mem, *user_dst_mem);
     // }
 
     // (6) Create softmax primitive

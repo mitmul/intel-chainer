@@ -44,8 +44,8 @@ private:
        mkldnn::memory::dims output_tz_; //output dims
        std::shared_ptr<mkldnn::memory::primitive_desc> user_dst_mpd_; //user dst mpd
        std::shared_ptr<mkldnn::memory::desc> user_dst_md_; //user dst md
-       std::shared_ptr<mkldnn::memory> user_dst_memory_; // usr dst memory
-       std::shared_ptr<mkldnn::memory> dst_memory_; // mkldnn dst memory
+       std::shared_ptr<mkldnn::memory> user_dst_mem_; // usr dst memory
+       std::shared_ptr<mkldnn::memory> dst_mem_; // mkldnn dst memory
        std::shared_ptr<mkldnn::stream> fwd_stream_; // fwd stream
        std::vector<mkldnn::primitive> fwd_primitives_; //fwd primitive vector
        std::shared_ptr<mkldnn::concat::primitive_desc> fwd_concat_pd_; //fwd prim desc

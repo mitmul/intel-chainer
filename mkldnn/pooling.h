@@ -184,7 +184,7 @@ private:
     std::shared_ptr<mkldnn::memory>                           user_y_mem_;
     std::shared_ptr<mkldnn::memory>                           user_gx_mem_;
     std::shared_ptr<mkldnn::memory>                           user_gy_mem_;
-    std::shared_ptr<mkldnn::memory>                           workspace_memory_;
+    std::shared_ptr<mkldnn::memory>                           workspace_mem_;
     std::shared_ptr<mkldnn::memory>                           x_mem_;
     std::shared_ptr<mkldnn::memory>                           y_mem_;
     std::shared_ptr<mkldnn::memory>                           gx_mem_;

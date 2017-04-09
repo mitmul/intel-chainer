@@ -323,33 +323,33 @@ private:
 
     //user memory
     //forward
-    std::shared_ptr<mkldnn::memory> user_src_memory_; //x
-    std::shared_ptr<mkldnn::memory> user_weights_memory_; //W
-    std::shared_ptr<mkldnn::memory> user_bias_memory_; //b
-    std::shared_ptr<mkldnn::memory> user_dst_memory_; //y
+    std::shared_ptr<mkldnn::memory> user_src_mem_; //x
+    std::shared_ptr<mkldnn::memory> user_weights_mem_; //W
+    std::shared_ptr<mkldnn::memory> user_bias_mem_; //b
+    std::shared_ptr<mkldnn::memory> user_dst_mem_; //y
     //backward
-    std::shared_ptr<mkldnn::memory> user_bwd_diff_src_memory_; //gX
-    std::shared_ptr<mkldnn::memory> user_bwd_diff_weights_memory_; //gW
-    std::shared_ptr<mkldnn::memory> user_bwd_diff_bias_memory_; //gb
-    std::shared_ptr<mkldnn::memory> user_bwd_diff_dst_memory_; //gy
-    std::shared_ptr<mkldnn::memory> user_bwd_src_memory_; //x
-    std::shared_ptr<mkldnn::memory> user_bwd_weights_memory_; //W
-//    std::shared_ptr<mkldnn::memory> user_bwd_dst_memory_; //y
+    std::shared_ptr<mkldnn::memory> user_bwd_diff_src_mem_; //gX
+    std::shared_ptr<mkldnn::memory> user_bwd_diff_weights_mem_; //gW
+    std::shared_ptr<mkldnn::memory> user_bwd_diff_bias_mem_; //gb
+    std::shared_ptr<mkldnn::memory> user_bwd_diff_dst_mem_; //gy
+    std::shared_ptr<mkldnn::memory> user_bwd_src_mem_; //x
+    std::shared_ptr<mkldnn::memory> user_bwd_weights_mem_; //W
+//    std::shared_ptr<mkldnn::memory> user_bwd_dst_mem_; //y
 
     //MKLDNN memory
     //forward
-    std::shared_ptr<mkldnn::memory> src_memory_; // x
-    std::shared_ptr<mkldnn::memory> weights_memory_;// W
-    std::shared_ptr<mkldnn::memory> bias_memory_;// b
-    std::shared_ptr<mkldnn::memory> dst_memory_; //y
+    std::shared_ptr<mkldnn::memory> src_mem_; // x
+    std::shared_ptr<mkldnn::memory> weights_mem_;// W
+    std::shared_ptr<mkldnn::memory> bias_mem_;// b
+    std::shared_ptr<mkldnn::memory> dst_mem_; //y
     //backward
-    std::shared_ptr<mkldnn::memory> bwd_src_memory_; // x
-    std::shared_ptr<mkldnn::memory> bwd_weights_memory_; //W
-    std::shared_ptr<mkldnn::memory> bwd_diff_weights_memory_; //gW
-    std::shared_ptr<mkldnn::memory> bwd_diff_src_memory_; //gX
-    std::shared_ptr<mkldnn::memory> bwd_diff_bias_memory_; //gb
-    std::shared_ptr<mkldnn::memory> bwd_diff_dst_weights_memory_; // gy for gW
-    std::shared_ptr<mkldnn::memory> bwd_diff_dst_data_memory_; // gy for gx
+    std::shared_ptr<mkldnn::memory> bwd_src_mem_; // x
+    std::shared_ptr<mkldnn::memory> bwd_weights_mem_; //W
+    std::shared_ptr<mkldnn::memory> bwd_diff_weights_mem_; //gW
+    std::shared_ptr<mkldnn::memory> bwd_diff_src_mem_; //gX
+    std::shared_ptr<mkldnn::memory> bwd_diff_bias_mem_; //gb
+    std::shared_ptr<mkldnn::memory> bwd_diff_dst_weights_mem_; // gy for gW
+    std::shared_ptr<mkldnn::memory> bwd_diff_dst_data_mem_; // gy for gx
     
     //memory desc
     //forward & backward can share same mem desc

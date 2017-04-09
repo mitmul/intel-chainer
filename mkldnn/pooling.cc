@@ -107,9 +107,9 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
         reorder_y_p = true;
     }
 
-    workspace_memory_.reset(new memory(y_mem_->get_primitive_desc()));
+    workspace_mem_.reset(new memory(y_mem_->get_primitive_desc()));
     fwd_.reset(new pooling_forward(
-            *fwd_pd_, *x_mem_, *y_mem_, *workspace_memory_));
+            *fwd_pd_, *x_mem_, *y_mem_, *workspace_mem_));
 
     LOG(INFO) << "    reorder_src: " << reorder_x_p;
     LOG(INFO) << "    reorder_dst: " << reorder_y_p;
@@ -234,7 +234,7 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
     }
 
     bwd_.reset(new pooling_backward(
-            *bwd_pd_, *gy_mem_, *workspace_memory_, *gx_mem_));
+            *bwd_pd_, *gy_mem_, *workspace_mem_, *gx_mem_));
 
     LOG(INFO) << "    reorder_dst_diff: " << reorder_y_p;
     LOG(INFO) << "    reorder_src_diff: " << reorder_x_p;
@@ -279,7 +279,7 @@ int Pooling<T>::forward(T*   x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
     user_x_mem_->set_data_handle(x);
     user_y_mem_->set_data_handle(y);
     if (ws != NULL)
-        workspace_memory_->set_data_handle(ws);
+        workspace_mem_->set_data_handle(ws);
     if (this->forward_first_use_) {
         this->forward_stream_->submit(this->forward_primitives_).wait();
         this->forward_first_use_ = false;
@@ -311,7 +311,7 @@ int Pooling<T>::backward(T*   gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
     user_gx_mem_->set_data_handle(gx);
     user_gy_mem_->set_data_handle(gy);
     if (ws != NULL)
-        workspace_memory_->set_data_handle(ws);
+        workspace_mem_->set_data_handle(ws);
     if (this->backward_first_use_) {
         this->backward_stream_->submit(this->backward_primitives_).wait();
         this->backward_first_use_ = false;

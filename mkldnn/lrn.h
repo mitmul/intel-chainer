@@ -97,7 +97,7 @@ private:
     std::shared_ptr<mkldnn::memory>                           bw_x_mem_;
     std::shared_ptr<mkldnn::memory>                           gx_mem_;
     std::shared_ptr<mkldnn::memory>                           gy_mem_;
-    std::shared_ptr<mkldnn::memory>                           workspace_memory_;
+    std::shared_ptr<mkldnn::memory>                           workspace_mem_;
 
     std::shared_ptr<mkldnn::lrn_forward::desc> lrn_fwd_desc_;
     std::shared_ptr<mkldnn::lrn_forward::primitive_desc> lrn_fwd_pd_;

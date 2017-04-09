@@ -17,13 +17,13 @@ private:
     {
         MKLDNNLinear<T>* linear_forward = NULL;
         linear_forward = dynamic_cast<MKLDNNLinear<T>*>(
-                            LayerFactory<T>::getInstance().getLinearLayer(
+                            LayerFactory<T>::get_instance().get_linear_layer(
                                 x_d1, x_d2,
                                 W_d1, W_d2,
                                 b_d1));
         if (linear_forward == NULL) {
             linear_forward = new MKLDNNLinear();
-            LayerFactory<T>::getInstance().setLinearLayer(
+            LayerFactory<T>::get_instance().set_linear_layer(
                                 x_d1, x_d2,
                                 W_d1, W_d2,
                                 b_d1,
@@ -39,7 +39,7 @@ private:
     {
         MKLDNNLinear<T>* linear_backward;
         linear_backward = dynamic_cast<MKLDNNLinear<T>*>(
-                            LayerFactory<T>::getInstance().getLinearLayer(
+                            LayerFactory<T>::get_instance().get_linear_layer(
                                 x_d1, x_d2,
                                 W_d1, W_d2,
                                 b_d1));

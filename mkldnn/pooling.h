@@ -46,12 +46,12 @@ protected:
         assert (alg_kind == pooling_max || alg_kind == pooling_avg);
         if (alg_kind == mkldnn::pooling_max) {
             pooling_forward = dynamic_cast<Pooling<T>*>(
-                                LayerFactory<T>::getInstance().getMaxPoolLayer
+                                LayerFactory<T>::get_instance().get_max_pool_layer
                                 (x_d1, x_d2, x_d3, x_d4,
                                  s_y, s_x, ker_h, ker_w, p_u, p_d, p_l, p_r));
         } else {
             pooling_forward = dynamic_cast<Pooling<float>*>(
-                                LayerFactory<T>::getInstance().getAvgPoolLayer
+                                LayerFactory<T>::get_instance().get_avg_pool_layer
                                 (x_d1, x_d2, x_d3, x_d4,
                                  s_y, s_x, ker_h, ker_w, p_u, p_d, p_l, p_r));
         }
@@ -62,12 +62,12 @@ protected:
                                        ker_h, ker_w,
                                        alg_kind);
             if (alg_kind == mkldnn::pooling_max) {
-                LayerFactory<T>::getInstance().setMaxPoolLayer(
+                LayerFactory<T>::get_instance().set_max_pool_layer(
                                     x_d1, x_d2, x_d3, x_d4,
                                     s_y, s_x, ker_h, ker_w, p_u, p_d, p_l, p_r,
                                     pooling_forward);
             } else {
-                LayerFactory<T>::getInstance().setAvgPoolLayer(
+                LayerFactory<T>::get_instance().set_avg_pool_layer(
                                     x_d1, x_d2, x_d3, x_d4,
                                     s_y, s_x, ker_h, ker_w, p_u, p_d, p_l, p_r,
                                     pooling_forward);
@@ -85,12 +85,12 @@ protected:
         Pooling<T>* pooling_backward = NULL;
         if (alg_kind == mkldnn::pooling_max) {
             pooling_backward = dynamic_cast<Pooling<T>*>(
-                                LayerFactory<T>::getInstance().getMaxPoolLayer
+                                LayerFactory<T>::get_instance().get_max_pool_layer
                                 (x_d1, x_d2, x_d3, x_d4,
                                  s_y, s_x, ker_h, ker_w, p_u, p_d, p_l, p_r));
         } else {
             pooling_backward = dynamic_cast<Pooling<T>*>(
-                                LayerFactory<T>::getInstance().getAvgPoolLayer
+                                LayerFactory<T>::get_instance().get_avg_pool_layer
                                 (x_d1, x_d2, x_d3, x_d4,
                                  s_y, s_x, ker_h, ker_w, p_u, p_d, p_l, p_r));
         }

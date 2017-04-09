@@ -114,7 +114,7 @@ class OpenMpManager {
   explicit OpenMpManager(Collection *collection);
   OpenMpManager(const OpenMpManager &openMpManager);
   OpenMpManager &operator =(const OpenMpManager &openMpManager);
-  static OpenMpManager &getInstance();
+  static OpenMpManager &get_instance();
 
   void getOpenMpEnvVars();
   void getCurrentCpuSet();

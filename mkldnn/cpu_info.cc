@@ -254,7 +254,7 @@ OpenMpManager::OpenMpManager(Collection *collection) :
   getCurrentCoreSet();
 }
 
-OpenMpManager &OpenMpManager::getInstance() {
+OpenMpManager &OpenMpManager::get_instance() {
   static CpuInfo cpuInfo;
   static Collection collection(&cpuInfo);
   static OpenMpManager openMpManager(&collection);
@@ -262,24 +262,24 @@ OpenMpManager &OpenMpManager::getInstance() {
 }
 
 void OpenMpManager::setGpuEnabled() {
-  OpenMpManager &openMpManager = getInstance();
+  OpenMpManager &openMpManager = get_instance();
   openMpManager.isGpuEnabled = true;
 }
 
 void OpenMpManager::setGpuDisabled() {
-  OpenMpManager &openMpManager = getInstance();
+  OpenMpManager &openMpManager = get_instance();
   openMpManager.isGpuEnabled = false;
 }
 
 bool OpenMpManager::isMajorThread(boost::thread::id currentThread) {
-  OpenMpManager &openMpManager = getInstance();
+  OpenMpManager &openMpManager = get_instance();
   return (boost::this_thread::get_id() == openMpManager.mainThreadId);
 }
 
 // Ideally bind given thread to secondary logical core, if
 // only one thread exists then bind to primary one
 void OpenMpManager::bindCurrentThreadToNonPrimaryCoreIfPossible() {
-  OpenMpManager &openMpManager = getInstance();
+  OpenMpManager &openMpManager = get_instance();
   if (openMpManager.isThreadsBindAllowed()) {
     int totalNumberOfAvailableCores = CPU_COUNT(&openMpManager.currentCoreSet);
     int logicalCoreToBindTo = totalNumberOfAvailableCores > 1 ? 1 : 0;
@@ -288,7 +288,7 @@ void OpenMpManager::bindCurrentThreadToNonPrimaryCoreIfPossible() {
 }
 
 void OpenMpManager::bindOpenMpThreads() {
-  OpenMpManager &openMpManager = getInstance();
+  OpenMpManager &openMpManager = get_instance();
 
   if (!openMpManager.isThreadsBindAllowed())
     return;
@@ -405,7 +405,7 @@ void OpenMpManager::bindCurrentThreadToLogicalCoreCpus(unsigned logicalCoreId) {
 }
 
 void OpenMpManager::printVerboseInformation() {
-  OpenMpManager &openMpManager = getInstance();
+  OpenMpManager &openMpManager = get_instance();
 
   LOG(INFO) << "Processor speed [MHz]: "
     << openMpManager.collection.getProcessorSpeedMHz();
@@ -433,7 +433,7 @@ void OpenMpManager::printVerboseInformation() {
 }
 
 unsigned OpenMpManager::getProcessorSpeedMHz() {
-  OpenMpManager &openMpManager = getInstance();
+  OpenMpManager &openMpManager = get_instance();
   return openMpManager.collection.getProcessorSpeedMHz();
 }
 

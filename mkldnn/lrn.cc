@@ -264,11 +264,11 @@ LocalResponseNormalization<T>* LocalResponseNormalization<T>::get_forward_object
     int n, double k, double alpha, double beta, mkldnn::algorithm alg_kind)
 {
     auto lrn_forward = dynamic_cast<LocalResponseNormalization<T>*>(
-        LayerFactory<T>::getInstance().getLRNLayer(x_d1,x_d2,x_d3,x_d4,n,k,alpha,beta));
+        LayerFactory<T>::get_instance().get_lrn_layer(x_d1,x_d2,x_d3,x_d4,n,k,alpha,beta));
     if (lrn_forward == NULL) {
         lrn_forward = new LocalResponseNormalization<T>(n,k,alpha,beta,alg_kind);
         // LOG(INFO) << "new lrn obj " << lrn << " dim " << x_d1;
-        LayerFactory<T>::getInstance().setLRNLayer(x_d1,x_d2,x_d3,x_d4,n,k,alpha,beta,lrn_forward);
+        LayerFactory<T>::get_instance().set_lrn_layer(x_d1,x_d2,x_d3,x_d4,n,k,alpha,beta,lrn_forward);
     }
     return lrn_forward;
 }
@@ -278,7 +278,7 @@ LocalResponseNormalization<T>* LocalResponseNormalization<T>::get_backward_objec
     int n, double k, double alpha, double beta, mkldnn::algorithm alg_kind)
 {
     auto lrn_backward = dynamic_cast<LocalResponseNormalization<T>*>(
-        LayerFactory<T>::getInstance().getLRNLayer(x_d1,x_d2,x_d3,x_d4,n,k,alpha,beta));
+        LayerFactory<T>::get_instance().get_lrn_layer(x_d1,x_d2,x_d3,x_d4,n,k,alpha,beta));
     assert (lrn_backward != NULL);  // we must have already done forward before
     return lrn_backward;
 }

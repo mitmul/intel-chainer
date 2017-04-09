@@ -23,7 +23,7 @@ static Convolution2D<T>* get_forward_object(
 {
     Convolution2D<T>* conv2d_forward = NULL;
     conv2d_forward = dynamic_cast<Convolution2D<T>*> (
-                        LayerFactory<T>::getInstance().getConv2dLayer(
+                        LayerFactory<T>::get_instance().get_conv2d_layer(
                             x_d1, x_d2, x_d3, x_d4,
                             W_d1, W_d2, W_d3, W_d4,
                             b_d1,
@@ -34,7 +34,7 @@ static Convolution2D<T>* get_forward_object(
 
     if (conv2d_forward == NULL) {
         conv2d_forward = new Convolution2D();
-        LayerFactory<T>::getInstance().setConv2dLayer(
+        LayerFactory<T>::get_instance().set_conv2d_layer(
                             x_d1, x_d2, x_d3, x_d4,
                             W_d1, W_d2, W_d3, W_d4,
                             b_d1,
@@ -59,7 +59,7 @@ static Convolution2D<T>* get_backward_object(
 {
     Convolution2D<T>* conv2d_backward;
     conv2d_backward = dynamic_cast<Convolution2D<T>*>(
-                        LayerFactory<T>::getInstance().getConv2dLayer(
+                        LayerFactory<T>::get_instance().get_conv2d_layer(
                          x_d1, x_d2, x_d3, x_d4,
                          W_d1, W_d2, W_d3, W_d4,
                          b_d1,

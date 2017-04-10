@@ -58,11 +58,15 @@ class LocalResponseNormalization(function.Function):
         if switch.enable_lrnF((x,)):
             # print "test mkl forword float32"
             self.y = numpy.empty(x[0].shape,dtype=x[0].dtype)
-            self.ws = numpy.empty(x[0].shape, dtype=x[0].dtype)
+            print "x size is " + str(x[0].size)
             # print "x dtype is" + str(x[0].dtype)
             in_alpha = self.n*self.alpha
-            mkldnn.LocalResponseNormalization_F32.do_forward(x[0],self.y,self.n,self.k,in_alpha,self.beta)
-            # self.mkldnn_lrn.forward(x[0],self.y)
+            # mkldnn.LocalResponseNormalization_F32.do_forward(x[0],self.y,self.ws,self.n,self.k,in_alpha,self.beta)
+            # @staticmethod
+            ws_size = mkldnn.LocalResponseNormalization_F32.get_workspace_size(x[0],self.y,self.n,self.k,in_alpha,self.beta)
+            print "ws_size " + str(ws_size)
+            self.ws = numpy.empty(ws_size, dtype=x[0].dtype)
+            mkldnn.LocalResponseNormalization_F32.do_forward(x[0],self.y,self.ws,self.n,self.k,in_alpha,self.beta)
             # self.mkldnn_lrn = True
             return self.y,
         else:
@@ -85,7 +89,7 @@ class LocalResponseNormalization(function.Function):
             gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
             in_alpha = self.n*self.alpha
             mkldnn.LocalResponseNormalization_F32.do_backward(
-                x[0],gy[0],gx,self.n,self.k,in_alpha,self.beta)
+                x[0],gy[0],gx,self.ws,self.n,self.k,in_alpha,self.beta)
             # self.mkldnn_lrn.backward(x[0],gy[0],gx)
             return gx,
             # else:

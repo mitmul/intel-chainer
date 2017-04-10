@@ -80,7 +80,8 @@
     {( float* gy, int gy_d1, int gy_d2 )}
 %apply ( int N, double K, double ALPHA, double BETA )
     {( int n, double k, double alpha, double beta )}
-
+%apply ( float* IN_ARRAY1, int DIM1)
+    {( float* ws, int ws_d)}
 
 %include "common.h"
 %include "layer_factory.h"

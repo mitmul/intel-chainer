@@ -172,7 +172,7 @@ int LocalResponseNormalization<T>::backward_setup(
         p_.data_format}, *eng_}, gy));
 
     lrn_bwd_src_desc_.reset(new memory::desc({lrn_src_tz},
-        memory_data_type<T>(), p_.diff_data_format));
+        memory_data_type<T>(), format));
     lrn_diff_src_desc_.reset(new memory::desc({lrn_diff_src_tz},
         memory_data_type<T>(), p_.diff_data_format));
     lrn_diff_dst_desc_.reset(new memory::desc({lrn_diff_dst_tz},

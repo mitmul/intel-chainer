@@ -17,13 +17,13 @@ private:
     {
         MKLDNNLinear<T>* linear_forward = NULL;
         linear_forward = dynamic_cast<MKLDNNLinear<T>*>(
-                            LayerFactory<T>::getInstance().getLinearLayer(
+                            LayerFactory<T>::get_instance().get_linear_layer(
                                 x_d1, x_d2,
                                 W_d1, W_d2,
                                 b_d1));
         if (linear_forward == NULL) {
             linear_forward = new MKLDNNLinear();
-            LayerFactory<T>::getInstance().setLinearLayer(
+            LayerFactory<T>::get_instance().set_linear_layer(
                                 x_d1, x_d2,
                                 W_d1, W_d2,
                                 b_d1,
@@ -39,7 +39,7 @@ private:
     {
         MKLDNNLinear<T>* linear_backward;
         linear_backward = dynamic_cast<MKLDNNLinear<T>*>(
-                            LayerFactory<T>::getInstance().getLinearLayer(
+                            LayerFactory<T>::get_instance().get_linear_layer(
                                 x_d1, x_d2,
                                 W_d1, W_d2,
                                 b_d1));
@@ -155,27 +155,27 @@ public:
 
 private:
     //user primmemory
-    std::shared_ptr<mkldnn::memory> user_src_memory_;
-    std::shared_ptr<mkldnn::memory> user_weights_memory_;
-    std::shared_ptr<mkldnn::memory> user_bias_memory_;
-    std::shared_ptr<mkldnn::memory> user_dst_memory_;
-    std::shared_ptr<mkldnn::memory> user_dst_diff_memory_;
-    std::shared_ptr<mkldnn::memory> user_src_diff_memory_;
-    std::shared_ptr<mkldnn::memory> user_weights_diff_memory_;
-    std::shared_ptr<mkldnn::memory> user_bias_diff_memory_;
+    std::shared_ptr<mkldnn::memory> user_src_mem_;
+    std::shared_ptr<mkldnn::memory> user_weights_mem_;
+    std::shared_ptr<mkldnn::memory> user_bias_mem_;
+    std::shared_ptr<mkldnn::memory> user_dst_mem_;
+    std::shared_ptr<mkldnn::memory> user_dst_diff_mem_;
+    std::shared_ptr<mkldnn::memory> user_src_diff_mem_;
+    std::shared_ptr<mkldnn::memory> user_weights_diff_mem_;
+    std::shared_ptr<mkldnn::memory> user_bias_diff_mem_;
     /*******mkldnn internal prim memory*****/
     //forward
-    std::shared_ptr<mkldnn::memory> fwd_internal_src_memory_;
-    std::shared_ptr<mkldnn::memory> fwd_internal_weights_memory_;
-    std::shared_ptr<mkldnn::memory> fwd_internal_bias_memory_;
-    std::shared_ptr<mkldnn::memory> fwd_internal_dst_memory_;
+    std::shared_ptr<mkldnn::memory> fwd_internal_src_mem_;
+    std::shared_ptr<mkldnn::memory> fwd_internal_weights_mem_;
+    std::shared_ptr<mkldnn::memory> fwd_internal_bias_mem_;
+    std::shared_ptr<mkldnn::memory> fwd_internal_dst_mem_;
     //backward
-    std::shared_ptr<mkldnn::memory> bwd_internal_src_memory_;
-    std::shared_ptr<mkldnn::memory> bwd_internal_weights_memory_;
-    std::shared_ptr<mkldnn::memory> bwd_internal_dst_diff_memory_;
-    std::shared_ptr<mkldnn::memory> bwd_internal_src_diff_memory_;
-    std::shared_ptr<mkldnn::memory> bwd_internal_weights_diff_memory_;
-    std::shared_ptr<mkldnn::memory> bwd_internal_bias_diff_memory_;
+    std::shared_ptr<mkldnn::memory> bwd_internal_src_mem_;
+    std::shared_ptr<mkldnn::memory> bwd_internal_weights_mem_;
+    std::shared_ptr<mkldnn::memory> bwd_internal_dst_diff_mem_;
+    std::shared_ptr<mkldnn::memory> bwd_internal_src_diff_mem_;
+    std::shared_ptr<mkldnn::memory> bwd_internal_weights_diff_mem_;
+    std::shared_ptr<mkldnn::memory> bwd_internal_bias_diff_mem_;
     //reorder primitve
     //forward
     mkldnn::primitive fwd_reorder_src_;

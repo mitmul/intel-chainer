@@ -42,10 +42,10 @@ LayerFactory<T>::LayerFactory()
 }
 
 template<typename T>
-Layer<T>* LayerFactory<T>::getLayer(std::string key)
+Layer<T>* LayerFactory<T>::get_layer(std::string key)
 {
-    auto stream_iter = map.find(key);
-    if (stream_iter == map.end()) {
+    auto stream_iter = map_.find(key);
+    if (stream_iter == map_.end()) {
         return NULL;
     } else {
         return stream_iter->second;
@@ -53,11 +53,11 @@ Layer<T>* LayerFactory<T>::getLayer(std::string key)
 }
 
 template<typename T>
-void LayerFactory<T>::setLayer(std::string key, Layer<T>* layer)
+void LayerFactory<T>::set_layer(std::string key, Layer<T>* layer)
 {
-    auto stream_iter = map.find(key);
-    if (stream_iter == map.end()) {
-        map[key]=layer;
+    auto stream_iter = map_.find(key);
+    if (stream_iter == map_.end()) {
+        map_[key]=layer;
     } else {
         throw new std::invalid_argument("cannot set same key to a new stream");
     }
@@ -66,28 +66,28 @@ void LayerFactory<T>::setLayer(std::string key, Layer<T>* layer)
 #define RELU_PREFIX "relu_"
 
 template<typename T>
-Layer<T>* LayerFactory<T>::getRELULayer(int size)
+Layer<T>* LayerFactory<T>::get_relu_layer(int size)
 {
     std::string key = RELU_PREFIX;
 
     key += int_to_string(size);
-    return getLayer(key);
+    return get_layer(key);
 }
 
 template<typename T>
-void LayerFactory<T>::setRELULayer(int size, Layer<T>*   layer)
+void LayerFactory<T>::set_relu_layer(int size, Layer<T>*   layer)
 {
     std::string key = RELU_PREFIX;
 
     key += int_to_string(size);
-    setLayer(key, layer);
+    set_layer(key, layer);
 }
 
 #define RELU4D_PREFIX "relu4d_"
 
 template<typename T>
-Layer<T>* LayerFactory<T>::getRELU4dLayer(
-        int x_d1, int x_d2, int x_d3, int x_d4)
+Layer<T>* LayerFactory<T>::get_relu4d_layer(
+          int x_d1, int x_d2, int x_d3, int x_d4)
 {
     std::string key = RELU4D_PREFIX;
 
@@ -96,11 +96,11 @@ Layer<T>* LayerFactory<T>::getRELU4dLayer(
     key += int_to_string(x_d3);
     key += int_to_string(x_d4);
 
-    return getLayer(key);
+    return get_layer(key);
 }
 
 template<typename T>
-void LayerFactory<T>::setRELU4dLayer(
+void LayerFactory<T>::set_relu4d_layer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         Layer<T>* layer)
 {
@@ -111,17 +111,17 @@ void LayerFactory<T>::setRELU4dLayer(
     key += int_to_string(x_d3);
     key += int_to_string(x_d4);
 
-    setLayer(key, layer);
+    set_layer(key, layer);
 }
 
 #define MAX_POOLING_PREFIX "maxpool_"
 template<typename T>
-Layer<T>* LayerFactory<T>::getMaxPoolLayer(
-        int x_d1, int x_d2, int x_d3, int x_d4,
-        int stride_y, int stride_x,
-        int ksize_h,  int ksize_w,
-        int pad_u,    int pad_d,
-        int pad_l,    int pad_r)
+Layer<T>* LayerFactory<T>::get_max_pool_layer(
+          int x_d1, int x_d2, int x_d3, int x_d4,
+          int stride_y, int stride_x,
+          int ksize_h,  int ksize_w,
+          int pad_u,    int pad_d,
+          int pad_l,    int pad_r)
 {
     std::string key = MAX_POOLING_PREFIX;
 
@@ -138,11 +138,11 @@ Layer<T>* LayerFactory<T>::getMaxPoolLayer(
     key += int_to_string(pad_l);
     key += int_to_string(pad_r);
 
-    return getLayer(key);
+    return get_layer(key);
 }
 
 template<typename T>
-void LayerFactory<T>::setMaxPoolLayer(
+void LayerFactory<T>::set_max_pool_layer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h,  int ksize_w,
@@ -165,17 +165,17 @@ void LayerFactory<T>::setMaxPoolLayer(
     key += int_to_string(pad_l);
     key += int_to_string(pad_r);
 
-    setLayer(key, layer);
+    set_layer(key, layer);
 }
 
 #define AVG_POOLING_PREFIX "avgpool_"
 template<typename T>
-Layer<T>* LayerFactory<T>::getAvgPoolLayer(
-        int x_d1, int x_d2, int x_d3, int x_d4,
-        int stride_y, int stride_x,
-        int ksize_h,  int ksize_w,
-        int pad_u,    int pad_d,
-        int pad_l,    int pad_r)
+Layer<T>* LayerFactory<T>::get_avg_pool_layer(
+          int x_d1, int x_d2, int x_d3, int x_d4,
+          int stride_y, int stride_x,
+          int ksize_h,  int ksize_w,
+          int pad_u,    int pad_d,
+          int pad_l,    int pad_r)
 {
     std::string key = AVG_POOLING_PREFIX;
 
@@ -192,11 +192,11 @@ Layer<T>* LayerFactory<T>::getAvgPoolLayer(
     key += int_to_string(pad_l);
     key += int_to_string(pad_r);
 
-    return getLayer(key);
+    return get_layer(key);
 }
 
 template<typename T>
-void LayerFactory<T>::setAvgPoolLayer(
+void LayerFactory<T>::set_avg_pool_layer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int stride_y, int stride_x,
         int ksize_h,  int ksize_w,
@@ -219,19 +219,19 @@ void LayerFactory<T>::setAvgPoolLayer(
     key += int_to_string(pad_l);
     key += int_to_string(pad_r);
 
-    setLayer(key, layer);
+    set_layer(key, layer);
 }
 
 #define LRN_PREFIX "lrn_"
 template<typename T>
-Layer<T>* LayerFactory<T>::getLRNLayer(int             x_d1,
-                                        int             x_d2,
-                                        int             x_d3,
-                                        int             x_d4,
-                                        int             local_size,
-                                        double           k,
-                                        double           alpha,
-                                        double           beta)
+Layer<T>* LayerFactory<T>::get_lrn_layer(int             x_d1,
+                                         int             x_d2,
+                                         int             x_d3,
+                                         int             x_d4,
+                                         int             local_size,
+                                         double           k,
+                                         double           alpha,
+                                         double           beta)
 {
     std::string key = LRN_PREFIX;
 
@@ -244,19 +244,19 @@ Layer<T>* LayerFactory<T>::getLRNLayer(int             x_d1,
     key += double_to_string(alpha);
     key += double_to_string(beta);
 
-    return getLayer(key);
+    return get_layer(key);
 }
 
 template<typename T>
-void LayerFactory<T>::setLRNLayer(int              x_d1,
-                               int              x_d2,
-                               int              x_d3,
-                               int              x_d4,
-                               int              local_size,
-                               double            k,
-                               double            alpha,
-                               double            beta,
-                               Layer<T>*    layer)
+void LayerFactory<T>::set_lrn_layer(int              x_d1,
+                                    int              x_d2,
+                                    int              x_d3,
+                                    int              x_d4,
+                                    int              local_size,
+                                    double            k,
+                                    double            alpha,
+                                    double            beta,
+                                    Layer<T>*    layer)
 {
     std::string key = LRN_PREFIX;
 
@@ -269,14 +269,14 @@ void LayerFactory<T>::setLRNLayer(int              x_d1,
     key += double_to_string(alpha);
     key += double_to_string(beta);
 
-    setLayer(key, layer);
+    set_layer(key, layer);
 }
 
 #define SOFTMAX2D_PREFIX "softmax2d_"
 template<typename T>
-Layer<T>* LayerFactory<T>::getSoftmax2DLayer(int                d1,
-                                             int                d2,
-                                             int                axis)
+Layer<T>* LayerFactory<T>::get_softmax2d_layer(int                d1,
+                                               int                d2,
+                                               int                axis)
 {
     std::string key = SOFTMAX2D_PREFIX;
 
@@ -284,14 +284,14 @@ Layer<T>* LayerFactory<T>::getSoftmax2DLayer(int                d1,
     key += int_to_string(d2);
     key += int_to_string(axis);
 
-    return getLayer(key);
+    return get_layer(key);
 }
 
 template<typename T>
-void LayerFactory<T>::setSoftmax2DLayer(int                d1,
-                                        int                d2,
-                                        int                axis,
-                                        Layer<T>*      layer)
+void LayerFactory<T>::set_softmax2d_layer(int                d1,
+                                          int                d2,
+                                          int                axis,
+                                          Layer<T>*      layer)
 {
     std::string key = SOFTMAX2D_PREFIX;
 
@@ -299,16 +299,16 @@ void LayerFactory<T>::setSoftmax2DLayer(int                d1,
     key += int_to_string(d2);
     key += int_to_string(axis);
 
-    setLayer(key, layer);
+    set_layer(key, layer);
 }
 
 #define SOFTMAX4D_PREFIX "softmax4d_"
 template<typename T>
-Layer<T>* LayerFactory<T>::getSoftmax4DLayer(int                d1,
-                                             int                d2,
-                                             int                d3,
-                                             int                d4,
-                                             int                axis)
+Layer<T>* LayerFactory<T>::get_softmax4d_layer(int                d1,
+                                               int                d2,
+                                               int                d3,
+                                               int                d4,
+                                               int                axis)
 {
     std::string key = SOFTMAX4D_PREFIX;
 
@@ -318,16 +318,16 @@ Layer<T>* LayerFactory<T>::getSoftmax4DLayer(int                d1,
     key += int_to_string(d4);
     key += int_to_string(axis);
 
-    return getLayer(key);
+    return get_layer(key);
 }
 
 template<typename T>
-void LayerFactory<T>::setSoftmax4DLayer(int                d1,
-                                        int                d2,
-                                        int                d3,
-                                        int                d4,
-                                        int                axis,
-                                        Layer<T>*      layer)
+void LayerFactory<T>::set_softmax4d_layer(int                d1,
+                                          int                d2,
+                                          int                d3,
+                                          int                d4,
+                                          int                axis,
+                                          Layer<T>*      layer)
 {
     std::string key = SOFTMAX4D_PREFIX;
 
@@ -337,19 +337,19 @@ void LayerFactory<T>::setSoftmax4DLayer(int                d1,
     key += int_to_string(d4);
     key += int_to_string(axis);
 
-    setLayer(key, layer);
+    set_layer(key, layer);
 }
 
 #define CONVOLUTION2D_PREFIX "conv2d_"
 template<typename T>
-Layer<T>* LayerFactory<T>::getConv2dLayer(
-        int x_d1, int x_d2, int x_d3, int x_d4,
-        int W_d1, int W_d2, int W_d3, int W_d4,
-        int b_d1,
-        int ksize_h, int ksize_w,
-        int stride_y, int stride_x,
-        int pad_l_h, int pad_l_w,
-        int pad_r_h, int pad_r_w)
+Layer<T>* LayerFactory<T>::get_conv2d_layer(
+          int x_d1, int x_d2, int x_d3, int x_d4,
+          int W_d1, int W_d2, int W_d3, int W_d4,
+          int b_d1,
+          int ksize_h, int ksize_w,
+          int stride_y, int stride_x,
+          int pad_l_h, int pad_l_w,
+          int pad_r_h, int pad_r_w)
 {
     std::string key = CONVOLUTION2D_PREFIX;
 
@@ -371,11 +371,11 @@ Layer<T>* LayerFactory<T>::getConv2dLayer(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    return getLayer(key);
+    return get_layer(key);
 }
 
 template<typename T>
-void LayerFactory<T>::setConv2dLayer(
+void LayerFactory<T>::set_conv2d_layer(
         int x_d1, int x_d2, int x_d3, int x_d4,
         int W_d1, int W_d2, int W_d3, int W_d4,
         int b_d1,
@@ -405,12 +405,12 @@ void LayerFactory<T>::setConv2dLayer(
     key += int_to_string(pad_r_h);
     key += int_to_string(pad_r_w);
 
-    return setLayer(key, layer);
+    return set_layer(key, layer);
 }
 
 #define LINEAR_PREFIX "linear_"
 template<typename T>
-Layer<T>* LayerFactory<T>::getLinearLayer(
+Layer<T>* LayerFactory<T>::get_linear_layer(
             int x_d1, int x_d2,
             int W_d1, int W_d2,
             int b_d1)
@@ -422,11 +422,11 @@ Layer<T>* LayerFactory<T>::getLinearLayer(
     key += int_to_string(W_d1);
     key += int_to_string(W_d2);
     key += int_to_string(b_d1);
-    return getLayer(key);
+    return get_layer(key);
 }
 
 template<typename T>
-void LayerFactory<T>::setLinearLayer(
+void LayerFactory<T>::set_linear_layer(
         int x_d1, int x_d2,
         int W_d1, int W_d2,
         int b_d1,
@@ -438,7 +438,7 @@ void LayerFactory<T>::setLinearLayer(
     key += int_to_string(W_d1);
     key += int_to_string(W_d2);
     key += int_to_string(b_d1);
-    return setLayer(key, layer);
+    return set_layer(key, layer);
 }
 
 template class LayerFactory<float>;

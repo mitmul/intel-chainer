@@ -32,9 +32,9 @@ void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_in
         memory::dims input_tz = concat_input[i].dims;
         memory::format src_mfmt = memory::format::nchw;
 
-        shared_ptr<memory::primitive_desc> input_mem_desc;
-        input_mem_desc.reset(new memory::primitive_desc({input_tz, memory_data_type<T>(), src_mfmt}, cpu_engine));
-        srcs_prim_desc_.push_back(*input_mem_desc);
+        shared_ptr<memory::primitive_desc> input_mpd;
+        input_mpd.reset(new memory::primitive_desc({input_tz, memory_data_type<T>(), src_mfmt}, cpu_engine));
+        srcs_pd_.push_back(*input_mpd);
         
         std::shared_ptr<memory> input_mem;
         input_mem.reset(new memory({{{input_tz},memory_data_type<T>(), src_mfmt}, cpu_engine}));
@@ -45,30 +45,30 @@ void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_in
 
     //set the user des memory primitive/desc
     user_dst_md_.reset(new memory::desc(output_tz_, memory_data_type<T>(), memory::format::any));
-    user_dst_memory_.reset(new memory(
+    user_dst_mem_.reset(new memory(
                 {{{output_tz_}, memory_data_type<T>(), memory::format::nchw}, cpu_engine}));
 
     // create concat primitive desc and primitive
     fwd_concat_pd_.reset(
-            new concat::primitive_desc(*user_dst_md_, axis_, srcs_prim_desc_));
+            new concat::primitive_desc(*user_dst_md_, axis_, srcs_pd_));
 
     /*
      * yli135:
      * Fome mkldnn.hpp, only can get dst_primitive_des
      */
-    dst_memory_ = user_dst_memory_;
+    dst_mem_ = user_dst_mem_;
     bool fwd_reorder_concat_dst = false;
     if (memory::primitive_desc(fwd_concat_pd_.get()->dst_primitive_desc())
-            != user_dst_memory_.get()->get_primitive_desc()) {
+            != user_dst_mem_.get()->get_primitive_desc()) {
         LOG(INFO) << "concat fwd reorder dst memory";
-        dst_memory_.reset(
+        dst_mem_.reset(
                 new memory(fwd_concat_pd_.get()->dst_primitive_desc()));
-        concat_reorder_dst_ = reorder(*dst_memory_, *user_dst_memory_);
+        concat_reorder_dst_ = reorder(*dst_mem_, *user_dst_mem_);
         fwd_reorder_concat_dst = true;
     }
 
     fwd_concat_prim_.reset(
-            new concat(*fwd_concat_pd_, fwd_input_primitives_at_, *dst_memory_));
+            new concat(*fwd_concat_pd_, fwd_input_primitives_at_, *dst_mem_));
     
     /* push primitives into primitive vector */
     fwd_primitives_.push_back(*fwd_concat_prim_);
@@ -107,7 +107,7 @@ void Concat<T>::forward(int num_concats, char** data, int* n, int* c, int* h, in
     }
     
     /* set memory handle for dst memory */
-    user_dst_memory_->set_data_handle(y);
+    user_dst_mem_->set_data_handle(y);
 
     if (fwd_first_run_) {
         fwd_stream_->submit(fwd_primitives_).wait();
@@ -140,9 +140,9 @@ void Concat<T>::backward_setup(int num_concats, Concat<T>::concat_data* concat_o
         memory::dims diff_input_tz = concat_output[i].dims;
         memory::format diff_src_mfmt = memory::format::nchw;
 
-        shared_ptr<memory::primitive_desc> diff_input_mem_desc;
-        diff_input_mem_desc.reset(new memory::primitive_desc({diff_input_tz, memory_data_type<T>(), diff_src_mfmt}, cpu_engine));
-        diff_srcs_prim_desc_.push_back(*diff_input_mem_desc);
+        shared_ptr<memory::primitive_desc> diff_input_mpd;
+        diff_input_mpd.reset(new memory::primitive_desc({diff_input_tz, memory_data_type<T>(), diff_src_mfmt}, cpu_engine));
+        diff_srcs_pd_.push_back(*diff_input_mpd);
         
         std::shared_ptr<memory> diff_input_mem;
         diff_input_mem.reset(new memory({{{diff_input_tz},memory_data_type<T>(), diff_src_mfmt}, cpu_engine}));
@@ -155,7 +155,7 @@ void Concat<T>::backward_setup(int num_concats, Concat<T>::concat_data* concat_o
 
         std::shared_ptr<reorder::primitive_desc> reorder_pd;
         reorder_pd.reset(
-                new reorder::primitive_desc(view_pd.get()->dst_primitive_desc(), *diff_input_mem_desc));
+                new reorder::primitive_desc(view_pd.get()->dst_primitive_desc(), *diff_input_mpd));
 
         shared_ptr<mkldnn::reorder> reorder_prim;
         reorder_prim.reset(

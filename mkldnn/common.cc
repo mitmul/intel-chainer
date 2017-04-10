@@ -8,7 +8,7 @@
 using namespace mkldnn;
 
 engine cpu_engine(engine::cpu, 0);
-bool enableMkldnn = true;
+static bool s_enable_mkldnn = true;
 unsigned char dummy[PAGE_SIZE] __attribute__((aligned(PAGE_SIZE)));
 #define DUMMY_VAL 0xcc
 
@@ -37,10 +37,10 @@ int global_init()
 
 bool enabled()
 {
-    return enableMkldnn;
+    return s_enable_mkldnn;
 }
 
-bool checkDummy()
+bool check_dummy()
 {
     for (int i=0; i<PAGE_SIZE; i++) {
         if (dummy[i] != DUMMY_VAL) {
@@ -50,12 +50,12 @@ bool checkDummy()
     return true;
 }
 
-void setMkldnnEnable(bool isEnabled)
+void set_mkldnn_enable(bool is_enabled)
 {
-    enableMkldnn = isEnabled;
+    s_enable_mkldnn = is_enabled;
 }
 
-void enableGoogleLogging()
+void enable_google_logging()
 {
    google::SetStderrLogging(0);
 }

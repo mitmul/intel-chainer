@@ -85,7 +85,7 @@ protected:
         int x_d1, int x_d2, int x_d3, int x_d4,
         int n, double k, double alpha, double beta, mkldnn::algorithm alg_kind);
 private:
-    lrn_params p;
+    lrn_params p_;
 
     //forward
     std::shared_ptr<mkldnn::memory>                           user_x_mem_;
@@ -97,7 +97,7 @@ private:
     std::shared_ptr<mkldnn::memory>                           bw_x_mem_;
     std::shared_ptr<mkldnn::memory>                           gx_mem_;
     std::shared_ptr<mkldnn::memory>                           gy_mem_;
-    std::shared_ptr<mkldnn::memory>                           workspace_memory_;
+    std::shared_ptr<mkldnn::memory>                           workspace_mem_;
 
     std::shared_ptr<mkldnn::lrn_forward::desc> lrn_fwd_desc_;
     std::shared_ptr<mkldnn::lrn_forward::primitive_desc> lrn_fwd_pd_;
@@ -107,7 +107,7 @@ private:
 
     //backward
     std::shared_ptr<mkldnn::memory> lrn_bwd_user_src_mem_, lrn_diff_src_mem_, lrn_diff_dst_mem_;
-    std::shared_ptr<mkldnn::memory::desc> lrn_bwd_src_desc, lrn_diff_src_desc, lrn_diff_dst_desc;
+    std::shared_ptr<mkldnn::memory::desc> lrn_bwd_src_desc_, lrn_diff_src_desc_, lrn_diff_dst_desc_;
 
     std::shared_ptr<mkldnn::lrn_backward::desc> lrn_bwd_desc_;
     std::shared_ptr<mkldnn::lrn_backward::primitive_desc> lrn_bwd_pd_;
@@ -122,7 +122,7 @@ private:
     mkldnn::primitive                         reorder_gx_;
     mkldnn::primitive                         reorder_gy_;
 
-    std::shared_ptr<mkldnn::engine> eng;
+    std::shared_ptr<mkldnn::engine> eng_;
 
 };
 

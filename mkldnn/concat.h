@@ -44,8 +44,8 @@ private:
        mkldnn::memory::dims output_tz_; //output dims
        std::shared_ptr<mkldnn::memory::primitive_desc> user_dst_mpd_; //user dst mpd
        std::shared_ptr<mkldnn::memory::desc> user_dst_md_; //user dst md
-       std::shared_ptr<mkldnn::memory> user_dst_memory_; // usr dst memory
-       std::shared_ptr<mkldnn::memory> dst_memory_; // mkldnn dst memory
+       std::shared_ptr<mkldnn::memory> user_dst_mem_; // usr dst memory
+       std::shared_ptr<mkldnn::memory> dst_mem_; // mkldnn dst memory
        std::shared_ptr<mkldnn::stream> fwd_stream_; // fwd stream
        std::vector<mkldnn::primitive> fwd_primitives_; //fwd primitive vector
        std::shared_ptr<mkldnn::concat::primitive_desc> fwd_concat_pd_; //fwd prim desc
@@ -53,7 +53,7 @@ private:
        mkldnn::primitive concat_reorder_dst_; //reorder y
        std::vector<mkldnn::primitive::at> fwd_input_primitives_at_; //fwd input primitives     
        std::vector<std::shared_ptr<mkldnn::memory>> fwd_input_primitives_; // fwd input memory
-       std::vector<mkldnn::memory::primitive_desc> srcs_prim_desc_; //src primitve desc vector
+       std::vector<mkldnn::memory::primitive_desc> srcs_pd_; //src primitve desc vector
 
 
 
@@ -64,7 +64,7 @@ private:
        std::vector<mkldnn::reorder> reorders_;
        std::vector<mkldnn::primitive> bwd_primitives_; //bwd primitive vector
        std::shared_ptr<mkldnn::stream> bwd_stream_;
-       std::vector<mkldnn::memory::primitive_desc> diff_srcs_prim_desc_; //diff src primitve desc vector
+       std::vector<mkldnn::memory::primitive_desc> diff_srcs_pd_; //diff src primitve desc vector
       
         
 };

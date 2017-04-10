@@ -32,12 +32,12 @@ SoftmaxCrossEntropy<T>::softmax_cross_entropy_create_backward(int* dims, int ndi
 template<typename T>
 int SoftmaxCrossEntropy_2D<T>::forward(T* x, int dummy_x,
                                        T* y, int dummy_y,
-				       int* dims, int ndim)
+                                       int* dims, int ndim)
 {
     // Softmax mkldnn optimization
     Softmax<T>* softmax = Softmax<T>::softmax_create_forward(x, dummy_x,
                                                              y, dummy_y,
-						             dims, ndim, 1);
+                                                             dims, ndim, 1);
     softmax->forward();
 
     // log(F_Softmax)
@@ -46,9 +46,9 @@ int SoftmaxCrossEntropy_2D<T>::forward(T* x, int dummy_x,
 
     for (n = 0; n < dims[0]; n++) {
         for (c = 0; c < dims[1]; c++) {
-	    cur = y + n * dims[1] + c;
-	    *cur = logf(*cur);
-	}
+            cur = y + n * dims[1] + c;
+            *cur = logf(*cur);
+        }
     }
 
     return 0;
@@ -57,15 +57,15 @@ int SoftmaxCrossEntropy_2D<T>::forward(T* x, int dummy_x,
 template<typename T>
 int SoftmaxCrossEntropy_2D<T>::backward(T* gx, int dummy_gx,
                                         int* label, int nlabel,
-					int* dims, int ndim)
+                                        int* dims, int ndim)
 {
     int n, c;
 
     for (n = 0; n < dims[0]; n++) {
         if (label[n] >= 0 && label[n] < dims[1]) {
-	    c = label[n];
-	    *(gx + n * dims[1] + c) -= 1;
-	}
+            c = label[n];
+            *(gx + n * dims[1] + c) -= 1;
+        }
     }
 
     return 0;
@@ -74,7 +74,7 @@ int SoftmaxCrossEntropy_2D<T>::backward(T* gx, int dummy_gx,
 template<typename T>
 int SoftmaxCrossEntropy_4D<T>::forward(T* x, int dummy_x,
                                        T* y, int dummy_y,
-				       int* dims, int ndim)
+                       int* dims, int ndim)
 {
     return 0;
 }
@@ -82,7 +82,7 @@ int SoftmaxCrossEntropy_4D<T>::forward(T* x, int dummy_x,
 template<typename T>
 int SoftmaxCrossEntropy_4D<T>::backward(T* gx, int dummy_gx,
                                         int* label, int nlabel,
-					int* dims, int ndim)
+                    int* dims, int ndim)
 {
     return 0;
 }

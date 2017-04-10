@@ -6,8 +6,8 @@
 #define PAGE_SIZE 4096
 int global_init();
 bool enabled();
-void setMkldnnEnable(bool isEnabled);
-void enableGoogleLogging();
+void set_mkldnn_enable(bool is_enabled);
+void enable_google_logging();
 extern unsigned char dummy[PAGE_SIZE];
 #endif // _COMMON_H_
 

@@ -16,5 +16,6 @@ static mkldnn::memory::data_type memory_data_type() {
     return mkldnn::memory::data_type::data_undef;
 }
 
-
+int cpu_support_avx512_p(void);
+int cpu_support_avx2_p(void);
 // vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

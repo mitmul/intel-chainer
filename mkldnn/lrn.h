@@ -33,7 +33,7 @@ public:
         int n, double k, double alpha, double beta,
         mkldnn::algorithm alg_kind = mkldnn::algorithm::lrn_across_channels)
     {
-        // LOG(INFO) << "get_workspace_size";
+        LOG(INFO) << "get_workspace_size";
         auto forward_object = get_forward_object(
             x_d1, x_d2, x_d3, x_d4, n, k, alpha, beta, alg_kind);
         // LOG(INFO) << "forward";

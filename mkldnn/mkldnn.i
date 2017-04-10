@@ -16,6 +16,7 @@
     #include "lrn.h"
     #include "softmax_cross_entropy.h"
     #include "concat.h"
+    #include "sum.h"
 %}
 
 %include "numpy.i"
@@ -96,6 +97,7 @@
 %include "lrn.h"
 %include "softmax_cross_entropy.h"
 %include "concat.h"
+%include "sum.h"
 
 /*
 * Support Concat to get a variable size tuple
@@ -147,7 +149,8 @@
     free($6);
 }
 %apply (int num_concats, char** data, int* n, int* c, int* h, int* w) {
-    (int num_concats, char** data, int* n, int* c, int* h, int* w)
+    (int num_concats, char** data, int* n, int* c, int* h, int* w),
+    (int num_sum, char** data, int* n, int* c, int* h, int* w)
 }
 
 %template(Layer_F32) Layer<float>;
@@ -163,3 +166,4 @@
 %template(Linear_F32) MKLDNNLinear<float>;
 %template(SoftmaxCrossEntropy_F32) SoftmaxCrossEntropy<float>;
 %template(Concat_F32) Concat<float>;
+%template(Sum_F32) Sum<float>;

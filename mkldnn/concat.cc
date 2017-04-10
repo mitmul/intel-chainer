@@ -53,8 +53,7 @@ void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_in
             new concat::primitive_desc(*user_dst_md_, axis_, srcs_pd_));
 
     /*
-     * yli135:
-     * Fome mkldnn.hpp, only can get dst_primitive_des
+     * Check whether need to reorder for dst mem
      */
     dst_mem_ = user_dst_mem_;
     bool fwd_reorder_concat_dst = false;

@@ -406,7 +406,6 @@ Actual: {0}'''.format(type(data))
                         acc_grad's length is not 0, means need to do grad accumulate
                         call native MKLDNN sum primitive
                         """
-                        print "acc_grad=", len(acc_grad)
                         y = numpy.empty((grad_tmp.shape), dtype=grad_tmp.dtype)
                         acc_grad += (grad_tmp,)
                         mkldnn_sum = mkldnn.Sum_F32();

@@ -38,6 +38,7 @@ class Convolution2DFunction(function.Function):
                  deterministic=False, conv_link=None):
         self.sy, self.sx = _pair(stride)
         self.ph, self.pw = _pair(pad)
+        self.pd, self.pr = _pair(pad)
         self.use_cudnn = use_cudnn
         self.cover_all = cover_all
         self.deterministic = deterministic
@@ -75,7 +76,7 @@ class Convolution2DFunction(function.Function):
         """
         For mkldnn backend, only support float32 for x and W
         """
-        if switch.enable_convF(inputs) and self.cover_all is False:
+        if switch.enable_convF(inputs):
             """
             delay to create primitive here, because we can not get both W and x dtype in link init
             TODO: in future, native object create will be hidden in layer factory
@@ -87,12 +88,15 @@ class Convolution2DFunction(function.Function):
                                       cover_all=self.cover_all)
             assert out_w > 0, 'Width in the output should be positive.'
             
+            self.pd = self.sy*(out_h-1) + kh - h - self.ph
+            self.pr = self.sx*(out_w-1) + kw - w - self.pw
+
             y = numpy.empty(shape=(n, out_c, out_h, out_w), dtype=x.dtype)
             
             if b is not None:
-                mkldnn.Convolution2D_F32.do_forward(x, W, b, y, kh, kw, self.sx, self.sy, self.ph, self.pw, self.ph, self.pw)
+                mkldnn.Convolution2D_F32.do_forward(x, W, b, y, kh, kw, self.sx, self.sy, self.ph, self.pw, self.pd, self.pr)
             else:
-                mkldnn.Convolution2D_F32.do_forward(x, W, y, kh, kw, self.sx, self.sy, self.ph, self.pw, self.ph, self.pw)
+                mkldnn.Convolution2D_F32.do_forward(x, W, y, kh, kw, self.sx, self.sy, self.ph, self.pw, self.pd, self.pr)
             return y,
             
         else:
@@ -187,7 +191,7 @@ class Convolution2DFunction(function.Function):
         """
         For MKLDNN backward, only support float32
         """
-        if switch.enable_convF(inputs) and self.cover_all is False:
+        if switch.enable_convF(inputs):
             """
             delay to create primitive here, because we can not get both W and x dtype in link init
             TODO: in future, native object create will be hidden in layer factory
@@ -196,11 +200,11 @@ class Convolution2DFunction(function.Function):
             gx = numpy.empty(shape=(n, c, h, w), dtype=W.dtype)
             
             if b is None:
-                mkldnn.Convolution2D_F32.do_backward(x, W, gy, gW, gx, kh, kw, self.sy, self.sx, self.ph, self.pw, self.ph, self.pw, self.mkldnn_opt)
+                mkldnn.Convolution2D_F32.do_backward(x, W, gy, gW, gx, kh, kw, self.sy, self.sx, self.ph, self.pw, self.pd, self.pr, self.mkldnn_opt)
                 return gx, gW
             else:
                 gb = numpy.empty(shape=b.shape, dtype=W.dtype)
-                mkldnn.Convolution2D_F32.do_backward(x, W, b, gy, gW, gx, gb, kh, kw, self.sy, self.sx, self.ph, self.pw, self.ph, self.pw, self.mkldnn_opt)
+                mkldnn.Convolution2D_F32.do_backward(x, W, b, gy, gW, gx, gb, kh, kw, self.sy, self.sx, self.ph, self.pw, self.pd, self.pr, self.mkldnn_opt)
                 return gx, gW, gb
         else:
             gW = numpy.tensordot(

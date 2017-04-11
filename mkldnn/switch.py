@@ -14,14 +14,17 @@ supportTypes = (numpy.float32,)
 
 
 def SupportedInput(tul):
-	isSupportType = True
-	for x in tul:
-		if x[0].dtype  not in supportTypes:
-			isSupportType = False
-			break
-		else:
-			isSupportType = True
-	return isSupportType
+    isSupportType = True
+    for x in tul:
+        if len(x) == 0:
+            continue
+
+        if x[0].dtype  not in supportTypes:
+            isSupportType = False
+            break
+        else:
+            isSupportType = True
+    return isSupportType
 
 
 def enable_convF(tul):

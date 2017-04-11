@@ -41,30 +41,32 @@ class Concat(function.Function):
                 type_check.expect(in_types[0].shape[d] == in_types[i].shape[d])
 
     def forward(self, xs):
-        if switch.enable_concatF((xs,)):
-        # if mkldnn.enabled() and switch.enable_concat is True:
+        if switch.enable_concatF((xs,)) and self.axis == 1 and xs[0].ndim == 4:
             out_c = 0
             xs_new = ()
-            
-            # tuple's element value is not continuous, need to copy it so that native can get correct value from buffer address
-            for xi in xs:
-                tmp = xi.copy().astype(numpy.float32)
-                xs_new += (tmp,)
-                out_c += xi.shape[1]
 
-            # if self.mkldnn_concat is None:
-                # if xs[0].dtype == numpy.float32:
+            need_copy = False
+            for xi in xs:
+                if xi.flags.contiguous is False:
+                    need_copy = True
+            
+            # tuple's element value is not c continuous, need to copy it so that native can get correct value from buffer address
+            for xi in xs:
+                out_c += xi.shape[1]
+                if need_copy :
+                    tmp = xi.copy().astype(numpy.float32)
+                    xs_new += (tmp,)
+
             self.mkldnn_concat = mkldnn.Concat_F32()
-                # if xs[0].dtype == numpy.float64:
-                    # self.mkldnn_concat = mkldnn.Concat_F64()
 
             """
             only support channel dim concat
             """
             y = numpy.empty(shape=(xs[0].shape[0], out_c, xs[0].shape[2], xs[0].shape[3]), dtype=xs[0].dtype)
-            self.mkldnn_concat.forward(xs_new, y, self.axis)
-            #self.mkldnn_concat.forward(xs, y, self.axis)
-
+            if need_copy:
+                self.mkldnn_concat.forward(xs_new, y, self.axis)
+            else:
+                self.mkldnn_concat.forward(xs, y, self.axis)
             return y,
         else:
             xp = cuda.get_array_module(*xs)
@@ -74,13 +76,7 @@ class Concat(function.Function):
     def backward(self, xs, gy):
         if len(xs) == 1:
             return gy
-        if switch.enable_concatF((xs,gy)):
-        # if mkldnn.enabled() and switch.enable_concat is True:
-            # if self.mkldnn_concat is None:
-            #     if xs[0].dtype == numpy.float32:
-            #   self.mkldnn_concat = mkldnn.Concat_F32()
-                # if xs[0].dtype == numpy.float64:
-                #     self.mkldnn_concat = mkldnn.Concat_F64()
+        if switch.enable_concatF((xs,gy)) and self.axis == 1 and xs[0].ndim == 4:
             
             ## x should have same shape as xs
             xs_new = ()

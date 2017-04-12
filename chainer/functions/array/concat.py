@@ -81,8 +81,7 @@ class Concat(function.Function):
             ## x should have same shape as xs
             xs_new = ()
             for xi in xs:
-                temp = numpy.ndarray(shape=xi.shape, dtype=xi.dtype)
-                temp.fill(0.)
+                temp = numpy.empty(shape=xi.shape, dtype=xi.dtype)
                 xs_new += (temp,)
             
             self.mkldnn_concat.backward(xs_new, gy[0], self.axis)

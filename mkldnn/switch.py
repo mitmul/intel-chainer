@@ -9,18 +9,22 @@ enable_softmax      = False
 enable_linear       = True
 enable_softmax_cross_entropy = False
 enable_concat       = False
+enable_acc_grad     = True
 supportTypes = (numpy.float32,)
 
 
 def SupportedInput(tul):
-	isSupportType = True
-	for x in tul:
-		if x[0].dtype  not in supportTypes:
-			isSupportType = False
-			break
-		else:
-			isSupportType = True
-	return isSupportType
+    isSupportType = True
+    for x in tul:
+        if len(x) == 0:
+            continue
+
+        if x[0].dtype  not in supportTypes:
+            isSupportType = False
+            break
+        else:
+            isSupportType = True
+    return isSupportType
 
 
 def enable_convF(tul):
@@ -41,6 +45,8 @@ def enable_softmax_cross_entropyF(tul):
 	return mkldnn.enabled() and SupportedInput(tul) and enable_softmax_cross_entropy
 def enable_concatF(tul):
 	return mkldnn.enabled() and SupportedInput(tul) and enable_concat
+def enable_acc_gradF(tul):
+	return mkldnn.enabled() and SupportedInput(tul) and enable_acc_grad
 # concat now could support float32 and float64
 # def enable_concatF(tul):
 # 	return mkldnn.enabled() and enable_concat    

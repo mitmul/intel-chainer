@@ -11,6 +11,8 @@ from chainer import cuda
 from chainer import flag
 from chainer import utils
 
+from mkldnn import mkldnn
+from mkldnn import switch
 
 def _check_grad_type(func, x, gx):
     def make_message(message):
@@ -103,6 +105,9 @@ Actual: {0}'''.format(type(data))
         self.creator = None
 
         self.name = name
+
+        # for grad accumulate
+        self.acc_grad = ()
 
     def __reduce__(self):
         return Variable, (self.data, self.volatile, self.name, self._grad)
@@ -387,7 +392,27 @@ Actual: {0}'''.format(type(data))
             outputs = [y() for y in func.outputs]  # access via weak ref
 
             in_data = tuple([x.data for x in func.inputs])
-            out_grad = tuple([None if y is None else y.grad for y in outputs])
+            out_grad = ()
+            # if enable grad accumulate
+            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
+                out_grad_tmp = tuple([None if y is None else y.grad for y in outputs])
+                acc_grad_tuple = tuple([None if y is None else y.acc_grad for y in outputs])
+                for grad_tmp, acc_grad in zip(out_grad_tmp,acc_grad_tuple):
+                    if len(acc_grad) == 0:
+                        # no need accumulate, just return grad
+                        out_grad += (grad_tmp,)
+                    else:
+                        """
+                        acc_grad's length is not 0, means need to do grad accumulate
+                        call native MKLDNN sum primitive
+                        """
+                        y = numpy.empty((grad_tmp.shape), dtype=grad_tmp.dtype)
+                        acc_grad += (grad_tmp,)
+                        mkldnn_sum = mkldnn.Sum_F32();
+                        mkldnn_sum.sum(acc_grad, y)
+                        out_grad += (y,)
+            else:
+                out_grad = tuple([None if y is None else y.grad for y in outputs])
             hooks = chainer.get_function_hooks()
             if func._n_local_function_hooks != 0:
                 hooks = collections.OrderedDict(hooks)
@@ -427,16 +452,24 @@ Actual: {0}'''.format(type(data))
                 # branches and parameter gradient accumulation correctly.
                 id_x = id(x)
                 if x.creator is None:  # leaf
-                    if x._grad is None:
+                    if x._grad is None: # 1st visit
                         x.grad = gx
                         need_copy.add(id_x)
                     else:
                         cuda.get_device(gx).use()
-                        if id_x in need_copy:
-                            x.grad = utils.force_array(x.grad + gx)  # copy
-                            need_copy.remove(id_x)
+                        if id_x in need_copy: # 2nd visit
+                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
+                                # if enable_acc_grad, will deply to do grad accumulate, only record grad  
+                                x.acc_grad += (gx,)
+                            else:
+                                x.grad = utils.force_array(x.grad + gx)  # copy
+                            need_copy.remove(id_x) # remove from list in 2nd visit
                         else:
-                            x._grad += gx
+                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
+                                # if enable_acc_grad, will deply to do grad accumulate, only record grad
+                                x.acc_grad += (gx,)
+                            else:
+                                x._grad += gx # 3rd or later visit
                 else:  # not a leaf
                     add_cand(x.creator)
                     if id_x not in seen_vars:  # 1st visit
@@ -446,10 +479,18 @@ Actual: {0}'''.format(type(data))
                     else:
                         cuda.get_device(gx).use()
                         if id_x in need_copy:  # 2nd visit
-                            x._grad = utils.force_array(gx + x._grad)  # copied
+                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
+                                # if enable_acc_grad, will deply to do grad accumulate, only record grad
+                                x.acc_grad += (gx,)
+                            else:
+                                x._grad = utils.force_array(gx + x._grad)  # copied
                             need_copy.remove(id_x)
                         else:  # 3rd or later visit
-                            x._grad += gx
+                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
+                                # if enable_acc_grad, will deply to do grad accumulate, only record grad
+                                x.acc_grad += (gx,)
+                            else:
+                                x._grad += gx
             del gxs  # to reduce memory usage
             if initial_device is not None:
                 initial_device.use()

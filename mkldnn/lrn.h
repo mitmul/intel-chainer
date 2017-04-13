@@ -90,25 +90,42 @@ public:
     ~LocalResponseNormalization();
 public:
     int forward();
-
+    static int get_workspace_size(
+        T*   x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
+        T*   y,  int y_d1,  int y_d2,  int y_d3,  int y_d4,
+        int n, double k, double alpha, double beta,
+        mkldnn::algorithm alg_kind = mkldnn::algorithm::lrn_across_channels)
+    {
+        LOG(INFO) << "get_workspace_size";
+        auto forward_object = get_forward_object(
+            x_d1, x_d2, x_d3, x_d4, n, k, alpha, beta, alg_kind);
+        // LOG(INFO) << "forward";
+        return forward_object->forward_workspace_size(
+            x,  x_d1,  x_d2,  x_d3,  x_d4,
+            y,  y_d1,  y_d2,  y_d3,  y_d4);
+        // return workspace_size_;
+        // return 0;
+    }
     static void do_forward(
         T*   x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
         T*   y,  int y_d1,  int y_d2,  int y_d3,  int y_d4,
-        // T*   ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4,
+        T*   ws, int ws_d,
         int n, double k, double alpha, double beta,
         mkldnn::algorithm alg_kind = mkldnn::algorithm::lrn_across_channels) 
     {
-        LOG(INFO) << "do forward";
+        // LOG(INFO) << "do forward";
         auto forward_object = get_forward_object(
             x_d1, x_d2, x_d3, x_d4, n, k, alpha, beta, alg_kind);
-        LOG(INFO) << "forward";
+        // LOG(INFO) << "forward";
         forward_object->forward(x,  x_d1,  x_d2,  x_d3,  x_d4,
-                                y,  y_d1,  y_d2,  y_d3,  y_d4);
+                                y,  y_d1,  y_d2,  y_d3,  y_d4,
+                                ws, ws_d);
     }
     static void do_backward(
         T*   x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
         T*   gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
         T*   gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
+        T*   ws, int ws_d,
         // T*   ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4,
         int n, double k, double alpha, double beta,
         mkldnn::algorithm alg_kind = mkldnn::algorithm::lrn_across_channels) 
@@ -118,27 +135,37 @@ public:
 
         backward_object->backward(x,  x_d1,  x_d2,  x_d3,  x_d4,
                                   gy, gy_d1, gy_d2, gy_d3, gy_d4,
-                                  gx, gx_d1, gx_d2, gx_d3, gx_d4);
+                                  gx, gx_d1, gx_d2, gx_d3, gx_d4,
+                                  ws, ws_d);
     }
 private:
     int backward(
         T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
         T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
-        T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4);
+        T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
+        T* ws, int ws_d);
     int backward_setup(
         T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
         T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
         T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4);
-    void bwd_reset_mem(T* x,T* gy,T* gx);
+    void bwd_reset_mem(T* x,T* gy,T* gx, T* ws);
 
     int forward(
-        T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-        T* y, int y_d1, int y_d2, int y_d3, int y_d4);
+        T* x,  int x_d1, int x_d2, int x_d3, int x_d4,
+        T* y,  int y_d1, int y_d2, int y_d3, int y_d4,
+        T* ws, int ws_d);
     int forward_setup(
         T* x, int x_d1, int x_d2, int x_d3, int x_d4,
         T* y, int y_d1, int y_d2, int y_d3, int y_d4);
 
-    void fwd_reset_mem(T* x,T* y);
+    int forward_workspace_size(
+        T* x, int x_d1, int x_d2, int x_d3, int x_d4,
+        T* y, int y_d1, int y_d2, int y_d3, int y_d4);
+    int get_ws_size(
+        T* x, int x_d1, int x_d2, int x_d3, int x_d4,
+        T* y, int y_d1, int y_d2, int y_d3, int y_d4);
+    
+    void fwd_reset_mem(T* x,T* y, T* ws);
 protected:
     static LocalResponseNormalization<T>* get_forward_object(
         int x_d1, int x_d2, int x_d3, int x_d4,
@@ -149,7 +176,7 @@ protected:
         int n, double k, double alpha, double beta, mkldnn::algorithm alg_kind);
 private:
     lrn_params p_;
-
+    size_t                                                    workspace_size_;
     //forward
     std::shared_ptr<mkldnn::memory>                           user_x_mem_;
     std::shared_ptr<mkldnn::memory>                           user_y_mem_;

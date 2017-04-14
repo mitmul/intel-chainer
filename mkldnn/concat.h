@@ -1,6 +1,6 @@
 /*
- *COPYRIGHT 
- *All modification made by Intel Corporation: © 2017 Intel Corporation. 
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
  *Copyright (c) 2015 Preferred Infrastructure, Inc.
  *Copyright (c) 2015 Preferred Networks, Inc.
  *
@@ -76,15 +76,15 @@ class Concat : public Layer<T> {
 public:
     struct concat_data {
         T* data;
-        mkldnn::memory::dims dims;    
+        mkldnn::memory::dims dims;   
     };
 
     Concat<T>();
     ~Concat<T>();
-       
+      
     void forward_setup(int num_concats, concat_data* concat_input,
             T* y, int y_d1, int y_d2, int y_d3, int y_d4,
-            int axis); 
+            int axis);
 
     void forward(int num_concats, char** data, int* n, int* c, int* h, int* w,
             T* y, int y_d1, int y_d2, int y_d3, int y_d4,
@@ -92,13 +92,13 @@ public:
 
     void backward_setup(int num_concats, concat_data* concat_output,
             T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
-            int axis); 
-    
+            int axis);
+   
     void backward(int num_concats, char** data, int* n, int* c, int* h, int* w,
             T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
             int axis);
 private:
-        
+       
        int axis_;
        bool fwd_first_run_ = true;
        bool bwd_first_run_ = true;
@@ -114,7 +114,7 @@ private:
        std::shared_ptr<mkldnn::concat::primitive_desc> fwd_concat_pd_; //fwd prim desc
        std::shared_ptr<mkldnn::concat> fwd_concat_prim_; // fwd primitive
        mkldnn::primitive concat_reorder_dst_; //reorder y
-       std::vector<mkldnn::primitive::at> fwd_input_primitives_at_; //fwd input primitives     
+       std::vector<mkldnn::primitive::at> fwd_input_primitives_at_; //fwd input primitives    
        std::vector<std::shared_ptr<mkldnn::memory>> fwd_input_primitives_; // fwd input memory
        std::vector<mkldnn::memory::primitive_desc> srcs_pd_; //src primitve desc vector
 
@@ -128,8 +128,8 @@ private:
        std::vector<mkldnn::primitive> bwd_primitives_; //bwd primitive vector
        std::shared_ptr<mkldnn::stream> bwd_stream_;
        std::vector<mkldnn::memory::primitive_desc> diff_srcs_pd_; //diff src primitve desc vector
-      
-        
+     
+       
 };
 
 #endif  // _MKLDNN_CONCAT_H

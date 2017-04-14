@@ -1,6 +1,6 @@
 /*
- *COPYRIGHT 
- *All modification made by Intel Corporation: © 2017 Intel Corporation. 
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
  *Copyright (c) 2015 Preferred Infrastructure, Inc.
  *Copyright (c) 2015 Preferred Networks, Inc.
  *
@@ -76,14 +76,14 @@ class Sum : public Layer<T> {
 public:
     struct sum_data {
         T* data;
-        mkldnn::memory::dims dims;    
+        mkldnn::memory::dims dims;   
     };
 
     Sum<T>();
     ~Sum<T>();
-       
+      
     void sum_setup(int num_sum, sum_data* sum_input,
-            T* y, int y_d1, int y_d2, int y_d3, int y_d4); 
+            T* y, int y_d1, int y_d2, int y_d3, int y_d4);
 
     void sum(int num_sum, char** data, int* n, int* c, int* h, int* w,
             T* y, int y_d1, int y_d2, int y_d3, int y_d4);

@@ -1,6 +1,6 @@
 /*
- *COPYRIGHT 
- *All modification made by Intel Corporation: © 2017 Intel Corporation. 
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
  *Copyright (c) 2015 Preferred Infrastructure, Inc.
  *Copyright (c) 2015 Preferred Networks, Inc.
  *

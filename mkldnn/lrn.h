@@ -1,6 +1,6 @@
 /*
- *COPYRIGHT 
- *All modification made by Intel Corporation: © 2017 Intel Corporation. 
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
  *Copyright (c) 2015 Preferred Infrastructure, Inc.
  *Copyright (c) 2015 Preferred Networks, Inc.
  *
@@ -73,10 +73,10 @@
 #include "layer_factory.h"
 
 template <typename T>
-class LocalResponseNormalization : public Layer<T> 
+class LocalResponseNormalization : public Layer<T>
 {
 public:
-    struct lrn_params 
+    struct lrn_params
     {
         double alpha, beta,k;
         int local_size;
@@ -96,7 +96,7 @@ public:
         T*   y,  int y_d1,  int y_d2,  int y_d3,  int y_d4,
         // T*   ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4,
         int n, double k, double alpha, double beta,
-        mkldnn::algorithm alg_kind = mkldnn::algorithm::lrn_across_channels) 
+        mkldnn::algorithm alg_kind = mkldnn::algorithm::lrn_across_channels)
     {
         LOG(INFO) << "do forward";
         auto forward_object = get_forward_object(
@@ -111,7 +111,7 @@ public:
         T*   gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
         // T*   ws, int ws_d1, int ws_d2, int ws_d3, int ws_d4,
         int n, double k, double alpha, double beta,
-        mkldnn::algorithm alg_kind = mkldnn::algorithm::lrn_across_channels) 
+        mkldnn::algorithm alg_kind = mkldnn::algorithm::lrn_across_channels)
     {
         auto backward_object = get_backward_object(
             x_d1, x_d2, x_d3, x_d4, n, k, alpha, beta, alg_kind);

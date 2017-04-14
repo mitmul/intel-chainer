@@ -1,6 +1,6 @@
 /*
- *COPYRIGHT 
- *All modification made by Intel Corporation: © 2017 Intel Corporation. 
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
  *Copyright (c) 2015 Preferred Infrastructure, Inc.
  *Copyright (c) 2015 Preferred Networks, Inc.
  *
@@ -85,7 +85,7 @@ Sum<T>::~Sum() {
 template<typename T>
 void Sum<T>::sum_setup(int num_sum, Sum<T>::sum_data* sum_input,
         T* y, int y_d1, int y_d2, int y_d3, int y_d4) {
-    LOG(INFO) << "Enter sum forward_setup";  
+    LOG(INFO) << "Enter sum forward_setup"; 
     LOG(INFO) << "y_d1=" << y_d1 << "; y_d2=" << y_d2 << "; y_d3="<<y_d3 << "; y_d4=" << y_d4;
     memory::dims output_tz = {y_d1, y_d2, y_d3, y_d4};
     memory::format src_mfmt = memory::format::nchw;
@@ -109,18 +109,18 @@ void Sum<T>::sum_setup(int num_sum, Sum<T>::sum_data* sum_input,
           srcs_mem_.push_back(input_mem);
           srcs_mem_at_.push_back(*srcs_mem_[i]);
       }
-        
+       
       //create user dst memory prim/desc
       user_dst_md_.reset(new memory::desc(output_tz, memory_data_type<T>(),memory::format::any));
       user_dst_mem_.reset(new memory({{{output_tz}, memory_data_type<T>(), memory::format::nchw}, cpu_engine}, dummy));
-    
+   
       sum_pd_.reset(new mkldnn::sum::primitive_desc(*user_dst_md_, scale_,  srcs_mem_pd_));
 
 
 
       /*
        * Check whether need to reorder for dst mem
-       */   
+       */  
       dst_mem_ = user_dst_mem_;
       bool reorder_sum_dst = false;
       if (sum_pd_.get()->dst_primitive_desc()
@@ -152,7 +152,7 @@ void Sum<T>::sum(int num_sum, char** data, int* n, int* c, int* h, int* w,
     }
 
     if (sum_prim_ == NULL) {
-        sum_setup(num_sum, sum_input, 
+        sum_setup(num_sum, sum_input,
                 y, y_d1, y_d2, y_d3, y_d4);
     }
 

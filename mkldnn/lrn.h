@@ -100,11 +100,13 @@ public:
         auto forward_object = get_forward_object(
             x_d1, x_d2, x_d3, x_d4, n, k, alpha, beta, alg_kind);
         // LOG(INFO) << "forward";
-        return forward_object->forward_workspace_size(
-            x,  x_d1,  x_d2,  x_d3,  x_d4,
-            y,  y_d1,  y_d2,  y_d3,  y_d4);
-        // return workspace_size_;
-        // return 0;
+        if (forward_object->workspace_size_ != 0 && !forward_object->forward_first_use_){
+            return forward_object->workspace_size_;
+        }else{
+            return forward_object->forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
+                      y, y_d1, y_d2, y_d3, y_d4);
+        }
+        
     }
     static void do_forward(
         T*   x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
@@ -157,13 +159,6 @@ private:
     int forward_setup(
         T* x, int x_d1, int x_d2, int x_d3, int x_d4,
         T* y, int y_d1, int y_d2, int y_d3, int y_d4);
-
-    int forward_workspace_size(
-        T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-        T* y, int y_d1, int y_d2, int y_d3, int y_d4);
-    int get_ws_size(
-        T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-        T* y, int y_d1, int y_d2, int y_d3, int y_d4);
     
     void fwd_reset_mem(T* x,T* y, T* ws);
 protected:
@@ -177,6 +172,7 @@ protected:
 private:
     lrn_params p_;
     size_t                                                    workspace_size_;
+    bool                                                      forward_first_use_;
     //forward
     std::shared_ptr<mkldnn::memory>                           user_x_mem_;
     std::shared_ptr<mkldnn::memory>                           user_y_mem_;

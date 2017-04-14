@@ -75,7 +75,8 @@ using namespace mkldnn;
 template<typename T>
 LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k,
                 double alpha, double beta,mkldnn::algorithm alg_kind)
-                : workspace_size_(0),user_x_mem_(NULL), user_y_mem_(NULL), x_md_(NULL), y_md_(NULL)
+                : workspace_size_(0), forward_first_use_(true)
+                , user_x_mem_(NULL), user_y_mem_(NULL), x_md_(NULL), y_md_(NULL)
                 , bw_x_mem_(NULL), gx_mem_(NULL), gy_mem_(NULL), workspace_mem_(NULL)
                 , lrn_fwd_desc_(NULL), lrn_fwd_pd_(NULL)
                 , lrn_fwd_(NULL), fwd_stream_(NULL)
@@ -108,51 +109,6 @@ LocalResponseNormalization<T>::~LocalResponseNormalization()
 
 
 template<typename T>
-int LocalResponseNormalization<T>::get_ws_size(
-    T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-    T* y, int y_d1, int y_d2, int y_d3, int y_d4)
-{
-    memory::format format;
-    // we check AVX512 first then AVX2
-    if (cpu_support_avx512_p() && (x_d2%16)==0) {
-        format = memory::format::nChw16c;
-        LOG(INFO) << "forward_setup nChw16c";
-    } else if (cpu_support_avx2_p() && (x_d2%8)==0) {
-        format = memory::format::nChw8c;
-        LOG(INFO) << "forward_setup nChw8c";
-    } else {
-        format = memory::format::nchw;
-    }
-    // LOG(INFO) << "forward_setup";
-    // LOG(INFO) << "lrn_src_tz "<< x_d1 << x_d2<< x_d3 << x_d4 ;
-    // LOG(INFO) << "lrn_dst_tz "<< y_d1 << y_d2<< y_d3 << y_d4 ;
-    memory::dims lrn_src_tz = {x_d1, x_d2, x_d3, x_d4};
-    // memory::dims lrn_dst_tz = {y_d1, y_d2, y_d3, y_d4};
-
-    /* create memory for user data */
-    LOG(INFO) << "create memory for user data";
-    // user_x_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),p_.data_format}, *eng_}, x));
-    x_md_.reset(new memory::desc({lrn_src_tz}, memory_data_type<T>(),format));
-
-
-    LOG(INFO) << "lrn_fwd_desc_";
-    lrn_fwd_desc_.reset(new lrn_forward::desc(p_.aprop_kind, p_.aalgorithm, *x_md_,
-        p_.local_size, p_.alpha, p_.beta, p_.k));
-    lrn_fwd_pd_.reset(new lrn_forward::primitive_desc(*lrn_fwd_desc_, *eng_));
-
-
-    workspace_mem_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc()));
-    // auto workspace_size = lrn_fwd_pd_->workspace_primitive_desc().get_size();
-    auto workspace_size = workspace_mem_->get_primitive_desc().get_size();
-
-    workspace_size_ = workspace_size;
-    LOG(INFO) << "workspace_size_ is " << workspace_size;
-
-    return workspace_size;
-}
-
-
-template<typename T>
 int LocalResponseNormalization<T>::forward_setup(
     T* x, int x_d1, int x_d2, int x_d3, int x_d4,
     T* y, int y_d1, int y_d2, int y_d3, int y_d4)
@@ -176,11 +132,11 @@ int LocalResponseNormalization<T>::forward_setup(
 
     /* create memory for user data */
     LOG(INFO) << "create memory for user data";
-    user_x_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),p_.data_format}, *eng_}, x));
+    user_x_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),p_.data_format}, *eng_}, dummy));
     x_md_.reset(new memory::desc({lrn_src_tz}, memory_data_type<T>(),format));
 
 
-    user_y_mem_.reset(new memory({{{lrn_dst_tz}, memory_data_type<T>(),p_.data_format}, *eng_}, y));
+    user_y_mem_.reset(new memory({{{lrn_dst_tz}, memory_data_type<T>(),p_.data_format}, *eng_}, dummy));
     y_md_.reset(new memory::desc({lrn_dst_tz}, memory_data_type<T>(),p_.diff_data_format));
 
     if (!lrn_fwd_pd_)
@@ -214,7 +170,7 @@ int LocalResponseNormalization<T>::forward_setup(
     }
 
     // LOG(INFO) << "workspace_primitive_desc";
-    workspace_mem_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc()));
+    workspace_mem_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc(),dummy));
     auto workspace_size = lrn_fwd_pd_->workspace_primitive_desc().get_size();
     workspace_size_ = workspace_size;
     LOG(INFO) << "workspace_size_ is " << workspace_size;
@@ -241,21 +197,21 @@ void LocalResponseNormalization<T>::fwd_reset_mem(T* x,T* y,T* ws)
     workspace_mem_->set_data_handle(ws);
 }
 
-template<typename T>
-int LocalResponseNormalization<T>::forward_workspace_size(
-    T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-    T* y, int y_d1, int y_d2, int y_d3, int y_d4)
-{
-    if (!fwd_stream_ && workspace_size_ == 0) {
-        LOG(INFO) << "forward_workspace_size !fwd_stream_";
-        // get_ws_size(x, x_d1, x_d2, x_d3, x_d4, 
-        //               y, y_d1, y_d2, y_d3, y_d4);
-        forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
-                      y, y_d1, y_d2, y_d3, y_d4);
-        fwd_stream_->submit(fwd_primitives_).wait();
-    }
-    return workspace_size_;
-}
+// template<typename T>
+// int LocalResponseNormalization<T>::forward_workspace_size(
+//     T* x, int x_d1, int x_d2, int x_d3, int x_d4,
+//     T* y, int y_d1, int y_d2, int y_d3, int y_d4)
+// {
+//     if (!fwd_stream_ && workspace_size_ == 0) {
+//         LOG(INFO) << "forward_workspace_size !fwd_stream_";
+//         // get_ws_size(x, x_d1, x_d2, x_d3, x_d4, 
+//         //               y, y_d1, y_d2, y_d3, y_d4);
+//         forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
+//                       y, y_d1, y_d2, y_d3, y_d4);
+//         // fwd_stream_->submit(fwd_primitives_).wait();
+//     }
+//     return workspace_size_;
+// }
 
 template<typename T>
 int LocalResponseNormalization<T>::forward(
@@ -263,10 +219,14 @@ int LocalResponseNormalization<T>::forward(
     T* y, int y_d1, int y_d2, int y_d3, int y_d4,
     T* ws, int ws_d)
 {
-    if (!fwd_stream_) {
-        LOG(INFO) << "forward !fwd_stream_";
-        forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
-                      y, y_d1, y_d2, y_d3, y_d4);
+    if (forward_first_use_) {
+        LOG(INFO) << "forward forward_first_use_";
+        forward_first_use_ = false;
+        if (!fwd_stream_)
+        {
+            forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
+                y, y_d1, y_d2, y_d3, y_d4);
+        }
         fwd_reset_mem(x, y, ws);
         fwd_stream_->submit(fwd_primitives_).wait();
     } else {

@@ -250,7 +250,7 @@ static void do_backward(
 public:
     Convolution2D();
     ~Convolution2D();
-   
+
     /*
      * Convolution forward primitive setup
      * Params:
@@ -266,7 +266,7 @@ public:
             int s1, int s2,
             int pl1, int pl2,
             int pr1, int pr2);
-   
+
     /*
      * Convolution forward with bias
      * Params:
@@ -296,7 +296,7 @@ public:
             int s1, int s2,
             int pl1, int pl2,
             int pr1, int pr2);
-   
+
     /*
      * Covolution backward primitive setup
      * Params:
@@ -366,7 +366,7 @@ private:
     std::shared_ptr<mkldnn::convolution_backward_weights::primitive_desc> bwd_weights_pd_;
     std::shared_ptr<mkldnn::convolution_backward_data::desc> bwd_data_desc_;
     std::shared_ptr<mkldnn::convolution_backward_data::primitive_desc> bwd_data_pd_;
-   
+
     //stream
     std::shared_ptr<mkldnn::stream> fwd_stream_;
     std::vector<mkldnn::primitive> fwd_primitives_;
@@ -413,7 +413,7 @@ private:
     std::shared_ptr<mkldnn::memory> bwd_diff_bias_mem_; //gb
     std::shared_ptr<mkldnn::memory> bwd_diff_dst_weights_mem_; // gy for gW
     std::shared_ptr<mkldnn::memory> bwd_diff_dst_data_mem_; // gy for gx
-   
+
     //memory desc
     //forward & backward can share same mem desc
     std::shared_ptr<mkldnn::memory::desc> src_md_; //x & gx

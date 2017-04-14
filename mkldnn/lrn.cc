@@ -85,7 +85,7 @@ LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k,
 {
     // google::ShutdownGoogleLogging();
     // google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
-    // google::LogToStderr();     
+    // google::LogToStderr();
     // LOG(INFO) << "n = " << n << " k = " << k << " alpha = " << alpha << "beta = " << beta ;
     p_.alpha = alpha;
     p_.beta = beta;
@@ -165,7 +165,7 @@ int LocalResponseNormalization<T>::forward_setup(
 
     // LOG(INFO) << "workspace_primitive_desc";
     workspace_mem_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc()));
-   
+
     // LOG(INFO) << "lrn_fwd_";
     lrn_fwd_.reset(new lrn_forward(*lrn_fwd_pd_, *x_mem_, *workspace_mem_, *y_mem_));
 
@@ -290,7 +290,7 @@ void LocalResponseNormalization<T>::bwd_reset_mem(T* x,T* gy,T* gx)
     lrn_bwd_user_src_mem_->set_data_handle(x);
     lrn_diff_src_mem_->set_data_handle(gx);
     lrn_diff_dst_mem_->set_data_handle(gy);
-   
+
 }
 
 template<typename T>
@@ -301,7 +301,7 @@ int LocalResponseNormalization<T>::backward(
 {
     // LOG(INFO) << "backward: " << x << " : " << x_size << " : " << gy << " : " << gy_size << " : " << gx << " : " << gx_size;
     if (!bwd_stream_) {
-        backward_setup(   
+        backward_setup(
             x, x_d1, x_d2, x_d3, x_d4,
             gy, gy_d1, gy_d2, gy_d3, gy_d4,
             gx, gx_d1,gx_d2, gx_d3, gx_d4);

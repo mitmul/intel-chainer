@@ -93,7 +93,7 @@ private:
                                 linear_forward);
         }
         return linear_forward;
-    }  
+    }
 
     static MKLDNNLinear<T>* get_backward_object(
                                             T* x, int x_d1, int x_d2,
@@ -137,7 +137,7 @@ public:
                             W, W_d1, W_d2,
                             y, y_d1, y_d2);
     }
-   
+
     static void do_backward(T* x, int x_d1, int x_d2,
                             T* W, int W_d1, int W_d2,
                             T* b, int b_d1,
@@ -192,7 +192,7 @@ public:
     int forward(T* x, int x_d1, int x_d2,
                 T* W, int W_d1, int W_d2,
                 T* y, int y_d1, int y_d2);
-  
+
     int setup_backward(T* x,  int x_d1, int x_d2,
                         T* W,  int W_d1, int W_d2,
                         T* b,  int b_d1,

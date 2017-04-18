@@ -170,27 +170,17 @@ int LocalResponseNormalization<T>::forward_setup(
     }
 
     // LOG(INFO) << "workspace_primitive_desc";
-<<<<<<< HEAD
     workspace_mem_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc(),dummy));
     auto workspace_size = lrn_fwd_pd_->workspace_primitive_desc().get_size();
     workspace_size_ = workspace_size;
     LOG(INFO) << "workspace_size_ is " << workspace_size;
-=======
-    workspace_mem_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc()));
-
->>>>>>> origin/mkldnnpy
     // LOG(INFO) << "lrn_fwd_";
     lrn_fwd_.reset(new lrn_forward(*lrn_fwd_pd_, *x_mem_, *workspace_mem_, *y_mem_));
 
     LOG(INFO) << "    reorder_src: " << reorder_x_p;
     LOG(INFO) << "    reorder_dst: " << reorder_y_p;
-<<<<<<< HEAD
  
     if (reorder_x_p) this->fwd_primitives_.push_back(reorder_x_);
-=======
-
-     if (reorder_x_p) this->fwd_primitives_.push_back(reorder_x_);
->>>>>>> origin/mkldnnpy
     fwd_primitives_.push_back(*lrn_fwd_);
     if (reorder_y_p) this->fwd_primitives_.push_back(reorder_y_);
     fwd_stream_.reset(new stream(stream::kind::eager));
@@ -331,12 +321,8 @@ void LocalResponseNormalization<T>::bwd_reset_mem(T* x,T* gy,T* gx, T* ws)
     lrn_bwd_user_src_mem_->set_data_handle(x);
     lrn_diff_src_mem_->set_data_handle(gx);
     lrn_diff_dst_mem_->set_data_handle(gy);
-<<<<<<< HEAD
     workspace_mem_->set_data_handle(ws);
-    
-=======
 
->>>>>>> origin/mkldnnpy
 }
 
 template<typename T>

@@ -1,6 +1,6 @@
 /*
- *COPYRIGHT 
- *All modification made by Intel Corporation: © 2017 Intel Corporation. 
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
  *Copyright (c) 2015 Preferred Infrastructure, Inc.
  *Copyright (c) 2015 Preferred Networks, Inc.
  *
@@ -93,7 +93,7 @@ private:
                                 linear_forward);
         }
         return linear_forward;
-    }   
+    }
 
     static MKLDNNLinear<T>* get_backward_object(
                                             T* x, int x_d1, int x_d2,
@@ -137,7 +137,7 @@ public:
                             W, W_d1, W_d2,
                             y, y_d1, y_d2);
     }
-    
+
     static void do_backward(T* x, int x_d1, int x_d2,
                             T* W, int W_d1, int W_d2,
                             T* b, int b_d1,
@@ -156,8 +156,8 @@ public:
                              gW, gW_d1, gW_d2,
                              gx, gx_d1, gx_d2,
                              gb, gb_d1);
-    } 
- 
+    }
+
     static void do_backward(T* x, int x_d1, int x_d2,
                             T* W, int W_d1, int W_d2,
                             T* gy, int gy_d1, int gy_d2,
@@ -172,8 +172,8 @@ public:
                              gy, gy_d1, gy_d2,
                              gW, gW_d1, gW_d2,
                              gx, gx_d1, gx_d2);
-    } 
- 
+    }
+
 
     MKLDNNLinear();
 
@@ -192,7 +192,7 @@ public:
     int forward(T* x, int x_d1, int x_d2,
                 T* W, int W_d1, int W_d2,
                 T* y, int y_d1, int y_d2);
-   
+
     int setup_backward(T* x,  int x_d1, int x_d2,
                         T* W,  int W_d1, int W_d2,
                         T* b,  int b_d1,

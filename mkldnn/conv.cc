@@ -1,6 +1,6 @@
 /*
- *COPYRIGHT 
- *All modification made by Intel Corporation: © 2017 Intel Corporation. 
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
  *Copyright (c) 2015 Preferred Infrastructure, Inc.
  *Copyright (c) 2015 Preferred Networks, Inc.
  *
@@ -120,7 +120,7 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
     if (b != NULL)
         user_bias_mem_.reset(new memory({{{bias_tz_},
                                             memory_data_type<T>(), memory::format::x}, cpu_engine}, dummy));
-    
+
     /* create memory descriptors for convolution data w/ no specified format */
     src_md_.reset(new memory::desc({src_tz_}, memory_data_type<T>(),
                                    memory::format::any));
@@ -149,7 +149,7 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
     /* create reorders between user and data if it is needed and
      *  add it to net before convolution */
     src_mem_ = user_src_mem_;
-    if (memory::primitive_desc(fwd_pd_.get()->src_primitive_desc()) 
+    if (memory::primitive_desc(fwd_pd_.get()->src_primitive_desc())
             != user_src_mem_.get()->get_primitive_desc()) {
         //LOG(INFO) << "fwd reorder src dim";
         src_mem_.reset(new memory(fwd_pd_.get()->src_primitive_desc()));
@@ -182,18 +182,18 @@ void Convolution2D<T>::forward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d
     else
         conv_fwd_.reset(new convolution_forward(*fwd_pd_, *src_mem_,
                                       *weights_mem_, *dst_mem_));
-    
+
     //put all primitives into fwd_stream_
     if (fwd_reorder_conv_src_){
         fwd_primitives_.push_back(conv_reorder_src_);
-    }     
+    }
     if (fwd_reorder_conv_weights_){
         fwd_primitives_.push_back(conv_reorder_weights_);
-    }     
+    }
     fwd_primitives_.push_back(*conv_fwd_);
     if (fwd_reorder_conv_dst_){
         fwd_primitives_.push_back(conv_reorder_dst_);
-    }     
+    }
     return;
 }
 
@@ -218,7 +218,7 @@ int Convolution2D<T>::forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
     }
     //LOG(INFO) << "conv_fwd_:" << conv_fwd_;
     //LOG(INFO) << "x=" << x << "; x_size=" << x_d1*x_d2*x_d3*x_d4*4;
-    
+
     user_src_mem_->set_data_handle(x);
     user_weights_mem_->set_data_handle(W);
     if ( b != NULL ){
@@ -245,7 +245,7 @@ int Convolution2D<T>::forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
 {
 //    LOG(INFO) << "Convolution forward without bias";
 //    LOG(INFO) << conv_fwd_;
-        
+
     forward(x, x_d1, x_d2, x_d3, x_d4,
             W, W_d1, W_d2, W_d3, W_d4,
             NULL, -1,
@@ -282,12 +282,12 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
                     memory::format::x,}, cpu_engine}, dummy)); //gB
     }
 
-    /* 
+    /*
      * create backward convolution operator desc
      * memory desc can be shared between forward and backward, since they have same shape
      * */
     if ( b != NULL) {
-        /* 
+        /*
          * weight backward conv desc (gW = gy * X)
          * src_md: x
          * weigths_md: gW
@@ -298,7 +298,7 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
                     convolution_direct, *src_md_, *weights_md_,
                     *bias_md_, *dst_md_, strides_, padding_l_, padding_r_, padding_kind::zero));
     } else {
-        /* 
+        /*
          * weight backward conv prim desc (gW = gy * X)
          * src_md: x
          * weigths_md: gW
@@ -308,8 +308,8 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
                     convolution_direct, *src_md_, *weights_md_,
                     *dst_md_, strides_, padding_l_, padding_r_, padding_kind::zero));
     }
-    
-    /* 
+
+    /*
      * data backward conv prim desc (gX = gy * W)
      * for data backward conv, no need b/gb
      * src_md: gx
@@ -380,7 +380,7 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
         conv_bwd_reorder_dst_data_ = reorder(*user_bwd_diff_dst_mem_, *bwd_diff_dst_data_mem_);
         bwd_reorder_diff_dst_data_ = true;
     }
-    
+
     /* user_bwd_diff_src_mem_ ==> gX */
     bwd_diff_src_mem_ = user_bwd_diff_src_mem_;
     if (memory::primitive_desc(bwd_data_pd_.get()->diff_src_primitive_desc())
@@ -388,13 +388,13 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
         // LOG(INFO) << "bwd reorder gX";
         bwd_diff_src_mem_.reset(new memory(bwd_data_pd_.get()->diff_src_primitive_desc()));
         conv_bwd_reorder_diff_src_ = reorder(*bwd_diff_src_mem_, *user_bwd_diff_src_mem_);
-        bwd_reorder_diff_src_ = true; 
-    } 
+        bwd_reorder_diff_src_ = true;
+    }
 
     /* create weight conv bwd prim */
     if (b != NULL) {
-        /* 
-         * create convolution backward primitive (gW = gy * X) 
+        /*
+         * create convolution backward primitive (gW = gy * X)
          * src_mem: x
          * diff_dst_mem: gy
          * diff_weights_mem: gW
@@ -404,7 +404,7 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
                     *bwd_weights_pd_, *bwd_src_mem_,
                     *bwd_diff_dst_weights_mem_, *bwd_diff_weights_mem_, *user_bwd_diff_bias_mem_));
     } else {
-        /* 
+        /*
          * create convolution backward primitive (gW = gy * x)
          * src_mem: x
          * diff_dst_mem: gy
@@ -415,7 +415,7 @@ void Convolution2D<T>::backward_setup( T* x, int x_d1, int x_d2, int x_d3, int x
                     *bwd_diff_dst_weights_mem_, *bwd_diff_weights_mem_));
     }
 
-    /* 
+    /*
      * create data conv bwd prim (gX = gy * W)
      * */
     conv_bwd_data_.reset(new convolution_backward_data(
@@ -479,13 +479,13 @@ int Convolution2D<T>::backward( T* x, int x_d1, int x_d2, int x_d3, int x_d4,
                 gx, gx_d1, gx_d2, gx_d3, gx_d4,
                 gb, gb_d1);
     }
-    
+
     user_bwd_src_mem_->set_data_handle(x); //x
     user_bwd_weights_mem_->set_data_handle(W); //W
     user_bwd_diff_src_mem_->set_data_handle(gx); //gx
     user_bwd_diff_weights_mem_->set_data_handle(gW); //gW
     user_bwd_diff_dst_mem_->set_data_handle(gy); //gy
-    
+
     if (b!=NULL) {
         user_bwd_diff_bias_mem_->set_data_handle(gb); //gb
     }

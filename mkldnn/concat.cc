@@ -1,6 +1,6 @@
 /*
- *COPYRIGHT 
- *All modification made by Intel Corporation: © 2017 Intel Corporation. 
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
  *Copyright (c) 2015 Preferred Infrastructure, Inc.
  *Copyright (c) 2015 Preferred Networks, Inc.
  *
@@ -83,13 +83,13 @@ Concat<T>::~Concat() {
 }
 
 template<typename T>
-void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_input, 
+void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_input,
         T* y, int y_d1, int y_d2, int y_d3, int y_d4,
         int axis) {
-//    LOG(INFO) << "Enter forward_setup";  
+//    LOG(INFO) << "Enter forward_setup";
 //    LOG(INFO) << "y_d1=" << y_d1 << "; y_d2=" << y_d2 << "; y_d3="<<y_d3 << "; y_d4=" << y_d4;
     output_tz_ = {y_d1, y_d2, y_d3, y_d4}; //dst memory dim
-    axis_ = axis; //yli135: currently, seems only support 1 
+    axis_ = axis; //yli135: currently, seems only support 1
 
     for (int i = 0; i < num_concats; i++) {
         memory::dims input_tz = concat_input[i].dims;
@@ -98,10 +98,10 @@ void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_in
         shared_ptr<memory::primitive_desc> input_mpd;
         input_mpd.reset(new memory::primitive_desc({input_tz, memory_data_type<T>(), src_mfmt}, cpu_engine));
         srcs_pd_.push_back(*input_mpd);
-        
+
         std::shared_ptr<memory> input_mem;
         input_mem.reset(new memory({{{input_tz},memory_data_type<T>(), src_mfmt}, cpu_engine}));
-        
+
         fwd_input_primitives_.push_back(input_mem);
         fwd_input_primitives_at_.push_back(*fwd_input_primitives_[i]);
     }
@@ -131,7 +131,7 @@ void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_in
 
     fwd_concat_prim_.reset(
             new concat(*fwd_concat_pd_, fwd_input_primitives_at_, *dst_mem_));
-    
+
     /* push primitives into primitive vector */
     fwd_primitives_.push_back(*fwd_concat_prim_);
     if (fwd_reorder_concat_dst) {
@@ -140,7 +140,7 @@ void Concat<T>::forward_setup(int num_concats, Concat<T>::concat_data* concat_in
 }
 
 template<typename T>
-void Concat<T>::forward(int num_concats, char** data, int* n, int* c, int* h, int* w, 
+void Concat<T>::forward(int num_concats, char** data, int* n, int* c, int* h, int* w,
         T* y, int y_d1, int y_d2, int y_d3, int y_d4,
         int axis) {
     /*
@@ -149,7 +149,7 @@ void Concat<T>::forward(int num_concats, char** data, int* n, int* c, int* h, in
     concat_data concat_input[num_concats];
     for(int i = 0; i < num_concats; i++) {
         concat_input[i].data = (T*)data[i];
-        concat_input[i].dims = {n[i], c[i], h[i], w[i]};        
+        concat_input[i].dims = {n[i], c[i], h[i], w[i]};
     }
 
     /*
@@ -160,14 +160,14 @@ void Concat<T>::forward(int num_concats, char** data, int* n, int* c, int* h, in
                 y, y_d1, y_d2, y_d3, y_d4,
                 axis);
     }
-    
+
     /*
      * set memory data handle for input memory
      */
     for (int i = 0; i < num_concats; i++) {
         fwd_input_primitives_[i]->set_data_handle(concat_input[i].data);
     }
-    
+
     /* set memory handle for dst memory */
     user_dst_mem_->set_data_handle(y);
 
@@ -179,14 +179,14 @@ void Concat<T>::forward(int num_concats, char** data, int* n, int* c, int* h, in
 }
 
 template<typename T>
-void Concat<T>::backward_setup(int num_concats, Concat<T>::concat_data* concat_output, 
+void Concat<T>::backward_setup(int num_concats, Concat<T>::concat_data* concat_output,
         T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
         int axis) {
     /* init the offset */
     memory::dims offsets = {0, 0, 0, 0};
-    
-    /* 
-     * prepare user diff dst memory 
+
+    /*
+     * prepare user diff dst memory
      * reuse memory desc as fwd: user_dst_mpd_
      * only create a new memory used for diff dst to set handle
      * */
@@ -205,12 +205,12 @@ void Concat<T>::backward_setup(int num_concats, Concat<T>::concat_data* concat_o
         shared_ptr<memory::primitive_desc> diff_input_mpd;
         diff_input_mpd.reset(new memory::primitive_desc({diff_input_tz, memory_data_type<T>(), diff_src_mfmt}, cpu_engine));
         diff_srcs_pd_.push_back(*diff_input_mpd);
-        
+
         std::shared_ptr<memory> diff_input_mem;
         diff_input_mem.reset(new memory({{{diff_input_tz},memory_data_type<T>(), diff_src_mfmt}, cpu_engine}));
 
         bwd_reorder_diff_src_mem_.push_back(*diff_input_mem);
-        
+
         std::shared_ptr<view::primitive_desc> view_pd;
         view_pd.reset(
                 new view::primitive_desc(*user_diff_dst_mpd_, diff_input_tz, offsets));
@@ -238,7 +238,7 @@ void Concat<T>::backward(int num_concats, char** data, int* n, int* c, int* h, i
     concat_data concat_output[num_concats];
     for(int i = 0; i < num_concats; i++) {
         concat_output[i].data = (T*)data[i];
-        concat_output[i].dims = {n[i], c[i], h[i], w[i]};        
+        concat_output[i].dims = {n[i], c[i], h[i], w[i]};
     }
     if (reorders_.size() == 0) {
         backward_setup(num_concats, concat_output,
@@ -252,10 +252,10 @@ void Concat<T>::backward(int num_concats, char** data, int* n, int* c, int* h, i
     for (int i = 0; i < num_concats; i++) {
         bwd_reorder_diff_src_mem_[i].set_data_handle(concat_output[i].data);
     }
-    
+
     /* set memory handle for dst memory */
     user_diff_dst_prim_->set_data_handle(gy);
-    
+
     if (bwd_first_run_) {
         bwd_stream_->submit(bwd_primitives_).wait();
     } else {

@@ -1,6 +1,6 @@
 /*
- *COPYRIGHT 
- *All modification made by Intel Corporation: © 2017 Intel Corporation. 
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
  *Copyright (c) 2015 Preferred Infrastructure, Inc.
  *Copyright (c) 2015 Preferred Networks, Inc.
  *
@@ -250,9 +250,9 @@ static void do_backward(
 public:
     Convolution2D();
     ~Convolution2D();
-    
+
     /*
-     * Convolution forward primitive setup 
+     * Convolution forward primitive setup
      * Params:
      * X: input, (n,c,h,w)
      * W: weight, (n, out_c, h, w)
@@ -266,7 +266,7 @@ public:
             int s1, int s2,
             int pl1, int pl2,
             int pr1, int pr2);
-    
+
     /*
      * Convolution forward with bias
      * Params:
@@ -275,7 +275,7 @@ public:
      * b: bias
      * y: output, (n, out_c, out_h, out_w)
      */
-    int forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4, 
+    int forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
             T* W, int W_d1, int W_d2, int W_d3, int W_d4,
             T* b, int b_d1,
             T* y, int y_d1, int y_d2, int y_d3, int y_d4,
@@ -290,17 +290,17 @@ public:
      * W: weight, (n, out_c, h, w)
      * y: output, (n, out_c, out_h, out_w)
      */
-    int forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4, 
+    int forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
             T* W, int W_d1, int W_d2, int W_d3, int W_d4,
             T* y, int y_d1, int y_d2, int y_d3, int y_d4,
             int s1, int s2,
             int pl1, int pl2,
             int pr1, int pr2);
-    
+
     /*
      * Covolution backward primitive setup
      * Params:
-     * 
+     *
      */
     void backward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
             T* W, int W_d1, int W_d2, int W_d3, int W_d4,
@@ -366,7 +366,7 @@ private:
     std::shared_ptr<mkldnn::convolution_backward_weights::primitive_desc> bwd_weights_pd_;
     std::shared_ptr<mkldnn::convolution_backward_data::desc> bwd_data_desc_;
     std::shared_ptr<mkldnn::convolution_backward_data::primitive_desc> bwd_data_pd_;
-    
+
     //stream
     std::shared_ptr<mkldnn::stream> fwd_stream_;
     std::vector<mkldnn::primitive> fwd_primitives_;
@@ -413,7 +413,7 @@ private:
     std::shared_ptr<mkldnn::memory> bwd_diff_bias_mem_; //gb
     std::shared_ptr<mkldnn::memory> bwd_diff_dst_weights_mem_; // gy for gW
     std::shared_ptr<mkldnn::memory> bwd_diff_dst_data_mem_; // gy for gx
-    
+
     //memory desc
     //forward & backward can share same mem desc
     std::shared_ptr<mkldnn::memory::desc> src_md_; //x & gx

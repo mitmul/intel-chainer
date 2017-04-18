@@ -1,6 +1,6 @@
 /*
- *COPYRIGHT 
- *All modification made by Intel Corporation: © 2017 Intel Corporation. 
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
  *Copyright (c) 2015 Preferred Infrastructure, Inc.
  *Copyright (c) 2015 Preferred Networks, Inc.
  *
@@ -86,7 +86,7 @@ LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k,
 {
     // google::ShutdownGoogleLogging();
     // google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
-    // google::LogToStderr();      
+    // google::LogToStderr();
     // LOG(INFO) << "n = " << n << " k = " << k << " alpha = " << alpha << "beta = " << beta ;
     p_.alpha = alpha;
     p_.beta = beta;
@@ -170,17 +170,27 @@ int LocalResponseNormalization<T>::forward_setup(
     }
 
     // LOG(INFO) << "workspace_primitive_desc";
+<<<<<<< HEAD
     workspace_mem_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc(),dummy));
     auto workspace_size = lrn_fwd_pd_->workspace_primitive_desc().get_size();
     workspace_size_ = workspace_size;
     LOG(INFO) << "workspace_size_ is " << workspace_size;
+=======
+    workspace_mem_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc()));
+
+>>>>>>> origin/mkldnnpy
     // LOG(INFO) << "lrn_fwd_";
     lrn_fwd_.reset(new lrn_forward(*lrn_fwd_pd_, *x_mem_, *workspace_mem_, *y_mem_));
 
     LOG(INFO) << "    reorder_src: " << reorder_x_p;
     LOG(INFO) << "    reorder_dst: " << reorder_y_p;
+<<<<<<< HEAD
  
     if (reorder_x_p) this->fwd_primitives_.push_back(reorder_x_);
+=======
+
+     if (reorder_x_p) this->fwd_primitives_.push_back(reorder_x_);
+>>>>>>> origin/mkldnnpy
     fwd_primitives_.push_back(*lrn_fwd_);
     if (reorder_y_p) this->fwd_primitives_.push_back(reorder_y_);
     fwd_stream_.reset(new stream(stream::kind::eager));
@@ -222,8 +232,7 @@ int LocalResponseNormalization<T>::forward(
     if (forward_first_use_) {
         LOG(INFO) << "forward forward_first_use_";
         forward_first_use_ = false;
-        if (!fwd_stream_)
-        {
+        if (!fwd_stream_){
             forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
                 y, y_d1, y_d2, y_d3, y_d4);
         }
@@ -276,7 +285,7 @@ int LocalResponseNormalization<T>::backward_setup(
     // auto lrn_src_mem_ = lrn_bwd_user_src_mem_;
 
     lrn_bwd_desc_.reset(new lrn_backward::desc(p_.aalgorithm,
-        *lrn_bwd_src_desc_, *lrn_diff_dst_desc_, 
+        *lrn_bwd_src_desc_, *lrn_diff_dst_desc_,
         p_.local_size, p_.alpha, p_.beta,p_.k));
     lrn_bwd_pd_.reset(new lrn_backward::primitive_desc(*lrn_bwd_desc_, *eng_,
         *lrn_fwd_pd_));
@@ -304,7 +313,7 @@ int LocalResponseNormalization<T>::backward_setup(
     LOG(INFO) << "    reorder_dst_diff: " << reorder_y_p;
     LOG(INFO) << "    reorder_src_diff: " << reorder_x_p;
 
-    lrn_bwd_.reset(new lrn_backward(*lrn_bwd_pd_, 
+    lrn_bwd_.reset(new lrn_backward(*lrn_bwd_pd_,
         *bw_x_mem_, *gy_mem_, *workspace_mem_,*gx_mem_));
 
     if (reorder_y_p) bwd_primitives_.push_back(reorder_gy_);
@@ -322,8 +331,12 @@ void LocalResponseNormalization<T>::bwd_reset_mem(T* x,T* gy,T* gx, T* ws)
     lrn_bwd_user_src_mem_->set_data_handle(x);
     lrn_diff_src_mem_->set_data_handle(gx);
     lrn_diff_dst_mem_->set_data_handle(gy);
+<<<<<<< HEAD
     workspace_mem_->set_data_handle(ws);
     
+=======
+
+>>>>>>> origin/mkldnnpy
 }
 
 template<typename T>
@@ -335,13 +348,13 @@ int LocalResponseNormalization<T>::backward(
 {
     // LOG(INFO) << "backward: " << x << " : " << x_size << " : " << gy << " : " << gy_size << " : " << gx << " : " << gx_size;
     if (!bwd_stream_) {
-        backward_setup(    
+        backward_setup(
             x, x_d1, x_d2, x_d3, x_d4,
             gy, gy_d1, gy_d2, gy_d3, gy_d4,
             gx, gx_d1,gx_d2, gx_d3, gx_d4);
         bwd_reset_mem(x, gy, gx,ws);
         bwd_stream_->submit(bwd_primitives_).wait();
-    } 
+    }
     else {
         bwd_reset_mem(x, gy, gx, ws);
         bwd_stream_->rerun().wait();

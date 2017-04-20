@@ -14,6 +14,7 @@ from chainer import utils
 from mkldnn import mkldnn
 from mkldnn import switch
 
+
 def _check_grad_type(func, x, gx):
     def make_message(message):
         if func:
@@ -397,7 +398,7 @@ Actual: {0}'''.format(type(data))
             if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
                 out_grad_tmp = tuple([None if y is None else y.grad for y in outputs])
                 acc_grad_tuple = tuple([None if y is None else y.acc_grad for y in outputs])
-                for grad_tmp, acc_grad in zip(out_grad_tmp,acc_grad_tuple):
+                for grad_tmp, acc_grad in zip(out_grad_tmp, acc_grad_tuple):
                     if len(acc_grad) == 0:
                         # no need accumulate, just return grad
                         out_grad += (grad_tmp,)
@@ -408,7 +409,7 @@ Actual: {0}'''.format(type(data))
                         """
                         y = numpy.empty((grad_tmp.shape), dtype=grad_tmp.dtype)
                         acc_grad += (grad_tmp,)
-                        mkldnn_sum = mkldnn.Sum_F32();
+                        mkldnn_sum = mkldnn.Sum_F32()
                         mkldnn_sum.sum(acc_grad, y)
                         out_grad += (y,)
             else:
@@ -421,9 +422,9 @@ Actual: {0}'''.format(type(data))
             cuda.get_device(*(in_data + out_grad)).use()
             for hook in six.itervalues(hooks):
                 hook.backward_preprocess(func, in_data, out_grad)
-	    _x = func.inputs[0]
-	    if _x.creator == None:
-	        func.mkldnn_opt = True
+            _x = func.inputs[0]
+            if _x.creator is None:
+                func.mkldnn_opt = True
             gxs = func.backward(in_data, out_grad)
             assert len(gxs) == len(in_data)
             for hook in six.itervalues(hooks):
@@ -452,24 +453,24 @@ Actual: {0}'''.format(type(data))
                 # branches and parameter gradient accumulation correctly.
                 id_x = id(x)
                 if x.creator is None:  # leaf
-                    if x._grad is None: # 1st visit
+                    if x._grad is None:  # 1st visit
                         x.grad = gx
                         need_copy.add(id_x)
                     else:
                         cuda.get_device(gx).use()
-                        if id_x in need_copy: # 2nd visit
+                        if id_x in need_copy:  # 2nd visit
                             if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
-                                # if enable_acc_grad, will deply to do grad accumulate, only record grad  
+                                # if enable_acc_grad,will deply to do grad accumulate,only record grad 
                                 x.acc_grad += (gx,)
                             else:
                                 x.grad = utils.force_array(x.grad + gx)  # copy
-                            need_copy.remove(id_x) # remove from list in 2nd visit
+                            need_copy.remove(id_x)  # remove from list in 2nd visit
                         else:
                             if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
                                 # if enable_acc_grad, will deply to do grad accumulate, only record grad
                                 x.acc_grad += (gx,)
                             else:
-                                x._grad += gx # 3rd or later visit
+                                x._grad += gx  # 3rd or later visit
                 else:  # not a leaf
                     add_cand(x.creator)
                     if id_x not in seen_vars:  # 1st visit

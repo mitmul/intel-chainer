@@ -13,7 +13,7 @@ def _as_mat(x):
 
 
 class LinearFunction(function.Function):
-    def __init__(self, linear_link = None):
+    def __init__(self, linear_link=None):
         if switch.enable_linear and linear_link is None:
             assert "linear_link can not be None in mkldnn enabled mode"
         self.linear_link = linear_link
@@ -43,11 +43,11 @@ class LinearFunction(function.Function):
         W = inputs[1]
         b = inputs[2] if len(inputs) == 3 else None
         if switch.enable_linearF(inputs):
-            y = numpy.empty(shape=(x.shape[0], W.shape[0]), dtype=W.dtype);
+            y = numpy.empty(shape=(x.shape[0], W.shape[0]), dtype=W.dtype)
             if b is not None:
                 mkldnn.Linear_F32.do_forward(x, W, b, y)
             else:
-                mkldnn.Linear_F32.do_forward(x, W, y);
+                mkldnn.Linear_F32.do_forward(x, W, y)
             return y,
         else:
             y = x.dot(W.T).astype(x.dtype, copy=False)
@@ -81,6 +81,7 @@ class LinearFunction(function.Function):
                 return gx, gW, gb
             else:
                 return gx, gW
+
 
 def linear(x, W, b=None, linear_link=None):
     """Linear function, or affine transformation.

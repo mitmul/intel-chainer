@@ -62,7 +62,6 @@ class SoftmaxCrossEntropy(function.Function):
         # Improve me
         # It is disabled by default
         if switch.enable_softmax_cross_entropyF(inputs):
-        # if mkldnn.enabled() and switch.enable_softmax_cross_entropy is True:
             y_out = numpy.empty(x.shape, dtype=numpy.float32)
             mkldnn_sce_fwd = mkldnn.SoftmaxCrossEntropy_F32_softmax_cross_entropy_create_forward(x.shape)
             mkldnn_sce_fwd.forward(x.ravel(), y_out.ravel(), x.shape)
@@ -133,7 +132,6 @@ class SoftmaxCrossEntropy(function.Function):
             # Improve me
             # It is disabled by default
             if switch.enable_softmax_cross_entropyF(inputs):
-            # if mkldnn.enabled() and switch.enable_softmax_cross_entropy is True:
                 mkldnn_sce_bwd = mkldnn.SoftmaxCrossEntropy_F32_softmax_cross_entropy_create_backward(gx.shape)
                 mkldnn_sce_bwd.backward(gx.ravel(), t.ravel(), gx.shape)
             else:

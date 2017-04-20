@@ -162,7 +162,7 @@ class Function(object):
         inputs = [x if isinstance(x, chainer.Variable)
                   else chainer.Variable(x, volatile=flag.AUTO)
                   for x in inputs]
-	self.mkldnn_opt = False
+        self.mkldnn_opt = False
         in_data = tuple([x.data for x in inputs])
         if chainer.is_debug():
             self._stack = traceback.extract_stack()

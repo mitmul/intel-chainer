@@ -2,11 +2,6 @@ from chainer import cuda
 from chainer.functions.connection import convolution_2d
 from chainer import initializers
 from chainer import link
-from mkldnn import mkldnn
-from mkldnn import switch
-from chainer.utils import conv
-
-import numpy as np
 
 
 class Convolution2D(link.Link):
@@ -102,7 +97,6 @@ class Convolution2D(link.Link):
         if self.has_uninitialized_params:
             with cuda.get_device(self._device_id):
                 self._initialize_params(x.shape[1])
-        
         return convolution_2d.convolution_2d(
             x, self.W, self.b, self.stride, self.pad, self.use_cudnn,
             deterministic=self.deterministic)

@@ -382,7 +382,7 @@ void OpenMpManager::getCurrentCpuSet() {
 void OpenMpManager::getDefaultCpuSet(cpu_set_t *defaultCpuSet) {
   CPU_ZERO(defaultCpuSet);
   unsigned numberOfProcessors = collection.getNumberOfProcessors();
-  for (int processorId = 0; processorId < numberOfProcessors; processorId++) {
+  for (unsigned processorId = 0; processorId < numberOfProcessors; processorId++) {
     CPU_SET(processorId, defaultCpuSet);
   }
 }
@@ -400,7 +400,7 @@ void OpenMpManager::getCurrentCoreSet() {
   CPU_ZERO(&usedCoreSet);
   CPU_ZERO(&currentCoreSet);
 
-  for (int processorId = 0; processorId < numberOfProcessors; processorId++) {
+  for (unsigned processorId = 0; processorId < numberOfProcessors; processorId++) {
     if (CPU_ISSET(processorId, &currentCpuSet)) {
       unsigned coreId = processorId % totalNumberOfCpuCores;
       if (!CPU_ISSET(coreId, &usedCoreSet)) {
@@ -415,7 +415,7 @@ void OpenMpManager::selectAllCoreCpus(cpu_set_t *set, unsigned physicalCoreId) {
   unsigned numberOfProcessors = collection.getNumberOfProcessors();
   unsigned totalNumberOfCpuCores = collection.getTotalNumberOfCpuCores();
 
-  int processorId = physicalCoreId % totalNumberOfCpuCores;
+  unsigned processorId = physicalCoreId % totalNumberOfCpuCores;
   while (processorId < numberOfProcessors) {
     if (CPU_ISSET(processorId, &currentCpuSet)) {
       CPU_SET(processorId, set);
@@ -428,7 +428,7 @@ void OpenMpManager::selectAllCoreCpus(cpu_set_t *set, unsigned physicalCoreId) {
 unsigned OpenMpManager::getPhysicalCoreId(unsigned logicalCoreId) {
   unsigned numberOfProcessors = collection.getNumberOfProcessors();
 
-  for (int processorId = 0; processorId < numberOfProcessors; processorId++) {
+  for (unsigned processorId = 0; processorId < numberOfProcessors; processorId++) {
     if (CPU_ISSET(processorId, &currentCoreSet)) {
       if (!logicalCoreId--) {
         return processorId;

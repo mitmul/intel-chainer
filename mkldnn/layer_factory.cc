@@ -74,19 +74,19 @@ static std::string pointer_to_string(void* ptr)
     os << std::hex << static_cast<void*>(ptr) << "_";
     return os.str();
 }
+
+static std::string float_to_string(float value)
+{
+    std::ostringstream os;
+    os << "F" << value << "_";
+    return os.str();
+}
 #endif
 
 static std::string int_to_string(int value)
 {
     std::ostringstream os;
     os << std::hex << "I" << value << "_";
-    return os.str();
-}
-
-static std::string float_to_string(float value)
-{
-    std::ostringstream os;
-    os << "F" << value << "_";
     return os.str();
 }
 

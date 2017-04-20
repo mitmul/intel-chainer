@@ -79,8 +79,6 @@
     {( float* y, int y_d1, int y_d2 )}
 %apply ( float* INPLACE_ARRAY2, int DIM1, int DIM2 )
     {( float* gy, int gy_d1, int gy_d2 )}
-%apply ( int N, double K, double ALPHA, double BETA )
-    {( int n, double k, double alpha, double beta )}
 %apply ( float* IN_ARRAY1, int DIM1)
     {( float* ws, int ws_d)}
 
@@ -158,7 +156,6 @@
 %template(Convolution2D_F32) Convolution2D<float>;
 %template(Pooling_F32) Pooling<float>;
 %template(MaxPooling_F32) MaxPooling<float>;
-%template(Layer_F32) Layer<float>;
 %template(Relu4D_F32) Relu4D<float>;
 %template(Relu_F32) Relu<float>;
 %template(AvgPooling_F32) AvgPooling<float>;

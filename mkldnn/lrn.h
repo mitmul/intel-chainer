@@ -76,6 +76,7 @@ template <typename T>
 class LocalResponseNormalization : public Layer<T>
 {
 public:
+#ifndef SWIG
     struct lrn_params
     {
         double alpha, beta,k;
@@ -85,6 +86,7 @@ public:
         mkldnn::memory::format data_format;
         mkldnn::memory::format diff_data_format;
     };
+#endif
 public:
     LocalResponseNormalization(int n, double k, double alpha, double beta, mkldnn::algorithm alg_kind);
     ~LocalResponseNormalization();

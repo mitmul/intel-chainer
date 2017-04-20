@@ -179,7 +179,7 @@ int LocalResponseNormalization<T>::forward_setup(
 
     LOG(INFO) << "    reorder_src: " << reorder_x_p;
     LOG(INFO) << "    reorder_dst: " << reorder_y_p;
- 
+
     if (reorder_x_p) this->fwd_primitives_.push_back(reorder_x_);
     fwd_primitives_.push_back(*lrn_fwd_);
     if (reorder_y_p) this->fwd_primitives_.push_back(reorder_y_);
@@ -204,9 +204,9 @@ void LocalResponseNormalization<T>::fwd_reset_mem(T* x,T* y,T* ws)
 // {
 //     if (!fwd_stream_ && workspace_size_ == 0) {
 //         LOG(INFO) << "forward_workspace_size !fwd_stream_";
-//         // get_ws_size(x, x_d1, x_d2, x_d3, x_d4, 
+//         // get_ws_size(x, x_d1, x_d2, x_d3, x_d4,
 //         //               y, y_d1, y_d2, y_d3, y_d4);
-//         forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
+//         forward_setup(x, x_d1, x_d2, x_d3, x_d4,
 //                       y, y_d1, y_d2, y_d3, y_d4);
 //         // fwd_stream_->submit(fwd_primitives_).wait();
 //     }
@@ -223,7 +223,7 @@ int LocalResponseNormalization<T>::forward(
         LOG(INFO) << "forward forward_first_use_";
         forward_first_use_ = false;
         if (!fwd_stream_){
-            forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
+            forward_setup(x, x_d1, x_d2, x_d3, x_d4,
                 y, y_d1, y_d2, y_d3, y_d4);
         }
         fwd_reset_mem(x, y, ws);

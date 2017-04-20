@@ -103,10 +103,10 @@ public:
         if (forward_object->workspace_size_ != 0 && !forward_object->forward_first_use_){
             return forward_object->workspace_size_;
         }else{
-            return forward_object->forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
+            return forward_object->forward_setup(x, x_d1, x_d2, x_d3, x_d4,
                       y, y_d1, y_d2, y_d3, y_d4);
         }
-        
+
     }
     static void do_forward(
         T*   x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
@@ -159,7 +159,7 @@ private:
     int forward_setup(
         T* x, int x_d1, int x_d2, int x_d3, int x_d4,
         T* y, int y_d1, int y_d2, int y_d3, int y_d4);
-    
+
     void fwd_reset_mem(T* x,T* y, T* ws);
 protected:
     static LocalResponseNormalization<T>* get_forward_object(

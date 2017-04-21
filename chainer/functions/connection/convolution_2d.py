@@ -75,10 +75,6 @@ class Convolution2DFunction(function.Function):
         For mkldnn backend, only support float32 for x and W
         """
         if switch.enable_convF(inputs):
-            """
-            delay to create primitive here, because we can not get both W and x dtype in link init
-            TODO: in future, native object create will be hidden in layer factory
-            """
             out_h = conv.get_conv_outsize(h, kh, self.sy, self.ph, cover_all=self.cover_all)
             assert out_h > 0, 'Height in the output should be positive.'
             out_w = conv.get_conv_outsize(w, kw, self.sx, self.pw, cover_all=self.cover_all)
@@ -185,10 +181,6 @@ class Convolution2DFunction(function.Function):
         For MKLDNN backward, only support float32
         """
         if switch.enable_convF(inputs):
-            """
-            delay to create primitive here, because we can not get both W and x dtype in link init
-            TODO: in future, native object create will be hidden in layer factory
-            """
             gW = numpy.empty(shape=(out_c, input_c, kh, kw), dtype=W.dtype)
             gx = numpy.empty(shape=(n, c, h, w), dtype=W.dtype)
             if b is None:

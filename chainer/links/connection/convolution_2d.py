@@ -99,7 +99,7 @@ class Convolution2D(link.Link):
                 self._initialize_params(x.shape[1])
         return convolution_2d.convolution_2d(
             x, self.W, self.b, self.stride, self.pad, self.use_cudnn,
-            deterministic=self.deterministic)
+            deterministic=self.deterministic, in_chain=self.in_chain)
 
 
 def _pair(x):

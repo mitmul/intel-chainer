@@ -34,14 +34,14 @@ def _pair(x):
 class Convolution2DFunction(function.Function):
 
     def __init__(self, stride=1, pad=0, use_cudnn=True, cover_all=False,
-                 deterministic=False, conv_link=None):
+                 deterministic=False, in_chain=False):
         self.sy, self.sx = _pair(stride)
         self.ph, self.pw = _pair(pad)
         self.pd, self.pr = _pair(pad)
         self.use_cudnn = use_cudnn
         self.cover_all = cover_all
         self.deterministic = deterministic
-        self.conv_link = conv_link
+        self.in_chain = in_chain
 
     def check_type_forward(self, in_types):
         n_in = in_types.size()
@@ -303,7 +303,7 @@ class Convolution2DFunction(function.Function):
 
 
 def convolution_2d(x, W, b=None, stride=1, pad=0, use_cudnn=True,
-                   cover_all=False, deterministic=False, conv_link=None):
+                   cover_all=False, deterministic=False, in_chain=False):
     """Two-dimensional convolution function.
 
     This is an implementation of two-dimensional convolution in ConvNets.
@@ -369,7 +369,7 @@ def convolution_2d(x, W, b=None, stride=1, pad=0, use_cudnn=True,
 
     """
     func = Convolution2DFunction(
-        stride, pad, use_cudnn, cover_all, deterministic, conv_link)
+        stride, pad, use_cudnn, cover_all, deterministic, in_chain)
     if b is None:
         return func(x, W)
     else:

@@ -422,9 +422,12 @@ Actual: {0}'''.format(type(data))
             cuda.get_device(*(in_data + out_grad)).use()
             for hook in six.itervalues(hooks):
                 hook.backward_preprocess(func, in_data, out_grad)
-            _x = func.inputs[0]
-            if _x.creator is None:
-                func.mkldnn_opt = True
+
+            if isinstance(func, chainer.functions.connection.convolution_2d.Convolution2DFunction):
+                _x = func.inputs[0]
+                if _x.creator is None and func.in_chain is True:
+                    func.mkldnn_opt = True
+
             gxs = func.backward(in_data, out_grad)
             assert len(gxs) == len(in_data)
             for hook in six.itervalues(hooks):

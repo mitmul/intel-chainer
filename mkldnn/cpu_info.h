@@ -65,6 +65,7 @@
 #define CPU_INFO_H
 
 #include <boost/thread/thread.hpp>
+#include <boost/utility.hpp>
 #include <sched.h>
 #include <cstdio>
 #include <cstdlib>
@@ -83,7 +84,7 @@ struct Processor {
   Processor();
 };
 
-class CpuInfoInterface {
+class CpuInfoInterface : boost::noncopyable {
  public:
   virtual ~CpuInfoInterface() {}
   virtual const char *getFirstLine() = 0;

@@ -21,7 +21,7 @@ f_relu = F.ReLU(False)
 res = f_relu.forward_cpu(x)
 print(res)
 
-print '--------------gy---------------'
+print ('--------------gy---------------')
 gy = x;
 res = f_relu.backward_cpu(x, gy)
 print(res)

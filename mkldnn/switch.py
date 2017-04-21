@@ -1,5 +1,5 @@
 import numpy
-import mkldnn
+from mkldnn import mkldnn
 enable_conv         = True
 enable_max_pooling  = True
 enable_avg_pooling  = True
@@ -49,4 +49,4 @@ def enable_acc_gradF(tul):
 	return mkldnn.enabled() and SupportedInput(tul) and enable_acc_grad
 # concat now could support float32 and float64
 # def enable_concatF(tul):
-# 	return mkldnn.enabled() and enable_concat    
+# 	return mkldnn.enabled() and enable_concat

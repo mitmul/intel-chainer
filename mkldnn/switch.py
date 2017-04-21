@@ -1,5 +1,6 @@
 import numpy
-from mkldnn import mkldnn
+import mkldnn
+is_from_chain       = False
 enable_conv         = True
 enable_max_pooling  = True
 enable_avg_pooling  = True

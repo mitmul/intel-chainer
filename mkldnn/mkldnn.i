@@ -107,12 +107,28 @@
 /* Get the ndarray tuple */
 %typemap(in) (int num_concats, char** data, int* n, int* c, int* h, int *w) {
     int i;
-    if (!PyTuple_Check($input)) {
-        PyErr_SetString(PyExc_ValueError, "Expecting a Tuple");
+    bool isTuple = false;
+    bool isList = false;
+
+    isTuple = PyTuple_Check($input);
+    isList = PyList_Check($input);
+
+    if (!isTuple && !isList) {
+        PyErr_SetString(PyExc_ValueError, "Expecting a Tuple or List");
+        return NULL;
+    }
+    if (isTuple && isList) {
+        PyErr_SetString(PyExc_ValueError, "Object can not be both Tuple and List, something wrong");
         return NULL;
     }
 
-    $1 = PyTuple_Size($input);
+    $1 = 0;
+    if (isTuple) {
+        $1 = PyTuple_Size($input);
+    } else if (isList) {
+        $1 = PyList_Size($input);
+    }
+
     /* malloc the concat data struct */
     $2 = (char**)malloc(($1)*sizeof(char*));
     $3 = (int*)malloc(($1)*sizeof(int));
@@ -120,7 +136,12 @@
     $5 = (int*)malloc(($1)*sizeof(int));
     $6 = (int*)malloc(($1)*sizeof(int));
     for (i = 0; i < $1; i++) {
-        PyObject* x = PyTuple_GetItem($input, i);
+        PyObject* x=NULL;
+        if (isTuple) {
+            x = PyTuple_GetItem($input, i);
+        } else if (isList) {
+            x = PyList_GetItem($input, i);
+        }
         if (!PyArray_Check(x)) {
             PyErr_SetString(PyExc_ValueError, "Item must be array");
             return NULL;

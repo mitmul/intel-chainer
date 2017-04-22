@@ -81,4 +81,8 @@ static mkldnn::memory::data_type memory_data_type() {
 
 int cpu_support_avx512_p(void);
 int cpu_support_avx2_p(void);
+
+#define DISALLOW_COPY_AND_ASSIGN(TypeName) \
+  TypeName(const TypeName&) = delete;      \
+  void operator=(const TypeName&) = delete
 // vim: et ts=4 sw=4 cindent cino^=l0,\:0,N-s

@@ -471,7 +471,10 @@ Actual: {0}'''.format(type(data))
                         else:
                             if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
                                 # if enable_acc_grad, will deply to do grad accumulate, only record grad
-                                x.acc_grad += (gx,)
+                                if len(x.acc_grad) > 0: # means 3rd or later visit for variable x
+                                    x.acc_grad += (gx,)
+                                else: # means this variable is W or b
+                                    x._grad += gx
                             else:
                                 x._grad += gx  # 3rd or later visit
                 else:  # not a leaf

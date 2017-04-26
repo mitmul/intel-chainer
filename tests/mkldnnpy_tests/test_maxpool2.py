@@ -10,11 +10,11 @@ class TestMaxpool2(unittest.TestCase):
     def setUp(self):
         self.x = np.random.rand(1, 1, 4, 4).astype('f'),
         self.gy = np.random.rand(1, 1, 4, 4).astype('f'),
-    
+
     def tearDown(self):
         self.x = None
         self.gy = None
-    
+
     def check_maxpool2(self):
         for _ in range(2):
             switch.enable_max_pooling = True
@@ -27,7 +27,7 @@ class TestMaxpool2(unittest.TestCase):
             gx_expect = f.backward_cpu(self.x, self.gy)
             testing.assert_allclose(np.asarray(y), np.asarray(y_expect))
             testing.assert_allclose(np.asarray(gx), np.asarray(gx_expect))
-    
+
     @condition.retry(3)
     def test_cpu(self):
         self.check_maxpool2()

@@ -20,19 +20,19 @@ class TestConvolution(unittest.TestCase):
         self.chainer_conv = L.Convolution2D(self.in_size, self.out_size, self.ker_size, stride=1, pad=1,
                                             initialW=self.W,
                                             use_cudnn=False)
-    
+
     def tearDown(self):
         self.x = None
         self.y = None
         self.W = None
-    
+
     def check_convolution(self):
         switch.enable_conv = True
         result = self.chainer_conv(self.x)
         switch.enable_conv = False
         result_expect = self.chainer_conv(self.x)
         testing.assert_allclose(result.data, result_expect.data)
-    
+
     @condition.retry(3)
     def test_cpu(self):
         self.check_convolution()

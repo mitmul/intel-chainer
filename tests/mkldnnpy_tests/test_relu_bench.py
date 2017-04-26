@@ -1,6 +1,4 @@
-import chainer
 import chainer.functions as F
-import chainer.links as L
 import numpy as np
 import time
 
@@ -14,15 +12,12 @@ count = 0
 niter = 15
 n_dry = 3
 
-
-
 for i in range(niter):
     x = np.asarray(data),
     gy = np.asarray(datay),
 
-
     start = time.time()
-    #model.forward(x)
+    # model.forward(x)
     f_relu = F.ReLU(False)
     f_relu.forward_cpu(x)
     f_relu.backward_cpu(x, gy)
@@ -44,15 +39,12 @@ count = 0
 niter = 5
 n_dry = 3
 
-
-
 for i in range(niter):
     x = np.asarray(data),
     gy = np.asarray(datay),
 
-
     start = time.time()
-    #model.forward(x)
+    # model.forward(x)
     f_relu = F.ReLU(False)
     f_relu.forward_cpu(x)
     f_relu.backward_cpu(x, gy)
@@ -63,4 +55,3 @@ for i in range(niter):
 
 
 print("Average Forward: ", total_forward/count, "ms")
-

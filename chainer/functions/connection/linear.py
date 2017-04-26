@@ -42,7 +42,7 @@ class LinearFunction(function.Function):
         x = _as_mat(inputs[0])
         W = inputs[1]
         b = inputs[2] if len(inputs) == 3 else None
-        if switch.enable_linearF(inputs):
+        if switch.enable_linearF(inputs) and isinstance(x, numpy.ndarray):
             y = numpy.empty(shape=(x.shape[0], W.shape[0]), dtype=W.dtype)
             if b is not None:
                 mkldnn.Linear_F32.do_forward(x, W, b, y)
@@ -63,7 +63,7 @@ class LinearFunction(function.Function):
         """
         For MKLDNN backward, only support float32
         """
-        if switch.enable_linearF(inputs):
+        if switch.enable_linearF(inputs) and isinstance(x, numpy.ndarray):
             gW = numpy.empty(shape=W.shape, dtype=W.dtype)
             gx = numpy.empty(shape=x.shape, dtype=W.dtype)
             if b is not None:

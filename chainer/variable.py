@@ -395,7 +395,7 @@ Actual: {0}'''.format(type(data))
             in_data = tuple([x.data for x in func.inputs])
             out_grad = ()
             # if enable grad accumulate
-            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
+            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4 and all(isinstance(xi, numpy.ndarray) for xi in in_data):
                 out_grad_tmp = tuple([None if y is None else y.grad for y in outputs])
                 acc_grad_tuple = tuple([None if y is None else y.acc_grad for y in outputs])
                 for grad_tmp, acc_grad in zip(out_grad_tmp, acc_grad_tuple):
@@ -462,14 +462,14 @@ Actual: {0}'''.format(type(data))
                     else:
                         cuda.get_device(gx).use()
                         if id_x in need_copy:  # 2nd visit
-                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
+                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4 and all(isinstance(xi, numpy.ndarray) for xi in in_data):
                                 # if enable_acc_grad,will deply to do grad accumulate,only record grad 
                                 x.acc_grad += (gx,)
                             else:
                                 x.grad = utils.force_array(x.grad + gx)  # copy
                             need_copy.remove(id_x)  # remove from list in 2nd visit
                         else:
-                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
+                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4 and all(isinstance(xi, numpy.ndarray) for xi in in_data):
                                 # if enable_acc_grad, will deply to do grad accumulate, only record grad
                                 if len(x.acc_grad) > 0: # means 3rd or later visit for variable x
                                     x.acc_grad += (gx,)
@@ -486,14 +486,14 @@ Actual: {0}'''.format(type(data))
                     else:
                         cuda.get_device(gx).use()
                         if id_x in need_copy:  # 2nd visit
-                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
+                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4 and all(isinstance(xi, numpy.ndarray) for xi in in_data):
                                 # if enable_acc_grad, will deply to do grad accumulate, only record grad
                                 x.acc_grad += (gx,)
                             else:
                                 x._grad = utils.force_array(gx + x._grad)  # copied
                             need_copy.remove(id_x)
                         else:  # 3rd or later visit
-                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4:
+                            if switch.enable_acc_gradF((in_data,)) and in_data[0].ndim == 4 and all(isinstance(xi, numpy.ndarray) for xi in in_data):
                                 # if enable_acc_grad, will deply to do grad accumulate, only record grad
                                 x.acc_grad += (gx,)
                             else:

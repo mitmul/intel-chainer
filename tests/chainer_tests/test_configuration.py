@@ -5,7 +5,7 @@ import unittest
 import chainer
 from chainer import configuration
 from chainer import testing
-import sys
+
 
 class TestLocalConfig(unittest.TestCase):
 
@@ -67,7 +67,6 @@ class TestLocalConfig(unittest.TestCase):
         sio = io.StringIO()
         self.config.show(sio)
         contents = sio.getvalue()
-        print contents
         self.assertEqual(contents, 'x global x\ny local y\nz local z\n')
 
     def test_print_global_config(self):

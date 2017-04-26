@@ -16,6 +16,14 @@ Minimum requirements:
 - Six 1.9
 
 Requirements for some features:
+- Intel MKL-DNN support (accelerate Chainer on CPU, esp. Intel® Xeon® and Intel® Xeon Phi™ processors)
+  - mkl-dnn 0.7
+  - g++ 4.8.4+
+  - swig 3.0
+  - glog 0.3.3
+  - gflags 2.0
+  - python-setuptools 3.3
+  - boost 1.58
 - CUDA support
   - CUDA 6.5, 7.0, 7.5, 8.0
   - filelock
@@ -53,6 +61,25 @@ You can also install Chainer from the source code:
 python setup.py install
 ```
 
+### Installation with Intel MKL-DNN
+To enable MKL-DNN, first you have to install MKL-DNN library.
+- Install MKL-DNN
+```
+git clone https://github.com/01org/mkl-dnn.git
+cd scripts && ./prepare_mkl.sh && cd -
+mkdir -p build && cd build && cmake .. && make -j
+sudo make install
+```
+- Build Chainer with MKL-DNN support
+```
+python setup.py build
+python setup.py install
+```
+- To run Chainer with MKL-DNN support, set environment variable `LD_LIBRARY_PATH` for MKL-DNN library before run
+```
+# set the /path/to/mkldnn-lib, most likely it will be /usr/local/lib
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+```
 
 ### Installation with CUDA
 

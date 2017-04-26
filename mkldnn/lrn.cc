@@ -1,3 +1,66 @@
+/*
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
+ *Copyright (c) 2015 Preferred Infrastructure, Inc.
+ *Copyright (c) 2015 Preferred Networks, Inc.
+ *
+ *Permission is hereby granted, free of charge, to any person obtaining a copy
+ *of this software and associated documentation files (the "Software"), to deal
+ *in the Software without restriction, including without limitation the rights
+ *to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *copies of the Software, and to permit persons to whom the Software is
+ *furnished to do so, subject to the following conditions:
+ *
+ *The above copyright notice and this permission notice shall be included in
+ *all copies or substantial portions of the Software.
+ *
+ *THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *THE SOFTWARE.
+ *
+ *
+ *######################################################################
+ *# The CuPy is designed based on NumPy's API.
+ *# CuPy's source code and documents contain the original NumPy ones.
+ *######################################################################
+ *Copyright (c) 2005-2016, NumPy Developers.
+ *All rights reserved.
+ *
+ *Redistribution and use in source and binary forms, with or without
+ *modification, are permitted provided that the following conditions are
+ *met:
+ *
+ *    * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above
+ *       copyright notice, this list of conditions and the following
+ *       disclaimer in the documentation and/or other materials provided
+ *       with the distribution.
+ *
+ *    * Neither the name of the NumPy Developers nor the names of any
+ *       contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
+ *
+ *THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *######################################################################
+ */
+
+
 #include <glog/logging.h>
 #include <iostream>
 #include "common.h"
@@ -12,7 +75,8 @@ using namespace mkldnn;
 template<typename T>
 LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k,
                 double alpha, double beta,mkldnn::algorithm alg_kind)
-                : user_x_mem_(NULL), user_y_mem_(NULL), x_md_(NULL), y_md_(NULL)
+                : workspace_size_(0), forward_first_use_(true)
+                , user_x_mem_(NULL), user_y_mem_(NULL), x_md_(NULL), y_md_(NULL)
                 , bw_x_mem_(NULL), gx_mem_(NULL), gy_mem_(NULL), workspace_mem_(NULL)
                 , lrn_fwd_desc_(NULL), lrn_fwd_pd_(NULL)
                 , lrn_fwd_(NULL), fwd_stream_(NULL)
@@ -22,7 +86,7 @@ LocalResponseNormalization<T>::LocalResponseNormalization(int n, double k,
 {
     // google::ShutdownGoogleLogging();
     // google::SetLogDestination(google::GLOG_INFO,"./lrnMyInfo");
-    // google::LogToStderr();      
+    // google::LogToStderr();
     // LOG(INFO) << "n = " << n << " k = " << k << " alpha = " << alpha << "beta = " << beta ;
     p_.alpha = alpha;
     p_.beta = beta;
@@ -43,6 +107,7 @@ LocalResponseNormalization<T>::~LocalResponseNormalization()
 
 }
 
+
 template<typename T>
 int LocalResponseNormalization<T>::forward_setup(
     T* x, int x_d1, int x_d2, int x_d3, int x_d4,
@@ -52,8 +117,10 @@ int LocalResponseNormalization<T>::forward_setup(
     // we check AVX512 first then AVX2
     if (cpu_support_avx512_p() && (x_d2%16)==0) {
         format = memory::format::nChw16c;
+        LOG(INFO) << "forward_setup nChw16c";
     } else if (cpu_support_avx2_p() && (x_d2%8)==0) {
         format = memory::format::nChw8c;
+        LOG(INFO) << "forward_setup nChw8c";
     } else {
         format = memory::format::nchw;
     }
@@ -65,18 +132,20 @@ int LocalResponseNormalization<T>::forward_setup(
 
     /* create memory for user data */
     LOG(INFO) << "create memory for user data";
-    user_x_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),p_.data_format}, *eng_}, x));
+    user_x_mem_.reset(new memory({{{lrn_src_tz}, memory_data_type<T>(),p_.data_format}, *eng_}, dummy));
     x_md_.reset(new memory::desc({lrn_src_tz}, memory_data_type<T>(),format));
 
 
-    user_y_mem_.reset(new memory({{{lrn_dst_tz}, memory_data_type<T>(),p_.data_format}, *eng_}, y));
+    user_y_mem_.reset(new memory({{{lrn_dst_tz}, memory_data_type<T>(),p_.data_format}, *eng_}, dummy));
     y_md_.reset(new memory::desc({lrn_dst_tz}, memory_data_type<T>(),p_.diff_data_format));
 
-
-    LOG(INFO) << "lrn_fwd_desc_";
-    lrn_fwd_desc_.reset(new lrn_forward::desc(p_.aprop_kind, p_.aalgorithm, *x_md_,
+    if (!lrn_fwd_pd_)
+    {
+        LOG(INFO) << "lrn_fwd_desc_";
+        lrn_fwd_desc_.reset(new lrn_forward::desc(p_.aprop_kind, p_.aalgorithm, *x_md_,
         p_.local_size, p_.alpha, p_.beta, p_.k));
-    lrn_fwd_pd_.reset(new lrn_forward::primitive_desc(*lrn_fwd_desc_, *eng_));
+        lrn_fwd_pd_.reset(new lrn_forward::primitive_desc(*lrn_fwd_desc_, *eng_));
+    }
 
     x_mem_ = user_x_mem_;
     y_mem_ = user_y_mem_;
@@ -101,43 +170,66 @@ int LocalResponseNormalization<T>::forward_setup(
     }
 
     // LOG(INFO) << "workspace_primitive_desc";
-    workspace_mem_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc()));
-    
+    workspace_mem_.reset(new memory(lrn_fwd_pd_->workspace_primitive_desc(),dummy));
+    auto workspace_size = lrn_fwd_pd_->workspace_primitive_desc().get_size();
+    workspace_size_ = workspace_size;
+    LOG(INFO) << "workspace_size_ is " << workspace_size;
     // LOG(INFO) << "lrn_fwd_";
     lrn_fwd_.reset(new lrn_forward(*lrn_fwd_pd_, *x_mem_, *workspace_mem_, *y_mem_));
 
     LOG(INFO) << "    reorder_src: " << reorder_x_p;
     LOG(INFO) << "    reorder_dst: " << reorder_y_p;
- 
-     if (reorder_x_p) this->fwd_primitives_.push_back(reorder_x_);
+
+    if (reorder_x_p) this->fwd_primitives_.push_back(reorder_x_);
     fwd_primitives_.push_back(*lrn_fwd_);
     if (reorder_y_p) this->fwd_primitives_.push_back(reorder_y_);
     fwd_stream_.reset(new stream(stream::kind::eager));
 
-    return 0;
+    return workspace_size;
 }
 
 template<typename T>
-void LocalResponseNormalization<T>::fwd_reset_mem(T* x,T* y)
+void LocalResponseNormalization<T>::fwd_reset_mem(T* x,T* y,T* ws)
 {
     // LOG(INFO) << "x " << x << "y " << y << "ws " << ws;
     user_x_mem_->set_data_handle(x);
     user_y_mem_->set_data_handle(y);
+    workspace_mem_->set_data_handle(ws);
 }
+
+// template<typename T>
+// int LocalResponseNormalization<T>::forward_workspace_size(
+//     T* x, int x_d1, int x_d2, int x_d3, int x_d4,
+//     T* y, int y_d1, int y_d2, int y_d3, int y_d4)
+// {
+//     if (!fwd_stream_ && workspace_size_ == 0) {
+//         LOG(INFO) << "forward_workspace_size !fwd_stream_";
+//         // get_ws_size(x, x_d1, x_d2, x_d3, x_d4,
+//         //               y, y_d1, y_d2, y_d3, y_d4);
+//         forward_setup(x, x_d1, x_d2, x_d3, x_d4,
+//                       y, y_d1, y_d2, y_d3, y_d4);
+//         // fwd_stream_->submit(fwd_primitives_).wait();
+//     }
+//     return workspace_size_;
+// }
 
 template<typename T>
 int LocalResponseNormalization<T>::forward(
     T* x, int x_d1, int x_d2, int x_d3, int x_d4,
-    T* y, int y_d1, int y_d2, int y_d3, int y_d4)
+    T* y, int y_d1, int y_d2, int y_d3, int y_d4,
+    T* ws, int ws_d)
 {
-    if (!fwd_stream_) {
-        // LOG(INFO) << "!fwd_stream_";
-        forward_setup(x, x_d1, x_d2, x_d3, x_d4, 
-                      y, y_d1, y_d2, y_d3, y_d4);
-        fwd_reset_mem(x, y);
+    if (forward_first_use_) {
+        LOG(INFO) << "forward forward_first_use_";
+        forward_first_use_ = false;
+        if (!fwd_stream_){
+            forward_setup(x, x_d1, x_d2, x_d3, x_d4,
+                y, y_d1, y_d2, y_d3, y_d4);
+        }
+        fwd_reset_mem(x, y, ws);
         fwd_stream_->submit(fwd_primitives_).wait();
     } else {
-        fwd_reset_mem(x, y);
+        fwd_reset_mem(x, y, ws);
         fwd_stream_->rerun().wait();
     }
     return 0;
@@ -152,9 +244,11 @@ int LocalResponseNormalization<T>::backward_setup(
     memory::format format;
     // we check AVX512 first then AVX2
     if (cpu_support_avx512_p() && (x_d2%16)==0) {
+        LOG(INFO) << "backward_setup nChw16c";
         format = memory::format::nChw16c;
     } else if (cpu_support_avx2_p() && (x_d2%8)==0) {
         format = memory::format::nChw8c;
+        LOG(INFO) << "backward_setup nChw8c";
     } else {
         format = memory::format::nchw;
     }
@@ -181,7 +275,7 @@ int LocalResponseNormalization<T>::backward_setup(
     // auto lrn_src_mem_ = lrn_bwd_user_src_mem_;
 
     lrn_bwd_desc_.reset(new lrn_backward::desc(p_.aalgorithm,
-        *lrn_bwd_src_desc_, *lrn_diff_dst_desc_, 
+        *lrn_bwd_src_desc_, *lrn_diff_dst_desc_,
         p_.local_size, p_.alpha, p_.beta,p_.k));
     lrn_bwd_pd_.reset(new lrn_backward::primitive_desc(*lrn_bwd_desc_, *eng_,
         *lrn_fwd_pd_));
@@ -209,7 +303,7 @@ int LocalResponseNormalization<T>::backward_setup(
     LOG(INFO) << "    reorder_dst_diff: " << reorder_y_p;
     LOG(INFO) << "    reorder_src_diff: " << reorder_x_p;
 
-    lrn_bwd_.reset(new lrn_backward(*lrn_bwd_pd_, 
+    lrn_bwd_.reset(new lrn_backward(*lrn_bwd_pd_,
         *bw_x_mem_, *gy_mem_, *workspace_mem_,*gx_mem_));
 
     if (reorder_y_p) bwd_primitives_.push_back(reorder_gy_);
@@ -221,32 +315,34 @@ int LocalResponseNormalization<T>::backward_setup(
 }
 
 template<typename T>
-void LocalResponseNormalization<T>::bwd_reset_mem(T* x,T* gy,T* gx)
+void LocalResponseNormalization<T>::bwd_reset_mem(T* x,T* gy,T* gx, T* ws)
 {
     // lrn_fwd_user_src_mem_->set_data_handle(x);
     lrn_bwd_user_src_mem_->set_data_handle(x);
     lrn_diff_src_mem_->set_data_handle(gx);
     lrn_diff_dst_mem_->set_data_handle(gy);
-    
+    workspace_mem_->set_data_handle(ws);
+
 }
 
 template<typename T>
 int LocalResponseNormalization<T>::backward(
     T* x,  int x_d1,  int x_d2,  int x_d3,  int x_d4,
     T* gy, int gy_d1, int gy_d2, int gy_d3, int gy_d4,
-    T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4)
+    T* gx, int gx_d1, int gx_d2, int gx_d3, int gx_d4,
+    T* ws, int ws_d)
 {
     // LOG(INFO) << "backward: " << x << " : " << x_size << " : " << gy << " : " << gy_size << " : " << gx << " : " << gx_size;
     if (!bwd_stream_) {
-        backward_setup(    
+        backward_setup(
             x, x_d1, x_d2, x_d3, x_d4,
             gy, gy_d1, gy_d2, gy_d3, gy_d4,
             gx, gx_d1,gx_d2, gx_d3, gx_d4);
-        bwd_reset_mem(x, gy, gx);
+        bwd_reset_mem(x, gy, gx,ws);
         bwd_stream_->submit(bwd_primitives_).wait();
-    } 
+    }
     else {
-        bwd_reset_mem(x, gy, gx);
+        bwd_reset_mem(x, gy, gx, ws);
         bwd_stream_->rerun().wait();
     }
     return 0;

@@ -7,6 +7,7 @@ from chainer.utils import type_check
 from mkldnn import mkldnn
 from mkldnn import switch
 
+
 class Concat(function.Function):
 
     """Concatenate multiple tensors towards specified axis."""
@@ -41,7 +42,7 @@ class Concat(function.Function):
                 type_check.expect(in_types[0].shape[d] == in_types[i].shape[d])
 
     def forward(self, xs):
-        if switch.enable_concatF((xs,)) and self.axis == 1 and xs[0].ndim == 4:
+        if switch.enable_concatF((xs,)) and self.axis == 1 and xs[0].ndim == 4 and all(isinstance(xi, numpy.ndarray) for xi in xs):
             out_c = 0
             xs_new = ()
 
@@ -49,11 +50,13 @@ class Concat(function.Function):
             for xi in xs:
                 if xi.flags.contiguous is False:
                     need_copy = True
-            
-            # tuple's element value is not c continuous, need to copy it so that native can get correct value from buffer address
+            """
+            tuple's element value is not c continuous,
+            need to copy it so that native can get correct value from buffer address
+            """
             for xi in xs:
                 out_c += xi.shape[1]
-                if need_copy :
+                if need_copy:
                     tmp = xi.copy().astype(numpy.float32)
                     xs_new += (tmp,)
 
@@ -76,19 +79,14 @@ class Concat(function.Function):
     def backward(self, xs, gy):
         if len(xs) == 1:
             return gy
-        if switch.enable_concatF((xs,gy)) and self.axis == 1 and xs[0].ndim == 4:
-            
-            ## x should have same shape as xs
+        if switch.enable_concatF((xs, gy)) and self.axis == 1 and xs[0].ndim == 4 and all(isinstance(xi, numpy.ndarray) for xi in xs):
+            # x should have same shape as xs
             xs_new = ()
             for xi in xs:
-                temp = numpy.ndarray(shape=xi.shape, dtype=xi.dtype)
-                temp.fill(0.)
+                temp = numpy.empty(shape=xi.shape, dtype=xi.dtype)
                 xs_new += (temp,)
-            
             self.mkldnn_concat.backward(xs_new, gy[0], self.axis)
-            
             return xs_new
-
         else:
             xp = cuda.get_array_module(*xs)
             sizes = numpy.array([x.shape[self.axis] for x in xs[:-1]]).cumsum()

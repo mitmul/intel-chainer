@@ -7,6 +7,7 @@ from chainer.utils import type_check
 from mkldnn import mkldnn
 from mkldnn import switch
 
+
 def _cu_conv_sum(y, x, n):
     # Convolutional sum
     # TODO(beam2d): Use scan computation
@@ -54,19 +55,16 @@ class LocalResponseNormalization(function.Function):
         )
 
     def forward_cpu(self, x):
-        # if switch.enable_lrn and self.isfloat32:
         if switch.enable_lrnF((x,)):
-            # print "test mkl forword float32"
-            self.y = numpy.empty(x[0].shape,dtype=x[0].dtype)
-            self.ws = numpy.empty(x[0].shape, dtype=x[0].dtype)
-            # print "x dtype is" + str(x[0].dtype)
+            self.y = numpy.empty(x[0].shape, dtype=x[0].dtype)
             in_alpha = self.n*self.alpha
-            mkldnn.LocalResponseNormalization_F32.do_forward(x[0],self.y,self.n,self.k,in_alpha,self.beta)
-            # self.mkldnn_lrn.forward(x[0],self.y)
-            # self.mkldnn_lrn = True
+            ws_size = mkldnn.LocalResponseNormalization_F32.get_workspace_size(
+                x[0], self.y, self.n, self.k, in_alpha, self.beta)
+            self.ws = numpy.empty(ws_size, dtype=x[0].dtype)
+            mkldnn.LocalResponseNormalization_F32.do_forward(
+                x[0], self.y, self.ws, self.n, self.k, in_alpha, self.beta)
             return self.y,
         else:
-            # print "numpy forward"
             half_n = self.n // 2
             x2 = numpy.square(x[0])
             sum_part = x2.copy()
@@ -79,19 +77,13 @@ class LocalResponseNormalization(function.Function):
             return self.y,
 
     def backward_cpu(self, x, gy):
-        if switch.enable_lrnF((x,gy)):
-            # if self.mkldnn_lrn:
-            # print "test mkl backward float32"
+        if switch.enable_lrnF((x, gy)):
             gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
             in_alpha = self.n*self.alpha
             mkldnn.LocalResponseNormalization_F32.do_backward(
-                x[0],gy[0],gx,self.n,self.k,in_alpha,self.beta)
-            # self.mkldnn_lrn.backward(x[0],gy[0],gx)
+                x[0], gy[0], gx, self.ws, self.n, self.k, in_alpha, self.beta)
             return gx,
-            # else:
-            #     return None
         else:
-            # print "numpy backward_cpu"
             half_n = self.n // 2
             summand = self.y * gy[0] / self.unit_scale
             sum_part = summand.copy()

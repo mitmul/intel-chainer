@@ -7,7 +7,6 @@ from chainer.utils import type_check
 from mkldnn import mkldnn
 from mkldnn import switch
 
-import numpy as np
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
@@ -35,15 +34,14 @@ def _pair(x):
 class Convolution2DFunction(function.Function):
 
     def __init__(self, stride=1, pad=0, use_cudnn=True, cover_all=False,
-                 deterministic=False, conv_link=None):
+                 deterministic=False, in_chain=False):
         self.sy, self.sx = _pair(stride)
         self.ph, self.pw = _pair(pad)
         self.pd, self.pr = _pair(pad)
         self.use_cudnn = use_cudnn
         self.cover_all = cover_all
         self.deterministic = deterministic
-    
-        self.conv_link = conv_link
+        self.in_chain = in_chain
 
     def check_type_forward(self, in_types):
         n_in = in_types.size()
@@ -77,33 +75,24 @@ class Convolution2DFunction(function.Function):
         For mkldnn backend, only support float32 for x and W
         """
         if switch.enable_convF(inputs):
-            """
-            delay to create primitive here, because we can not get both W and x dtype in link init
-            TODO: in future, native object create will be hidden in layer factory
-            """
-            out_h = conv.get_conv_outsize(h, kh, self.sy, self.ph,
-                                      cover_all=self.cover_all)
+            out_h = conv.get_conv_outsize(h, kh, self.sy, self.ph, cover_all=self.cover_all)
             assert out_h > 0, 'Height in the output should be positive.'
-            out_w = conv.get_conv_outsize(w, kw, self.sx, self.pw,
-                                      cover_all=self.cover_all)
+            out_w = conv.get_conv_outsize(w, kw, self.sx, self.pw, cover_all=self.cover_all)
             assert out_w > 0, 'Width in the output should be positive.'
-            
             self.pd = self.sy*(out_h-1) + kh - h - self.ph
             self.pr = self.sx*(out_w-1) + kw - w - self.pw
 
             y = numpy.empty(shape=(n, out_c, out_h, out_w), dtype=x.dtype)
-            
             if b is not None:
                 mkldnn.Convolution2D_F32.do_forward(x, W, b, y, kh, kw, self.sx, self.sy, self.ph, self.pw, self.pd, self.pr)
             else:
                 mkldnn.Convolution2D_F32.do_forward(x, W, y, kh, kw, self.sx, self.sy, self.ph, self.pw, self.pd, self.pr)
             return y,
-            
         else:
             self.col = conv.im2col_cpu(
                 x, kh, kw, self.sy, self.sx, self.ph, self.pw,
                 cover_all=self.cover_all)
-            #print "%f, %f"%(cos_module.cos_func(0.5), sin_module.sin_func(0.5))
+            # print "%f, %f" %(cos_module.cos_func(0.5), sin_module.sin_func(0.5))
             y = numpy.tensordot(
                 self.col, W, ((1, 2, 3), (1, 2, 3))).astype(x.dtype, copy=False)
             if b is not None:
@@ -192,13 +181,8 @@ class Convolution2DFunction(function.Function):
         For MKLDNN backward, only support float32
         """
         if switch.enable_convF(inputs):
-            """
-            delay to create primitive here, because we can not get both W and x dtype in link init
-            TODO: in future, native object create will be hidden in layer factory
-            """
             gW = numpy.empty(shape=(out_c, input_c, kh, kw), dtype=W.dtype)
             gx = numpy.empty(shape=(n, c, h, w), dtype=W.dtype)
-            
             if b is None:
                 mkldnn.Convolution2D_F32.do_backward(x, W, gy, gW, gx, kh, kw, self.sy, self.sx, self.ph, self.pw, self.pd, self.pr, self.mkldnn_opt)
                 return gx, gW
@@ -311,7 +295,7 @@ class Convolution2DFunction(function.Function):
 
 
 def convolution_2d(x, W, b=None, stride=1, pad=0, use_cudnn=True,
-                   cover_all=False, deterministic=False, conv_link=None):
+                   cover_all=False, deterministic=False, in_chain=False):
     """Two-dimensional convolution function.
 
     This is an implementation of two-dimensional convolution in ConvNets.
@@ -377,7 +361,7 @@ def convolution_2d(x, W, b=None, stride=1, pad=0, use_cudnn=True,
 
     """
     func = Convolution2DFunction(
-        stride, pad, use_cudnn, cover_all, deterministic, conv_link)
+        stride, pad, use_cudnn, cover_all, deterministic, in_chain)
     if b is None:
         return func(x, W)
     else:

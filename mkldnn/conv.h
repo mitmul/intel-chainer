@@ -1,3 +1,66 @@
+/*
+ *COPYRIGHT
+ *All modification made by Intel Corporation: © 2017 Intel Corporation.
+ *Copyright (c) 2015 Preferred Infrastructure, Inc.
+ *Copyright (c) 2015 Preferred Networks, Inc.
+ *
+ *Permission is hereby granted, free of charge, to any person obtaining a copy
+ *of this software and associated documentation files (the "Software"), to deal
+ *in the Software without restriction, including without limitation the rights
+ *to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ *copies of the Software, and to permit persons to whom the Software is
+ *furnished to do so, subject to the following conditions:
+ *
+ *The above copyright notice and this permission notice shall be included in
+ *all copies or substantial portions of the Software.
+ *
+ *THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ *IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ *FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ *AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ *LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ *OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ *THE SOFTWARE.
+ *
+ *
+ *######################################################################
+ *# The CuPy is designed based on NumPy's API.
+ *# CuPy's source code and documents contain the original NumPy ones.
+ *######################################################################
+ *Copyright (c) 2005-2016, NumPy Developers.
+ *All rights reserved.
+ *
+ *Redistribution and use in source and binary forms, with or without
+ *modification, are permitted provided that the following conditions are
+ *met:
+ *
+ *    * Redistributions of source code must retain the above copyright
+ *       notice, this list of conditions and the following disclaimer.
+ *
+ *    * Redistributions in binary form must reproduce the above
+ *       copyright notice, this list of conditions and the following
+ *       disclaimer in the documentation and/or other materials provided
+ *       with the distribution.
+ *
+ *    * Neither the name of the NumPy Developers nor the names of any
+ *       contributors may be used to endorse or promote products derived
+ *       from this software without specific prior written permission.
+ *
+ *THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+ *"AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
+ *LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
+ *A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
+ *OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
+ *SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+ *LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
+ *DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
+ *THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+ *(INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+ *OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *######################################################################
+ */
+
+
 #ifndef _CONVOLUTION_H_
 #define _CONVOLUTION_H_
 
@@ -187,9 +250,9 @@ static void do_backward(
 public:
     Convolution2D();
     ~Convolution2D();
-    
+
     /*
-     * Convolution forward primitive setup 
+     * Convolution forward primitive setup
      * Params:
      * X: input, (n,c,h,w)
      * W: weight, (n, out_c, h, w)
@@ -203,7 +266,7 @@ public:
             int s1, int s2,
             int pl1, int pl2,
             int pr1, int pr2);
-    
+
     /*
      * Convolution forward with bias
      * Params:
@@ -212,7 +275,7 @@ public:
      * b: bias
      * y: output, (n, out_c, out_h, out_w)
      */
-    int forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4, 
+    int forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
             T* W, int W_d1, int W_d2, int W_d3, int W_d4,
             T* b, int b_d1,
             T* y, int y_d1, int y_d2, int y_d3, int y_d4,
@@ -227,17 +290,17 @@ public:
      * W: weight, (n, out_c, h, w)
      * y: output, (n, out_c, out_h, out_w)
      */
-    int forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4, 
+    int forward(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
             T* W, int W_d1, int W_d2, int W_d3, int W_d4,
             T* y, int y_d1, int y_d2, int y_d3, int y_d4,
             int s1, int s2,
             int pl1, int pl2,
             int pr1, int pr2);
-    
+
     /*
      * Covolution backward primitive setup
      * Params:
-     * 
+     *
      */
     void backward_setup(T* x, int x_d1, int x_d2, int x_d3, int x_d4,
             T* W, int W_d1, int W_d2, int W_d3, int W_d4,
@@ -303,7 +366,7 @@ private:
     std::shared_ptr<mkldnn::convolution_backward_weights::primitive_desc> bwd_weights_pd_;
     std::shared_ptr<mkldnn::convolution_backward_data::desc> bwd_data_desc_;
     std::shared_ptr<mkldnn::convolution_backward_data::primitive_desc> bwd_data_pd_;
-    
+
     //stream
     std::shared_ptr<mkldnn::stream> fwd_stream_;
     std::vector<mkldnn::primitive> fwd_primitives_;
@@ -350,7 +413,7 @@ private:
     std::shared_ptr<mkldnn::memory> bwd_diff_bias_mem_; //gb
     std::shared_ptr<mkldnn::memory> bwd_diff_dst_weights_mem_; // gy for gW
     std::shared_ptr<mkldnn::memory> bwd_diff_dst_data_mem_; // gy for gx
-    
+
     //memory desc
     //forward & backward can share same mem desc
     std::shared_ptr<mkldnn::memory::desc> src_md_; //x & gx

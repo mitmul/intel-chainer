@@ -67,13 +67,12 @@ class TestLocalConfig(unittest.TestCase):
         sio = io.StringIO()
         self.config.show(sio)
         contents = sio.getvalue()
-        self.assertEqual(contents, 'x:\tglobal x\ny:\tlocal y\nz:\tlocal z\n')
+        self.assertEqual(contents, 'x global x\ny local y\nz local z\n')
 
     def test_print_global_config(self):
         sio = io.StringIO()
         self.global_config.show(sio)
         contents = sio.getvalue()
-        self.assertEqual(contents, 'x:\tglobal x\ny:\tglobal y\n')
-
+        self.assertEqual(contents, 'x global x\ny global y\n')
 
 testing.run_module(__name__, __file__)

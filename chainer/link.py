@@ -127,6 +127,7 @@ class Link(object):
         self._uninitialized_params = {}
         self._cpu = True
         self._device_id = None
+        self.in_chain = False
         self.name = None
 
         for name, value in six.iteritems(params):
@@ -601,6 +602,7 @@ class Chain(Link):
                 'cannot register a new link %s: attribute exists' % name)
         self._children.append(name)
         link.name = name
+        link.in_chain = True
         d[name] = link
 
     def copy(self):
@@ -757,6 +759,7 @@ class ChainList(Link):
                 'given link is already registered to another chain by name %s'
                 % link.name)
         link.name = str(len(self._children))
+        link.in_chain = True
         self._children.append(link)
 
     def copy(self):

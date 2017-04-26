@@ -33,7 +33,7 @@ class MaxPooling2D(pooling_2d.Pooling2D):
                                     x[0], y, self.indexes,
                                     self.sy, self.sx,
                                     self.ph, self.pd, self.pw, self.pr,
-                                    self.kh, self.kw);
+                                    self.kh, self.kw)
             return y,
         else:
             col = conv.im2col_cpu(
@@ -100,17 +100,10 @@ class MaxPooling2D(pooling_2d.Pooling2D):
         return y,
 
     def backward_cpu(self, x, gy):
-        # if switch.enable_max_pooling:
-        if switch.enable_max_poolingF((x,gy)):
+        if switch.enable_max_poolingF((x, gy)):
             n, c, h, w = x[0].shape
             gx = numpy.empty((n, c, h, w), dtype=x[0].dtype)
 
-            #backward_obj = mkl.MaxPooling_F32.get_backward_object(
-            #        x[0],
-            #        self.sy, self.sx,
-            #        self.ph, self.pd, self.pw, self.pr,
-            #        self.kh, self.kw)
-            #backward_obj.backward(gy[0], x[0], gx)
             mkl.MaxPooling_F32.do_backward(
                                     gy[0], x[0], gx, self.indexes,
                                     self.sy, self.sx,

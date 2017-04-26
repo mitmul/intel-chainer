@@ -497,7 +497,9 @@ enum algorithm {
     lrn_across_channels = c_api::mkldnn_lrn_across_channels,
     lrn_within_channel  = c_api::mkldnn_lrn_within_channel,
     pooling_max = c_api::mkldnn_pooling_max,
-    pooling_avg = c_api::mkldnn_pooling_avg
+    pooling_avg = c_api::mkldnn_pooling_avg,
+    pooling_avg_include_padding = c_api::mkldnn_pooling_avg_include_padding,
+    pooling_avg_exclude_padding = c_api::mkldnn_pooling_avg_exclude_padding
 };
 
 enum batch_normalization_flag {
@@ -2188,6 +2190,15 @@ struct inner_product_backward_weights: public primitive {
                     c_api::mkldnn_inner_product_backward_weights_desc_init(
                         &data, &src_desc.data, &diff_weights_desc.data,
                         &diff_bias_desc.data, &diff_dst_desc.data),
+                "could not create a inner product backward weights descriptor");
+        }
+        desc(const memory::desc &src_desc,
+                const memory::desc &diff_weights_desc,
+                const memory::desc &diff_dst_desc) {
+            error::wrap_c_api(
+                    c_api::mkldnn_inner_product_backward_weights_desc_init(
+                        &data, &src_desc.data, &diff_weights_desc.data,
+                        nullptr, &diff_dst_desc.data),
                 "could not create a inner product backward weights descriptor");
         }
     };

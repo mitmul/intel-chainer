@@ -29,13 +29,13 @@ for i in range(niter):
     if i > n_dry - 1:
         count += 1
         total_forward += (end-start)*1000
-	
+
     y.grad = y_grad
     start = time.time()
     y.backward()
     end = time.time()
     if i > n_dry - 1:
-	total_backward += (end-start)*1000
+        total_backward += (end-start)*1000
 
 print("Average Forward: ", total_forward/count, "ms")
 print("Average Backward: ", total_backward/count, "ms")

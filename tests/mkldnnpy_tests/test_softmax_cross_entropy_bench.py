@@ -14,18 +14,18 @@ mkldnn.set_mkldnn_enable(True)
 print "With mkldnn"
 x = np.arange(1.0, 13.0, 2.0, dtype=np.float32).reshape(2,3)
 label = np.array([0, 2], dtype=np.int32)
-print "x	****************** "
+print "x    ****************** "
 print x
-print "label	****************** "
+print "label    ****************** "
 print label
 
 sce = F.SoftmaxCrossEntropy(use_cudnn=False, normalize=True, cache_score=True)
 loss = sce.forward_cpu((x, label))
 gx = sce.backward_cpu((x, label), (1, 1))
 
-print "loss	******************* "
+print "loss    ******************* "
 print loss
-print "gx	******************* "
+print "gx    ******************* "
 print gx
 
 mkldnn.set_mkldnn_enable(False)
@@ -34,18 +34,18 @@ print " "
 print "Without mkldnn"
 x = np.arange(1.0, 13.0, 2.0, dtype=np.float32).reshape(2,3)
 label = np.array([0, 2], dtype=np.int32)
-print "x	****************** "
+print "x    ****************** "
 print x
-print "label	****************** "
+print "label    ****************** "
 print label
 
 sce = F.SoftmaxCrossEntropy(use_cudnn=False, normalize=True, cache_score=True)
 loss = sce.forward_cpu((x, label))
 gx = sce.backward_cpu((x, label), (1, 1))
 
-print "loss	******************* "
+print "loss    ******************* "
 print loss
-print "gx	******************* "
+print "gx    ******************* "
 print gx
 
 # Performance Test

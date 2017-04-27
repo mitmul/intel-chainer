@@ -110,7 +110,8 @@ int Pooling<T>::forward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                                      (alg_kind == pooling_avg ? "avg" :
                                                   /* else */    "unknown"));
 
-    if (alg_kind != pooling_max && alg_kind != pooling_avg) {
+    if (alg_kind != pooling_max && alg_kind != pooling_avg
+            && alg_kind != pooling_avg_include_padding && alg_kind != pooling_avg_exclude_padding) {
         LOG(ERROR) << "alg_kind must be either pooling_max or "
                    << "pooling_avg";
     }
@@ -239,7 +240,8 @@ int Pooling<T>::backward_setup(int x_d1, int x_d2, int x_d3, int x_d4,
                                      (alg_kind == pooling_avg ? "avg" :
                                                   /* else */    "unknown"));
 
-    if (alg_kind != pooling_max && alg_kind != pooling_avg) {
+    if (alg_kind != pooling_max && alg_kind != pooling_avg
+            && alg_kind != pooling_avg_include_padding && alg_kind != pooling_avg_exclude_padding) {
         LOG(ERROR) << "alg_kind must be either pooling_max or "
                    << "pooling_avg";
     }

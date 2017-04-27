@@ -80,7 +80,7 @@ private:
         return Pooling<T>::get_forward_object(x, x_d1, x_d2, x_d3, x_d4,
                                               s_y, s_x, p_u, p_d, p_l, p_r,
                                               ker_h, ker_w,
-                                              mkldnn::pooling_avg);
+                                              mkldnn::pooling_avg_include_padding);
     };
 
     static Pooling<T>* get_backward_object(
@@ -91,7 +91,7 @@ private:
         return Pooling<T>::get_backward_object(x, x_d1, x_d2, x_d3, x_d4,
                                               s_y, s_x, p_u, p_d, p_l, p_r,
                                               ker_h, ker_w,
-                                              mkldnn::pooling_avg);
+                                              mkldnn::pooling_avg_include_padding);
     };
 
 public:
@@ -104,7 +104,7 @@ public:
         Pooling<T>::do_forward(x, x_d1, x_d2, x_d3, x_d4,
                                y, y_d1, y_d2, y_d3, y_d4,
                                s_y, s_x, p_u, p_d, p_l, p_r, ker_h, ker_w,
-                               mkldnn::pooling_avg);
+                               mkldnn::pooling_avg_include_padding);
     }
 
     static void do_backward(
@@ -118,7 +118,7 @@ public:
                                 x,  x_d1,  x_d2,  x_d3,  x_d4,
                                 gx, gx_d1, gx_d2, gx_d3, gx_d4,
                                 s_y, s_x, p_u, p_d, p_l, p_r, ker_h, ker_w,
-                                mkldnn::pooling_avg);
+                                mkldnn::pooling_avg_include_padding);
     }
 };
 

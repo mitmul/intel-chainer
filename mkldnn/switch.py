@@ -29,25 +29,25 @@ def SupportedInput(tul):
 
 
 def enable_convF(tul):
-	return mkldnn.enabled()  and SupportedInput(tul) and enable_conv
+        return mkldnn.enabled()  and SupportedInput(tul) and enable_conv
 def enable_max_poolingF(tul):
-	return mkldnn.enabled()  and SupportedInput(tul) and enable_max_pooling
+        return mkldnn.enabled()  and SupportedInput(tul) and enable_max_pooling
 def enable_avg_poolingF(tul):
-	return mkldnn.enabled() and SupportedInput(tul) and enable_avg_pooling
+        return mkldnn.enabled() and SupportedInput(tul) and enable_avg_pooling
 def enable_lrnF(tul):
-	return mkldnn.enabled()  and SupportedInput(tul) and enable_lrn
+        return mkldnn.enabled()  and SupportedInput(tul) and enable_lrn
 def enable_reluF(tul):
-	return mkldnn.enabled() and SupportedInput(tul) and enable_relu
+        return mkldnn.enabled() and SupportedInput(tul) and enable_relu
 def enable_softmaxF(tul):
-	return mkldnn.enabled() and SupportedInput(tul) and enable_softmax
+        return mkldnn.enabled() and SupportedInput(tul) and enable_softmax
 def enable_linearF(tul):
-	return mkldnn.enabled() and SupportedInput(tul) and enable_linear
+        return mkldnn.enabled() and SupportedInput(tul) and enable_linear
 def enable_softmax_cross_entropyF(tul):
-	return mkldnn.enabled() and SupportedInput(tul) and enable_softmax_cross_entropy
+        return mkldnn.enabled() and SupportedInput(tul) and enable_softmax_cross_entropy
 def enable_concatF(tul):
-	return mkldnn.enabled() and SupportedInput(tul) and enable_concat
+        return mkldnn.enabled() and SupportedInput(tul) and enable_concat
 def enable_acc_gradF(tul):
-	return mkldnn.enabled() and SupportedInput(tul) and enable_acc_grad
+        return mkldnn.enabled() and SupportedInput(tul) and enable_acc_grad
 # concat now could support float32 and float64
 # def enable_concatF(tul):
-# 	return mkldnn.enabled() and enable_concat
+#         return mkldnn.enabled() and enable_concat

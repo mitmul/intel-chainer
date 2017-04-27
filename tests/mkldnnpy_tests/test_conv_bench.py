@@ -22,7 +22,7 @@ conv = L.Convolution2D(3, 64, 7, stride=2, pad=3)
 x = Variable(data)
 
 for i in range(niter):
-    print "iter:", i
+    print ("iter:", i)
     start = time.time()
     y = conv(x)
     end = time.time()

@@ -54,12 +54,12 @@ class TestLocalResponseNormalizationValidation(unittest.TestCase):
     @attr.xeon
     @condition.retry(3)
     def test_xeon_cpu(self):
-            print "test xeon"
+            print ("test xeon")
             pass
     @attr.xeon_phi
     @condition.retry(3)
     def test_xeon_phi_cpu(self):
-            print "test xeon phi"
+            print ("test xeon phi")
             pass
 
 testing.run_module(__name__, __file__)

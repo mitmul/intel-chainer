@@ -24,7 +24,7 @@ incept = L.Inception(8,  8,  96, 8, 16,  8,  8)
 x = Variable(data)
 
 for i in range(niter):
-    print "iter:", i
+    print ("iter:", i)
     start = time.time()
     y = incept(x)
     end = time.time()

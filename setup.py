@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from setuptools import setup
-
+from setuptools.extension import Extension
+import numpy
 
 setup_requires = []
 install_requires = [
@@ -10,6 +11,36 @@ install_requires = [
     'numpy>=1.9.0',
     'protobuf',
     'six>=1.9.0',
+    'glog',
+]
+
+extensions = [
+    Extension(
+        "mkldnn._mkldnn",
+        sources=[
+                "mkldnn/relu4d.cc",
+                "mkldnn/relu.cc",
+                "mkldnn/conv.cc",
+                "mkldnn/concat.cc",
+                "mkldnn/common.cc",
+                "mkldnn/cpu_info.cc",
+                "mkldnn/layer_factory.cc",
+                "mkldnn/linear.cc",
+                "mkldnn/lrn.cc",
+                "mkldnn/pooling.cc",
+                "mkldnn/max_pooling.cc",
+                "mkldnn/avg_pooling.cc",
+                "mkldnn/softmax.cc",
+                "mkldnn/softmax_cross_entropy.cc",
+                "mkldnn/sum.cc",
+                "mkldnn/utils.cc",
+                "mkldnn/mkldnn.i"
+                ],
+        swig_opts=["-c++"],
+        extra_compile_args=["-std=c++11", "-fopenmp"],
+        include_dirs=["mkldnn/incl/", numpy.get_include()],
+        libraries=['glog', 'stdc++', 'boost_system', 'mkldnn', 'm'],
+    )
 ]
 
 setup(
@@ -56,7 +87,10 @@ setup(
               'chainer.training',
               'chainer.training.extensions',
               'chainer.training.triggers',
-              'chainer.utils'],
+              'chainer.utils',
+              'mkldnn',
+              ],
+    ext_modules=extensions,
     zip_safe=False,
     setup_requires=setup_requires,
     install_requires=install_requires,

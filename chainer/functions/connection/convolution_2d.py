@@ -4,6 +4,9 @@ from chainer import cuda
 from chainer import function
 from chainer.utils import conv
 from chainer.utils import type_check
+from mkldnn import mkldnn
+from mkldnn import switch
+
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
@@ -31,12 +34,14 @@ def _pair(x):
 class Convolution2DFunction(function.Function):
 
     def __init__(self, stride=1, pad=0, use_cudnn=True, cover_all=False,
-                 deterministic=False):
+                 deterministic=False, in_chain=False):
         self.sy, self.sx = _pair(stride)
         self.ph, self.pw = _pair(pad)
+        self.pd, self.pr = _pair(pad)
         self.use_cudnn = use_cudnn
         self.cover_all = cover_all
         self.deterministic = deterministic
+        self.in_chain = in_chain
 
     def check_type_forward(self, in_types):
         n_in = in_types.size()
@@ -63,15 +68,37 @@ class Convolution2DFunction(function.Function):
     def forward_cpu(self, inputs):
         x, W = inputs[:2]
         b = inputs[2] if len(inputs) == 3 else None
-        kh, kw = W.shape[2:]
-        self.col = conv.im2col_cpu(
-            x, kh, kw, self.sy, self.sx, self.ph, self.pw,
-            cover_all=self.cover_all)
-        y = numpy.tensordot(
-            self.col, W, ((1, 2, 3), (1, 2, 3))).astype(x.dtype, copy=False)
-        if b is not None:
-            y += b
-        return numpy.rollaxis(y, 3, 1),
+        out_c, input_c, kh, kw = W.shape
+        n, c, h, w = x.shape
+
+        """
+        For mkldnn backend, only support float32 for x and W
+        """
+        if switch.enable_convF(inputs):
+            out_h = conv.get_conv_outsize(h, kh, self.sy, self.ph, cover_all=self.cover_all)
+            assert out_h > 0, 'Height in the output should be positive.'
+            out_w = conv.get_conv_outsize(w, kw, self.sx, self.pw, cover_all=self.cover_all)
+            assert out_w > 0, 'Width in the output should be positive.'
+            self.pd = self.sy*(out_h-1) + kh - h - self.ph
+            self.pr = self.sx*(out_w-1) + kw - w - self.pw
+
+            y = numpy.empty(shape=(n, out_c, out_h, out_w), dtype=x.dtype)
+            if b is not None:
+                mkldnn.Convolution2D_F32.do_forward(x, W, b, y, kh, kw, self.sx, self.sy, self.ph, self.pw, self.pd, self.pr)
+            else:
+                mkldnn.Convolution2D_F32.do_forward(x, W, y, kh, kw, self.sx, self.sy, self.ph, self.pw, self.pd, self.pr)
+            return y,
+        else:
+            self.col = conv.im2col_cpu(
+                x, kh, kw, self.sy, self.sx, self.ph, self.pw,
+                cover_all=self.cover_all)
+            # print "%f, %f" %(cos_module.cos_func(0.5), sin_module.sin_func(0.5))
+            y = numpy.tensordot(
+                self.col, W, ((1, 2, 3), (1, 2, 3))).astype(x.dtype, copy=False)
+            if b is not None:
+                y += b
+            y = numpy.rollaxis(y, 3, 1)
+            return y,
 
     def forward_gpu(self, inputs):
         x, W = inputs[:2]
@@ -146,18 +173,33 @@ class Convolution2DFunction(function.Function):
         x, W = inputs[:2]
         b = inputs[2] if len(inputs) == 3 else None
         gy = grad_outputs[0]
-        h, w = x.shape[2:]
+        n, c, h, w = x.shape
+        out_c, input_c, kh, kw = W.shape
+        gn, gout_c, gout_h, gout_w = gy.shape
 
-        gW = numpy.tensordot(
-            gy, self.col, ((0, 2, 3), (0, 4, 5))).astype(W.dtype, copy=False)
-        gcol = numpy.tensordot(W, gy, (0, 1)).astype(x.dtype, copy=False)
-        gcol = numpy.rollaxis(gcol, 3)
-        gx = conv.col2im_cpu(gcol, self.sy, self.sx, self.ph, self.pw, h, w)
-
-        if b is None:
-            return gx, gW
+        """
+        For MKLDNN backward, only support float32
+        """
+        if switch.enable_convF(inputs):
+            gW = numpy.empty(shape=(out_c, input_c, kh, kw), dtype=W.dtype)
+            gx = numpy.empty(shape=(n, c, h, w), dtype=W.dtype)
+            if b is None:
+                mkldnn.Convolution2D_F32.do_backward(x, W, gy, gW, gx, kh, kw, self.sy, self.sx, self.ph, self.pw, self.pd, self.pr, self.mkldnn_opt)
+                return gx, gW
+            else:
+                gb = numpy.empty(shape=b.shape, dtype=W.dtype)
+                mkldnn.Convolution2D_F32.do_backward(x, W, b, gy, gW, gx, gb, kh, kw, self.sy, self.sx, self.ph, self.pw, self.pd, self.pr, self.mkldnn_opt)
+                return gx, gW, gb
         else:
-            gb = gy.sum(axis=(0, 2, 3))
+            gW = numpy.tensordot(
+                    gy, self.col, ((0, 2, 3), (0, 4, 5))).astype(W.dtype, copy=False)
+            gcol = numpy.tensordot(W, gy, (0, 1)).astype(x.dtype, copy=False)
+            gcol = numpy.rollaxis(gcol, 3)
+            gx = conv.col2im_cpu(gcol, self.sy, self.sx, self.ph, self.pw, h, w)
+            if b is None:
+                return gx, gW
+            else:
+                gb = gy.sum(axis=(0, 2, 3))
             return gx, gW, gb
 
     def backward_gpu(self, inputs, grad_outputs):
@@ -253,7 +295,7 @@ class Convolution2DFunction(function.Function):
 
 
 def convolution_2d(x, W, b=None, stride=1, pad=0, use_cudnn=True,
-                   cover_all=False, deterministic=False):
+                   cover_all=False, deterministic=False, in_chain=False):
     """Two-dimensional convolution function.
 
     This is an implementation of two-dimensional convolution in ConvNets.
@@ -319,7 +361,7 @@ def convolution_2d(x, W, b=None, stride=1, pad=0, use_cudnn=True,
 
     """
     func = Convolution2DFunction(
-        stride, pad, use_cudnn, cover_all, deterministic)
+        stride, pad, use_cudnn, cover_all, deterministic, in_chain)
     if b is None:
         return func(x, W)
     else:

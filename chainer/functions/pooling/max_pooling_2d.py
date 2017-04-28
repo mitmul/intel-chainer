@@ -3,6 +3,8 @@ import numpy
 from chainer import cuda
 from chainer.functions.pooling import pooling_2d
 from chainer.utils import conv
+from mkldnn import mkldnn as mkl
+from mkldnn import switch
 
 if cuda.cudnn_enabled:
     cudnn = cuda.cudnn
@@ -14,17 +16,37 @@ class MaxPooling2D(pooling_2d.Pooling2D):
     """Max pooling over a set of 2d planes."""
 
     def forward_cpu(self, x):
-        col = conv.im2col_cpu(
-            x[0], self.kh, self.kw, self.sy, self.sx, self.ph, self.pw,
-            pval=-float('inf'), cover_all=self.cover_all)
-        n, c, kh, kw, out_h, out_w = col.shape
-        col = col.reshape(n, c, kh * kw, out_h, out_w)
+        # if switch.enable_max_pooling:
+        # we can only handle none cover_all situation
+        if switch.enable_max_poolingF((x,)):
+            n, c, h, w = x[0].shape
+            y_h = conv.get_conv_outsize(
+                h, self.kh, self.sy, self.ph, self.cover_all)
+            y_w = conv.get_conv_outsize(
+                w, self.kw, self.sx, self.pw, self.cover_all)
+            self.pd = self.sy*(y_h-1)+self.kh - h - self.ph
+            self.pr = self.sx*(y_w-1)+self.kw - w - self.pw
+            y = numpy.empty((n, c, y_h, y_w), dtype=x[0].dtype)
+            self.indexes = numpy.empty((n, c, y_h, y_w), dtype=numpy.int32)
 
-        # We select maximum twice, since the implementation using numpy.choose
-        # hits its bug when kh * kw >= 32.
-        self.indexes = col.argmax(axis=2)
-        y = col.max(axis=2)
-        return y,
+            mkl.MaxPooling_F32.do_forward(
+                                    x[0], y, self.indexes,
+                                    self.sy, self.sx,
+                                    self.ph, self.pd, self.pw, self.pr,
+                                    self.kh, self.kw)
+            return y,
+        else:
+            col = conv.im2col_cpu(
+                x[0], self.kh, self.kw, self.sy, self.sx, self.ph, self.pw,
+                pval=-float('inf'), cover_all=self.cover_all)
+            n, c, kh, kw, out_h, out_w = col.shape
+            col = col.reshape(n, c, kh * kw, out_h, out_w)
+
+            # We select maximum twice, since the implementation using numpy.choose
+            # hits its bug when kh * kw >= 32.
+            self.indexes = col.argmax(axis=2)
+            y = col.max(axis=2)
+            return y,
 
     def forward_gpu(self, x):
         if (cuda.cudnn_enabled and self.use_cudnn and
@@ -78,23 +100,34 @@ class MaxPooling2D(pooling_2d.Pooling2D):
         return y,
 
     def backward_cpu(self, x, gy):
-        n, c, out_h, out_w = gy[0].shape
-        h, w = x[0].shape[2:]
-        kh, kw = self.kh, self.kw
+        if switch.enable_max_poolingF((x, gy)):
+            n, c, h, w = x[0].shape
+            gx = numpy.empty((n, c, h, w), dtype=x[0].dtype)
 
-        gcol = numpy.zeros(
-            (n * c * out_h * out_w * kh * kw), dtype=x[0].dtype)
+            mkl.MaxPooling_F32.do_backward(
+                                    gy[0], x[0], gx, self.indexes,
+                                    self.sy, self.sx,
+                                    self.ph, self.pd, self.pw, self.pr,
+                                    self.kh, self.kw)
+            return gx,
+        else:
+            n, c, out_h, out_w = gy[0].shape
+            h, w = x[0].shape[2:]
+            kh, kw = self.kh, self.kw
 
-        indexes = self.indexes.flatten()
-        indexes += numpy.arange(0, indexes.size * kh * kw, kh * kw)
+            gcol = numpy.zeros(
+                (n * c * out_h * out_w * kh * kw), dtype=x[0].dtype)
 
-        gcol[indexes] = gy[0].ravel()
-        gcol = gcol.reshape(n, c, out_h, out_w, kh, kw)
-        gcol = numpy.swapaxes(gcol, 2, 4)
-        gcol = numpy.swapaxes(gcol, 3, 5)
+            indexes = self.indexes.flatten()
+            indexes += numpy.arange(0, indexes.size * kh * kw, kh * kw)
 
-        gx = conv.col2im_cpu(gcol, self.sy, self.sx, self.ph, self.pw, h, w)
-        return gx,
+            gcol[indexes] = gy[0].ravel()
+            gcol = gcol.reshape(n, c, out_h, out_w, kh, kw)
+            gcol = numpy.swapaxes(gcol, 2, 4)
+            gcol = numpy.swapaxes(gcol, 3, 5)
+
+            gx = conv.col2im_cpu(gcol, self.sy, self.sx, self.ph, self.pw, h, w)
+            return gx,
 
     def backward_gpu(self, x, gy):
         if (cuda.cudnn_enabled and self.use_cudnn and

@@ -4,6 +4,8 @@ import six
 from chainer import cuda
 from chainer import function
 from chainer.utils import type_check
+from mkldnn import mkldnn
+from mkldnn import switch
 
 
 def _cu_conv_sum(y, x, n):
@@ -41,6 +43,7 @@ class LocalResponseNormalization(function.Function):
         self.k = k
         self.alpha = alpha
         self.beta = beta
+        self.isfloat32 = True
 
     def check_type_forward(self, in_types):
         type_check.expect(in_types.size() == 1)
@@ -52,27 +55,44 @@ class LocalResponseNormalization(function.Function):
         )
 
     def forward_cpu(self, x):
-        half_n = self.n // 2
-        x2 = numpy.square(x[0])
-        sum_part = x2.copy()
-        for i in six.moves.range(1, half_n + 1):
-            sum_part[:, i:] += x2[:, :-i]
-            sum_part[:, :-i] += x2[:, i:]
-        self.unit_scale = self.k + self.alpha * sum_part
-        self.scale = self.unit_scale ** -self.beta
-        self.y = x[0] * self.scale
-        return self.y,
+        if switch.enable_lrnF((x,)):
+            self.y = numpy.empty(x[0].shape, dtype=x[0].dtype)
+            in_alpha = self.n*self.alpha
+            ws_size = mkldnn.LocalResponseNormalization_F32.get_workspace_size(
+                x[0], self.y, self.n, self.k, in_alpha, self.beta)
+            self.ws = numpy.empty(ws_size, dtype=x[0].dtype)
+            mkldnn.LocalResponseNormalization_F32.do_forward(
+                x[0], self.y, self.ws, self.n, self.k, in_alpha, self.beta)
+            return self.y,
+        else:
+            half_n = self.n // 2
+            x2 = numpy.square(x[0])
+            sum_part = x2.copy()
+            for i in six.moves.range(1, half_n + 1):
+                sum_part[:, i:] += x2[:, :-i]
+                sum_part[:, :-i] += x2[:, i:]
+            self.unit_scale = self.k + self.alpha * sum_part
+            self.scale = self.unit_scale ** -self.beta
+            self.y = x[0] * self.scale
+            return self.y,
 
     def backward_cpu(self, x, gy):
-        half_n = self.n // 2
-        summand = self.y * gy[0] / self.unit_scale
-        sum_part = summand.copy()
-        for i in six.moves.range(1, half_n + 1):
-            sum_part[:, i:] += summand[:, :-i]
-            sum_part[:, :-i] += summand[:, i:]
+        if switch.enable_lrnF((x, gy)):
+            gx = numpy.empty(x[0].shape, dtype=x[0].dtype)
+            in_alpha = self.n*self.alpha
+            mkldnn.LocalResponseNormalization_F32.do_backward(
+                x[0], gy[0], gx, self.ws, self.n, self.k, in_alpha, self.beta)
+            return gx,
+        else:
+            half_n = self.n // 2
+            summand = self.y * gy[0] / self.unit_scale
+            sum_part = summand.copy()
+            for i in six.moves.range(1, half_n + 1):
+                sum_part[:, i:] += summand[:, :-i]
+                sum_part[:, :-i] += summand[:, i:]
 
-        gx = gy[0] * self.scale - 2 * self.alpha * self.beta * x[0] * sum_part
-        return gx,
+            gx = gy[0] * self.scale - 2 * self.alpha * self.beta * x[0] * sum_part
+            return gx,
 
     def forward_gpu(self, x):
         self.y = cuda.cupy.square(x[0])  # temporary

@@ -5,19 +5,21 @@
 [![Read the Docs](https://readthedocs.org/projects/chainer/badge/?version=stable)](http://docs.chainer.org/en/stable/?badge=stable)
 
 # Chainer: a neural network framework
-
-Note: This is a fast implementation of integration Chainer with Intel® Math Kernel Library for Deep Neural Networks (Intel® MKL-DNN). It accelerates Chainer on CPU, esp. Intel® Xeon® and Intel® Xeon Phi™ processors. Current optimized layers (operations) includes convolution (2D), local response normalization, ReLU, linear (inner product), pooling, concat, sum and gradient accumulation. Validated topologies includes Alexnet, Overfeat, VGGA, VGG-16, VGG-19 and GoogLeNet-v1 with performance gain from 50-250X on Xeon and Xeon Phi.
+# Intel® Software Optimization
+##### This is a fast implementation of integration Chainer with Intel® Math Kernel Library for Deep Neural Networks (Intel® MKL-DNN). It accelerates Chainer on CPU, esp. Intel® Xeon® and Intel® Xeon Phi™ processors. Current optimized layers (operations) includes convolution (2D), local response normalization, ReLU, linear (inner product), pooling, concat, sum and gradient accumulation. Validated topologies includes Alexnet, Overfeat, VGGA, VGG-16, VGG-19 and GoogLeNet-v1 with performance gain from 50-250X on Xeon and Xeon Phi.
 
 ## Requirements
 
 Chainer is tested on Ubuntu 14.04 and CentOS 7. We recommend them to use Chainer, though it may run on other systems as well.
 
 Minimum requirements:
+
 - Python 2.7.6+, 3.4.3+, 3.5.1+, 3.6.0+
 - NumPy 1.9, 1.10, 1.11, 1.12
 - Six 1.9
 
 Requirements for some features:
+
 - Intel MKL-DNN support
   - mkl-dnn 0.7
   - g++ 4.8.4+
@@ -54,42 +56,33 @@ pip install -U setuptools
 ```
 
 Then, install Chainer via PyPI:
+
 ```
 pip install chainer
 ```
 
 You can also install Chainer from the source code:
+
 ```
 python setup.py install
 ```
 
-### Installation and run with Intel software optimization
+### Installation with Intel software optimization
 To enable MKL-DNN, first you have to install MKL-DNN library.
-- Install MKL-DNN
+
 ```
 git clone https://github.com/01org/mkl-dnn.git
 cd scripts && ./prepare_mkl.sh && cd -
 mkdir -p build && cd build && cmake .. && make -j
 sudo make install
 ```
-- Build Chainer with MKL-DNN support
+
+### Build Chainer with MKL-DNN support
+
 ```
 python setup.py build
 python setup.py install
 ```
-- To run Chainer with Intel software optimization, set environment variable `LD_LIBRARY_PATH` for MKL-DNN library before run
-```
-# set the /path/to/mkldnn-lib, most likely it will be /usr/local/lib
-export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
-```
-- The rest of the steps is the same as before.
-To run convnet-benchmarks on IA, please check out https://github.com/mitmul/convnet-benchmarks repo.
-```
-cd chainer
-./train_imagenet.py -a alexnet -B 128 -g -1
-```
-Note: if an error of "AttributeError: 'module' object has no attribute 'cupy'" is reported, please refer to the following PR for the fix:
-https://github.com/mitmul/convnet-benchmarks/pull/3
 
 ### Installation with CUDA
 
@@ -144,6 +137,23 @@ You may need to install Cython for h5py.
 pip install cython
 pip install h5py
 ```
+
+## Run Chainer with Intel software optimization
+Set environment variable `LD_LIBRARY_PATH` for MKL-DNN library before run, most likely it will be /usr/local/lib:
+
+```
+export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
+```
+
+The rest of the steps is the same as before. To run convnet-benchmarks on IA, please check out [convnet-benchmarks](https://github.com/mitmul/convnet-benchmarks) repo:
+
+```
+cd chainer
+./train_imagenet.py -a alexnet -B 128 -g -1
+```
+
+*Note*: if an error of "AttributeError: 'module' object has no attribute 'cupy'" is reported, please refer to the following PR for the fix:
+[Timer fix for IA](https://github.com/mitmul/convnet-benchmarks/pull/3)
 
 
 ## Run with Docker

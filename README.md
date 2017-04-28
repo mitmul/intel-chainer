@@ -6,6 +6,8 @@
 
 # Chainer: a neural network framework
 
+Note: This is a fast implementation of integration Chainer with Intel(R) Math Kernel Library for Deep Neural Networks (Intel MKL-DNN). It accelerates Chainer on CPU, esp. Intel® Xeon® and Intel® Xeon Phi™ processors. Current optimized layers (operations) includes convolution (2D), local response normalization, ReLU, linear (inner product), pooling, concat, sum and gradient accumulation. Validated topologies includes Alexnet, Overfeat, VGGA, VGG-16, VGG-19 and GoogLeNet V1.
+
 ## Requirements
 
 Chainer is tested on Ubuntu 14.04 and CentOS 7. We recommend them to use Chainer, though it may run on other systems as well.
@@ -16,7 +18,7 @@ Minimum requirements:
 - Six 1.9
 
 Requirements for some features:
-- Intel MKL-DNN support (accelerate Chainer on CPU, esp. Intel® Xeon® and Intel® Xeon Phi™ processors)
+- Intel MKL-DNN support
   - mkl-dnn 0.7
   - g++ 4.8.4+
   - swig 3.0

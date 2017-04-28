@@ -6,7 +6,7 @@
 
 # Chainer: a neural network framework
 
-Note: This is a fast implementation of integration Chainer with Intel(R) Math Kernel Library for Deep Neural Networks (Intel MKL-DNN). It accelerates Chainer on CPU, esp. Intel® Xeon® and Intel® Xeon Phi™ processors. Current optimized layers (operations) includes convolution (2D), local response normalization, ReLU, linear (inner product), pooling, concat, sum and gradient accumulation. Validated topologies includes Alexnet, Overfeat, VGGA, VGG-16, VGG-19 and GoogLeNet V1.
+Note: This is a fast implementation of integration Chainer with Intel® Math Kernel Library for Deep Neural Networks (Intel® MKL-DNN). It accelerates Chainer on CPU, esp. Intel® Xeon® and Intel® Xeon Phi™ processors. Current optimized layers (operations) includes convolution (2D), local response normalization, ReLU, linear (inner product), pooling, concat, sum and gradient accumulation. Validated topologies includes Alexnet, Overfeat, VGGA, VGG-16, VGG-19 and GoogLeNet-v1 with performance gain from 50-250X on Xeon and Xeon Phi.
 
 ## Requirements
 
@@ -63,7 +63,7 @@ You can also install Chainer from the source code:
 python setup.py install
 ```
 
-### Installation with Intel MKL-DNN
+### Installation and run with Intel software optimization
 To enable MKL-DNN, first you have to install MKL-DNN library.
 - Install MKL-DNN
 ```
@@ -77,11 +77,19 @@ sudo make install
 python setup.py build
 python setup.py install
 ```
-- To run Chainer with MKL-DNN support, set environment variable `LD_LIBRARY_PATH` for MKL-DNN library before run
+- To run Chainer with Intel software optimization, set environment variable `LD_LIBRARY_PATH` for MKL-DNN library before run
 ```
 # set the /path/to/mkldnn-lib, most likely it will be /usr/local/lib
 export LD_LIBRARY_PATH=/usr/local/lib:$LD_LIBRARY_PATH
 ```
+- The rest of the steps is the same as before.
+To run convnet-benchmarks on IA, please check out https://github.com/mitmul/convnet-benchmarks repo.
+```
+cd chainer
+./train_imagenet.py -a alexnet -B 128 -g -1
+```
+Note: if an error of "AttributeError: 'module' object has no attribute 'cupy'" is reported, please refer to the following PR for the fix:
+https://github.com/mitmul/convnet-benchmarks/pull/3
 
 ### Installation with CUDA
 

@@ -37,7 +37,10 @@ extensions = [
                 "mkldnn/mkldnn.i"
                 ],
         swig_opts=["-c++"],
-        extra_compile_args=["-std=c++11", "-fopenmp"],
+        extra_compile_args=[
+            "-std=c++11", "-fopenmp", "-funsafe-math-optimizations",
+            "-ffinite-math-only", "-fno-rounding-math",
+            "-fvisibility-inlines-hidden"],
         include_dirs=["mkldnn/incl/", numpy.get_include()],
         libraries=['glog', 'stdc++', 'boost_system', 'mkldnn', 'm'],
     )

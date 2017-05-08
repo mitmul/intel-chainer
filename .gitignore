@@ -12,3 +12,6 @@ _readthedocs_build
 chainer.egg-info/
 dist/
 htmlcov/
+mkldnn/mkldnn.py
+mkldnn/mkldnn_wrap.cpp
+
